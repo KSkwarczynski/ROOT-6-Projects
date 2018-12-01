@@ -1,6 +1,6 @@
 using namespace std;
 
-void ADCanalisis(){
+void ADCanalysis(){
 ///////CHOSING FILE NAME TO OPEN///////
     TFile *f1= TFile::Open("24August_13_MCR0_hadrons_0pt8Gev_0pt0T_Beam___all.root");
 	TTree *FEB;
