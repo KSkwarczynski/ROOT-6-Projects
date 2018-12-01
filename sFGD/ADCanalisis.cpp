@@ -1,14 +1,16 @@
-{
-///////WCZYTANIE DRZEWA///////
+using namespace std;
+
+void ADCanalisis(){
+///////CHOSING FILE NAME TO OPEN///////
     TFile *f1= TFile::Open("24August_13_MCR0_hadrons_0pt8Gev_0pt0T_Beam___all.root");
 	TTree *FEB;
-/////FEBnumber SECLECT FEB WHICH YOU WANT TO OPEN////
+/////FEBnumber SECLECTS WHICH FEB (Front End Board) YOU WANT TO OPEN////
 	int FEBnumber=0;
-//////////kanalek USTAWIA KTORY KANAL WYPLOC W HISTOGRAMIE AMPLITUDY OD KANALY///////
+//////////kanalek - sets channel number you want in amplitude channel histogram///////
     int kanalek=48;
-//deklaracja tablic dla wynikow fitowania//
+//Declaring how much data you want in ToT important later//
     const int TableSize=9;
-//////[HG lub LG][wynik i error][liczba badanych ToT]
+//////[HG OR LG][RESULT ANDD ERROR][NUMBER OF DATA ToT]
     float constant[2][2][TableSize];
     float mean[2][2][TableSize];
     float sigma[2][2][TableSize];
@@ -29,7 +31,7 @@
     FEB->SetBranchAddress( Form("FEB_%d_hitLGAmpl",FEBnumber), &amplitudeLG);
   	FEB->SetBranchAddress( Form("FEB_%d_hitsChannel",FEBnumber), &channel);
     FEB->SetBranchAddress( Form("FEB_%d_hitTimeDif",FEBnumber), &ToT);
-/////////JUST TO LOOK NICE BUT FOR NOW DEOSNT MATTER/////
+/////////JUST TO LOOK NICE BUT FOR NOW DOESNT MATTER/////
     int Eventy = FEB->GetEntries();
 //////////////////////////CREATING HISTOGRAM AMPLITUDE HG x ToT////////
     TH2F *AmplTimeHist=new TH2F( Form("AmplTimeHist_FEB_%d",FEBnumber), Form("Amplitude HG and ToT histogram for for channel %d FEB_%d",kanalek ,FEBnumber), 4501, 0, 4500, 51, 0, 50);
@@ -39,8 +41,9 @@
     TH2F *AmplLGTimeaHist=new TH2F( Form("AmplLGTimeHist_FEB_%d",FEBnumber), Form("Amplitude LG and ToT histogram for channel %d FEB_%d",kanalek ,FEBnumber), 4501, 0, 4500, 51, 0, 50);
     AmplLGTimeaHist->GetXaxis()->SetTitle("Amplitude LG");
     AmplLGTimeaHist->GetYaxis()->SetTitle("ToT");
-/////////////////////////////////////////////////////////////////////////////
+////////There is only one GetEntry because there is only one "event" which is vector consisting of all real events//////
     FEB->GetEntry(0);
+
     double rozmiar = channel->size();
     int czasikCounter=0;
 //////////////////////////////////////
@@ -48,7 +51,7 @@
 ///////////wartosc startowa i koncowa do petli po ToT aby dobrze bylo tylko zmieniac "start" albo "TableSize"///////////
     int start=5;
     int limit=5*TableSize-start;
-//////////////////////////////////////////////////////////
+//////////Loop over given value of ToT/////
 for(int czasik=start; czasik<=limit; czasik=czasik+5){
     //creating histogram for Amplitude HG
     TH1F *AmplHist = new TH1F( Form("AmplHist_FEB_%d_ToT_%d",FEBnumber,czasik), Form("Amplitude HG histogram for channel %d, ToT %d and FEB_%d",kanalek ,czasik, FEBnumber), 1000, 0, 4500);
@@ -69,14 +72,15 @@ for(int czasik=start; czasik<=limit; czasik=czasik+5){
         }
 ////////TABELA Z WARTOSCIAMI ToT POTRZEBNA DO PRZYSZLYCH GRAFOW////////
 TimeOverThreshold[czasikCounter]=czasik;
-///////////////////////FITOWANIE////////////////////////
+///////////////////////FITOWANIE HG////////////////////////
 TF1 *funcHG = new TF1("fitHG", "gaus");
 double maksimumHG=AmplHist->GetMaximumBin();
+//zrobione żeby działąło wartość związana ze stosunkiem przedziału histogramu do binowania
 maksimumHG=maksimumHG*4.5;
 
 AmplHist->Fit(funcHG,"q","",maksimumHG-150,maksimumHG+250);
 
-////////////////////////////////////////////////////////////
+////wyciągamy wartości z fitu//
 constant[0][0][czasikCounter]= funcHG->GetParameter(0);
 constant[0][1][czasikCounter]= funcHG->GetParError(0);
 
@@ -89,13 +93,14 @@ sigma[0][1][czasikCounter]= funcHG->GetParError(2);
 AmplHist->Write();
 
 delete AmplHist;
-///////////////////////FITOWANIE////////////////////////
+///////////////////////FITOWANIE LG////////////////////////
 TF1 *funcLG = new TF1("fitLG", "gaus");
 double maksimumLG=AmplLGHist->GetMaximumBin();
+//zrobione żeby działąło wartość związana ze stosunkiem przedziału histogramu do binowania
 maksimumLG=maksimumLG*4.5;
 
 AmplLGHist->Fit(funcLG,"q","",maksimumLG-150,maksimumLG+250);
-///////////////////////////////////////////
+//////wyciągamy wartości z fitu//
 constant[1][0][czasikCounter]= funcLG->GetParameter(0);
 constant[1][1][czasikCounter]= funcLG->GetParError(0);
 
@@ -112,7 +117,7 @@ delete AmplLGHist;
 czasikCounter++;
 
 cout<<czasik<<endl;
-    }
+    } //end loop
 /////////////////////
     for(int i=0; i<rozmiar ;i++){
         if(channel->at(i)==kanalek){
@@ -120,14 +125,14 @@ cout<<czasik<<endl;
                 AmplLGTimeaHist->Fill(amplitudeLG->at(i),ToT->at(i));
                     }
     }
-///////////////////////////////////////////////////
+////Values from pedestal search, pedestal search not finished, values hardcoded when done they should be from external file
 int WojtekProgramDataHG=100;
 int WojtekProgramDataLG=105;
 
 //////[data and errors][table size]/////
 double PhotoElectronsHG[2][TableSize];
 double PhotoElectronsLG[2][TableSize];
-/////CONV. FACTOR [ADC/p.e] FROM TABLE///
+/////CONV. FACTOR [ADC/p.e] FROM TABLE NOT FINAL SO VALUES ARD HADCODED NOT TAKEN FROM EXTERNAL FILE///
 double ADChg=44;
 double ADClg=4.5;
 //////DEKLARACJA GRAPGOW//////
