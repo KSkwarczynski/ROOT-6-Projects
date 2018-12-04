@@ -266,7 +266,11 @@ int main ()
             for ( int TOFtrigger = 0; TOFtrigger < FEB[12].FEBSN->size(); TOFtrigger++){
             if (FEB[12].hitTimeDif->at(TOFtrigger) > 0 && NumberEvDis > eventNum){
                 for (int ik = 0; ik < 48; ik++ )
-                    energyDep[ik] = 0, energyDepXZ[ik] = 0, energyDepYZ[ik] = 0;
+                {
+                    energyDep[ik] = 0;
+                    energyDepXZ[ik] = 0;
+                    energyDepYZ[ik] = 0;
+                }
                     LargehitTimeDif = 0;
                     Int_t GTindex[2] = {0,0};
                     for (int i = 0; i < 19; i++){
@@ -308,8 +312,8 @@ int main ()
             for (int ik = 0; ik < 48; ik++ )
             {
                 event_LY[eventNum]->Fill(ik,energyDep[ik]);
-                //event_LY_YZ[eventNum]->Fill(ik,energyDepYZ[ik]);
-                //event_LY_XZ[eventNum]->Fill(ik,energyDepXZ[ik]);
+                event_LY_YZ[eventNum]->Fill(ik,energyDepYZ[ik]);
+                event_LY_XZ[eventNum]->Fill(ik,energyDep[ik]-energyDepYZ[ik]);
             }
         if ( LargehitTimeDif == 0) {
                 c1->Clear();
@@ -323,17 +327,17 @@ int main ()
                 c1 -> cd(2);
                 event_YZ[eventNum]-> Draw("colorz");
 
+                //c1 -> cd(3);
+                //event_XY[eventNum]-> Draw("colorz");
+
+                //c1 -> cd(4);
+                //event_LY[eventNum]->Draw("HIST");
+
                 c1 -> cd(3);
-                event_XY[eventNum]-> Draw("colorz");
+                event_LY_XZ[eventNum]->Draw("HIST");
 
                 c1 -> cd(4);
-                event_LY[eventNum]->Draw("HIST");
-
-                //c1 -> cd(4);
-                //event_LY_XZ[eventNum]->Draw("HIST");
-
-                //c1 -> cd(4);
-                //event_LY_YZ[eventNum]->Draw("HIST");
+                event_LY_YZ[eventNum]->Draw("HIST");
 
                 c1->Update();
                 events2D -> cd();
@@ -384,3 +388,4 @@ int main ()
      FileInput->Close();
      return 0;
 }
+
