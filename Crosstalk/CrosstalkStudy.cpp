@@ -65,7 +65,8 @@ int main ()
     vector<string> vFileNames;
     string sFileName;
     ifstream fList("febs_files_list.list");
-    while (!fList.eof()) {
+    while (!fList.eof())
+    {
         fList >> sFileName;
         vFileNames.push_back(sFileName);
     }
@@ -104,7 +105,6 @@ int main ()
 
     }
 
-
     TTree *FEBtree[NumberOfEB];
     Long64_t nentries[NumberOfEB];
     std::fill(nentries, nentries + NumberOfEB, 0);
@@ -114,7 +114,6 @@ int main ()
 
     vector<int> FEBnumbers;
     FEBnumbers.clear();
-
 
     for (Int_t ih=0; ih<NumberOfEB; ih++) {
         sFEBnum.str("");
@@ -156,93 +155,113 @@ int main ()
     }
     cout << "Number of spills " << minEn << endl;
 
-  TFile wfile(rootFileOutput.c_str(), "recreate");
-  cout<<rootFileOutput<<endl;
+    TFile wfile(rootFileOutput.c_str(), "recreate");
+    cout<<rootFileOutput<<endl;
 
-  int MapCon[28][2][96];
-  for (int iFEB = 0; iFEB<19; iFEB++) {
-       if (FEBs[iFEB] != 12){
+    int MapCon[28][2][96];
+    for (int iFEB = 0; iFEB<19; iFEB++)
+    {
+        if (FEBs[iFEB] != 12){
         sFEBnum.str("");
         sFEBnum << FEBs[iFEB];
         sFEB = "../mapping/" + sFEBnum.str() + ".txt";
         ifstream fmap(sFEB.c_str());
         //cout <<endl<< "FEB "<< FEBs[iFEB]<< " mapping"<<endl;
         int temp=0;
-        while (!fmap.eof()) {
+        while (!fmap.eof())
+        {
             fmap >> temp >> MapCon[FEBs[iFEB]][0][temp] >>MapCon[FEBs[iFEB]][1][temp];
             //cout<<temp<<" "<<MapCon[FEBs[iFEB]][0][temp]<<" "<<MapCon[FEBs[iFEB]][1][temp]<<endl;
         //temp++;
         }
         fmap.close();
        }
-  }
+    }
 
+    TH2F *EventsMap_XY = new TH2F("All_events_map_XY","All_events_map_XY",  24,0,24, 8,0,8);
+    TH2F *EventsMap_YZ = new TH2F("All_events_map_YZ","All_events_map_YZ",  48,0,48, 8,0,8);
+    TH2F *EventsMap_XZ = new TH2F("All_events_map_XZ","All_events_map_XZ",  24,0,24, 48,0,48);
 
-  TH2F *EventsMap_XY = new TH2F("All_events_map_XY","All_events_map_XY",  24,0,24, 8,0,8);
-  TH2F *EventsMap_YZ = new TH2F("All_events_map_YZ","All_events_map_YZ",  48,0,48, 8,0,8);
-  TH2F *EventsMap_XZ = new TH2F("All_events_map_XZ","All_events_map_XZ",  24,0,24, 48,0,48);
+    TDirectory *events2D = wfile.mkdir("events2D");
+    TDirectory *CrossTalkPlots = wfile.mkdir("CrossTalkPlots");
+    int NumberEvDis = 20000; // zmiana 10000
 
-  TDirectory *events2D = wfile.mkdir("events2D");
-  int NumberEvDis = 10000;
+    ostringstream sEventnum;
+    string sEvent;
+//////////////////Histogram Declaration///////////////////////////////////
+    TH2F *event_XY[NumberEvDis];
+    for (Int_t ih=0; ih < NumberEvDis;ih++)
+    {
+        sEventnum.str("");
+        sEventnum << ih;
+        sEvent = "event_XY"+sEventnum.str();
+        event_XY[ih] = new TH2F(sEvent.c_str(),sEvent.c_str(), 24,0,24, 8,0,8);
+    }
+    TH2F *event_YZ[NumberEvDis];
+    for (Int_t ih=0; ih < NumberEvDis;ih++)
+    {
+        sEventnum.str("");
+        sEventnum << ih;
+        sEvent = "event_YZ"+sEventnum.str();
+        event_YZ[ih] = new TH2F(sEvent.c_str(),sEvent.c_str(), 48,0,48, 8,0,8);
+    }
 
-  ostringstream sEventnum;
-  string sEvent;
-  TH2F *event_XY[NumberEvDis];
-  for (Int_t ih=0; ih < NumberEvDis;ih++){
-    sEventnum.str("");
-    sEventnum << ih;
-    sEvent = "event_XY"+sEventnum.str();
-    event_XY[ih] = new TH2F(sEvent.c_str(),sEvent.c_str(), 24,0,24, 8,0,8);
-  }
-
-  TH2F *event_YZ[NumberEvDis];
-  for (Int_t ih=0; ih < NumberEvDis;ih++){
-    sEventnum.str("");
-    sEventnum << ih;
-    sEvent = "event_YZ"+sEventnum.str();
-    event_YZ[ih] = new TH2F(sEvent.c_str(),sEvent.c_str(), 48,0,48, 8,0,8);
-  }
-
-  TH2F *event_XZ[NumberEvDis];
-  for (Int_t ih=0; ih < NumberEvDis;ih++){
-    sEventnum.str("");
-    sEventnum << ih;
-    sEvent = "event_XZ"+sEventnum.str();
-    event_XZ[ih] = new TH2F(sEvent.c_str(),sEvent.c_str(), 24,0,24, 48,0,48);
-  }
-
-  TH1F *event_LY[NumberEvDis];
-  for (Int_t ih=0; ih < NumberEvDis;ih++){
-    sEventnum.str("");
-    sEventnum << ih;
-    sEvent = "event_LY"+sEventnum.str();
-    event_LY[ih] = new TH1F(sEvent.c_str(),sEvent.c_str(),48,0,48);
-  }
-    TH1F *event_LY_XZ[NumberEvDis];
+    TH2F *event_XZ[NumberEvDis];
     for (Int_t ih=0; ih < NumberEvDis;ih++){
+        sEventnum.str("");
+        sEventnum << ih;
+        sEvent = "event_XZ"+sEventnum.str();
+        event_XZ[ih] = new TH2F(sEvent.c_str(),sEvent.c_str(), 24,0,24, 48,0,48);
+    }
+
+    TH1F *event_LY[NumberEvDis];
+    for (Int_t ih=0; ih < NumberEvDis;ih++)
+    {
+        sEventnum.str("");
+        sEventnum << ih;
+        sEvent = "event_LY"+sEventnum.str();
+        event_LY[ih] = new TH1F(sEvent.c_str(),sEvent.c_str(),48,0,48);
+    }
+
+    TH1F *event_LY_XZ[NumberEvDis];
+    for (Int_t ih=0; ih < NumberEvDis;ih++)
+    {
         sEventnum.str("");
         sEventnum << ih;
         sEvent = "event_LY_XZ"+sEventnum.str();
         event_LY_XZ[ih] = new TH1F(sEvent.c_str(),sEvent.c_str(),48,0,48);
     }
     TH1F *event_LY_YZ[NumberEvDis];
-    for (Int_t ih=0; ih < NumberEvDis;ih++){
+    for (Int_t ih=0; ih < NumberEvDis;ih++)
+    {
         sEventnum.str("");
         sEventnum << ih;
         sEvent = "event_LY_YZ"+sEventnum.str();
         event_LY_YZ[ih] = new TH1F(sEvent.c_str(),sEvent.c_str(),48,0,48);
     }
-  Double_t energyDep[48];
-  Double_t energyDepXZ[48];
-  Double_t energyDepYZ[48];
-  Int_t eventNum=0;
+    TH1F *CubeHitsCountZ[NumberEvDis];
+    for (Int_t ih=0; ih < NumberEvDis;ih++)
+    {
+        sEventnum.str("");
+        sEventnum << ih;
+        sEvent = "CubeHitsCountZ"+sEventnum.str();
+        CubeHitsCountZ[ih] = new TH1F(sEvent.c_str(),sEvent.c_str(),48,0,48);
+    }
+////////////////////////////////////////////////////////////////////////////////
+    Double_t energyDep[48];
+    Double_t energyDepXZ[48];
+    Double_t energyDepYZ[48];
+    Double_t CubeHitCounterZ[48];
+    Int_t eventNum=0;
 
-  bool LargehitTimeDif = 0;
+    bool LargehitTimeDif = 0;
 
-  TCanvas *c1 = new TCanvas("c1","c1", 1480, 1160);
-  bool SpillMised = false;
-  for (Int_t subSpill = 0; subSpill<minEn; subSpill++) {
-  //for (Int_t subSpill = 0; subSpill<10; subSpill++) {
+    TCanvas *c1 = new TCanvas("c1","c1", 1480, 1160);
+    TCanvas *c2 = new TCanvas("c2","c2", 1480, 1160);
+    bool SpillMised = false;
+    for (Int_t subSpill = 0; subSpill<minEn; subSpill++)
+    {
+    //for (Int_t subSpill = 0; subSpill<10; subSpill++) {
         Int_t SpillNumber = subSpill;
 
         cout << "Getting Spill Number " << SpillNumber + 1 << endl;
@@ -264,85 +283,134 @@ int main ()
 
 
             for ( int TOFtrigger = 0; TOFtrigger < FEB[12].FEBSN->size(); TOFtrigger++){
-            if (FEB[12].hitTimeDif->at(TOFtrigger) > 0 && NumberEvDis > eventNum){
-                for (int ik = 0; ik < 48; ik++ )
+            if (FEB[12].hitTimeDif->at(TOFtrigger) > 0 && NumberEvDis > eventNum)
+            {
+                for (int ik = 0; ik < 48; ik++ ) //zerowanie tablic przechowujace dane
                 {
                     energyDep[ik] = 0;
                     energyDepXZ[ik] = 0;
                     energyDepYZ[ik] = 0;
+                    CubeHitCounterZ[ik] = 0;
                 }
                     LargehitTimeDif = 0;
                     Int_t GTindex[2] = {0,0};
-                    for (int i = 0; i < 19; i++){
-                    if (FEBs[i]!=12){
+                    for (int i = 0; i < 19; i++) //loop over FEB
+                    {
+                        if (FEBs[i]!=12)
+                        {
 
                         auto bounds=std::equal_range (FEB[FEBs[i]].GTrigTag->begin(), FEB[FEBs[i]].GTrigTag->end(), FEB[12].GTrigTag->at(TOFtrigger));
                         GTindex[0] = bounds.first - FEB[FEBs[i]].GTrigTag->begin();
                         GTindex[1] = bounds.second - FEB[FEBs[i]].GTrigTag->begin();
 
-                        for (int check = GTindex[0]; check <  GTindex[1]; check++){
-                            if (abs(FEB[12].hitTimefromSpill->at(TOFtrigger) - FEB[FEBs[i]].hitTimefromSpill->at(check)) < 100){
+                        for (int check = GTindex[0]; check <  GTindex[1]; check++)
+                        {
+                            if (abs(FEB[12].hitTimefromSpill->at(TOFtrigger) - FEB[FEBs[i]].hitTimefromSpill->at(check)) < 100)
+                            {
                                 if (FEB[FEBs[i]].hitTimeDif->at(check) > 60)
                                     LargehitTimeDif = 1;
-                                if ( FEBs[i] == 0 || FEBs[i] == 16){
-                                    event_XY[eventNum]->Fill(MapCon[FEBs[i]][0][(int)FEB[FEBs[i]].hitsChannel->at(check)],MapCon[FEBs[i]][1][(int)FEB[FEBs[i]].hitsChannel->at(check)],FEB[FEBs[i]].hitCharge_pe->at(check));
+                                if ( FEBs[i] == 0 || FEBs[i] == 16)
+                                {
+                                    event_XY[eventNum]-> Fill( MapCon[FEBs[i]][0][(int)FEB[FEBs[i]].hitsChannel->at(check)],MapCon[FEBs[i]][1][(int)FEB[FEBs[i]].hitsChannel->at(check)],FEB[FEBs[i]].hitCharge_pe->at(check) );
                                     EventsMap_XY->Fill(MapCon[FEBs[i]][0][(int)FEB[FEBs[i]].hitsChannel->at(check)],MapCon[FEBs[i]][1][(int)FEB[FEBs[i]].hitsChannel->at(check)],1);
                                 }
                                 else if ( FEBs[i] == 1 || FEBs[i] == 2 || FEBs[i] == 17 || FEBs[i] ==24)
                                 {
-                                    event_YZ[eventNum]->Fill(MapCon[FEBs[i]][0][(int)FEB[FEBs[i]].hitsChannel->at(check)],MapCon[FEBs[i]][1][(int)FEB[FEBs[i]].hitsChannel->at(check)],FEB[FEBs[i]].hitCharge_pe->at(check));
+                                    event_YZ[eventNum]->Fill(MapCon[FEBs[i]][0][(int)FEB[FEBs[i]].hitsChannel->at(check)], MapCon[FEBs[i]][1][(int)FEB[FEBs[i]].hitsChannel->at(check)],FEB[FEBs[i]].hitCharge_pe->at(check));
                                     EventsMap_YZ->Fill(MapCon[FEBs[i]][0][(int)FEB[FEBs[i]].hitsChannel->at(check)],MapCon[FEBs[i]][1][(int)FEB[FEBs[i]].hitsChannel->at(check)],1);
-                                    if (FEB[FEBs[i]].hitCharge_pe->at(check) > 0  && FEB[FEBs[i]].hitCharge_pe->at(check) < 10000)
+                                    if (FEB[FEBs[i]].hitCharge_pe->at(check) > 0  && FEB[FEBs[i]].hitCharge_pe->at(check) < 10000)// zmiana 0 and 10000
+                                    {
                                         energyDep[MapCon[FEBs[i]][0][(int)FEB[FEBs[i]].hitsChannel->at(check)]] += FEB[FEBs[i]].hitCharge_pe->at(check);
                                         energyDepYZ[MapCon[FEBs[i]][0][(int)FEB[FEBs[i]].hitsChannel->at(check)]] += FEB[FEBs[i]].hitCharge_pe->at(check);
+                                        CubeHitCounterZ[MapCon[FEBs[i]][0][(int)FEB[FEBs[i]].hitsChannel->at(check)]]=+1;
+                                    }
                                 }
                                  else
                                 {
-                                    event_XZ[eventNum]->Fill(MapCon[FEBs[i]][0][(int)FEB[FEBs[i]].hitsChannel->at(check)],MapCon[FEBs[i]][1][(int)FEB[FEBs[i]].hitsChannel->at(check)],FEB[FEBs[i]].hitCharge_pe->at(check));
+                                    event_XZ[eventNum]->Fill(MapCon[FEBs[i]][0][(int)FEB[FEBs[i]].hitsChannel->at(check)],MapCon[FEBs[i]][1][(int)FEB[FEBs[i]].hitsChannel->at(check)],FEB[FEBs[i]].hitCharge_pe->at(check)); /////////////////////////////
                                     EventsMap_XZ->Fill(MapCon[FEBs[i]][0][(int)FEB[FEBs[i]].hitsChannel->at(check)],MapCon[FEBs[i]][1][(int)FEB[FEBs[i]].hitsChannel->at(check)],1);
-                                    if (FEB[FEBs[i]].hitCharge_pe->at(check) > 0  && FEB[FEBs[i]].hitCharge_pe->at(check) < 10000)
+                                    if (FEB[FEBs[i]].hitCharge_pe->at(check) > 0  && FEB[FEBs[i]].hitCharge_pe->at(check) < 10000) //zmiana 0 and 10000
+                                    {
                                         energyDep[MapCon[FEBs[i]][1][(int)FEB[FEBs[i]].hitsChannel->at(check)]] += FEB[FEBs[i]].hitCharge_pe->at(check);
                                         energyDepXZ[MapCon[FEBs[i]][1][(int)FEB[FEBs[i]].hitsChannel->at(check)]] += FEB[FEBs[i]].hitCharge_pe->at(check);
+                                        CubeHitCounterZ[MapCon[FEBs[i]][1][(int)FEB[FEBs[i]].hitsChannel->at(check)]]=+1;
+                                    }
                                 }
                             }
+                        }
                     }
                 }
+
+            int StoppingParticle = 0; //ciecie usuwajace czastki które sie nie zatrzymaly
+            if(energyDep[47]==0)
+            {
+                StoppingParticle=1;
             }
+            double PeakEnergy=0;
+            int PeakNumber=0;
 
             for (int ik = 0; ik < 48; ik++ )
             {
                 event_LY[eventNum]->Fill(ik,energyDep[ik]);
                 event_LY_YZ[eventNum]->Fill(ik,energyDepYZ[ik]);
                 event_LY_XZ[eventNum]->Fill(ik,energyDep[ik]-energyDepYZ[ik]);
+                CubeHitsCountZ[eventNum]->Fill(ik,CubeHitCounterZ[ik]);
+                if(energyDep[ik]>PeakEnergy)
+                {
+                    PeakEnergy=energyDep[ik];
+                    PeakNumber=ik;
+                }
             }
-        if ( LargehitTimeDif == 0) {
+
+            int DiscontinuityCut=0; // maximally two layers before peak can have 0 deposit
+            if(PeakNumber>3)
+            {
+                if(energyDep[PeakNumber-1]!=0 || energyDep[PeakNumber-2]!=0 || energyDep[PeakNumber-3]!=0)
+                {
+                    DiscontinuityCut=1;
+                }
+            }
+
+            if ( LargehitTimeDif == 0 && StoppingParticle==1 && PeakEnergy>250 && DiscontinuityCut==1)
+            {
                 c1->Clear();
-            if (event_XZ[eventNum]->GetEntries()>10){
+                c2->Clear();
+                if (event_XZ[eventNum]->GetEntries()>10)
+                {
 
-                c1->Divide(2,2);
+                    c1->Divide(3,2);
 
-                c1 -> cd(1);
-                event_XZ[eventNum]-> Draw("colorz");
+                    c1 -> cd(1);
+                    event_XY[eventNum]-> Draw("colorz");
 
-                c1 -> cd(2);
-                event_YZ[eventNum]-> Draw("colorz");
+                    c1 -> cd(2);
+                    event_XZ[eventNum]-> Draw("colorz");
 
-                //c1 -> cd(3);
-                //event_XY[eventNum]-> Draw("colorz");
+                    c1 -> cd(3);
+                    event_YZ[eventNum]-> Draw("colorz");
 
-                //c1 -> cd(4);
-                //event_LY[eventNum]->Draw("HIST");
+                    c1 -> cd(4);
+                    event_LY[eventNum]->Draw("HIST");
 
-                c1 -> cd(3);
-                event_LY_XZ[eventNum]->Draw("HIST");
+                    c1 -> cd(5);
+                    event_LY_XZ[eventNum]->Draw("HIST");
 
-                c1 -> cd(4);
-                event_LY_YZ[eventNum]->Draw("HIST");
+                    c1 -> cd(6);
+                    event_LY_YZ[eventNum]->Draw("HIST");
 
-                c1->Update();
-                events2D -> cd();
+                    c1->Update();
+                    events2D -> cd();
 
-                c1->Write();
+                    c1->Write();
+
+                    c2->Divide(1,1);
+
+                    c2->cd(1);
+                    CubeHitsCountZ[eventNum]->Draw("HIST");
+
+                    c2->Update();
+                    CrossTalkPlots -> cd();
+
             }
         }
         delete event_XY[eventNum];
@@ -351,11 +419,10 @@ int main ()
         delete event_LY[eventNum];
         delete event_LY_XZ[eventNum];
         delete event_LY_YZ[eventNum];
-
+        delete CubeHitsCountZ[eventNum];
         eventNum++;
     }
   }
-
             for (Int_t i=0; i<NumberOfEB; i++)
             {
                 FEB[i].FEBSN=0;
@@ -388,4 +455,3 @@ int main ()
      FileInput->Close();
      return 0;
 }
-
