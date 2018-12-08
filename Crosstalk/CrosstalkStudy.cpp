@@ -184,7 +184,7 @@ int main ()
 
     TDirectory *events2D = wfile.mkdir("events2D");
     TDirectory *CrossTalkPlots = wfile.mkdir("CrossTalkPlots");
-    int NumberEvDis = 20000; // zmiana 10000
+    int NumberEvDis = 30000; // zmiana 10000
 
     ostringstream sEventnum;
     string sEvent;
@@ -194,24 +194,30 @@ int main ()
     {
         sEventnum.str("");
         sEventnum << ih;
-        sEvent = "event_XY"+sEventnum.str();
+        sEvent = "event_XY_"+sEventnum.str();
         event_XY[ih] = new TH2F(sEvent.c_str(),sEvent.c_str(), 24,0,24, 8,0,8);
+        event_XY[ih]->GetYaxis()->SetTitle("X axis");
+        event_XY[ih]->GetXaxis()->SetTitle("Y axis]");
     }
     TH2F *event_YZ[NumberEvDis];
     for (Int_t ih=0; ih < NumberEvDis;ih++)
     {
         sEventnum.str("");
         sEventnum << ih;
-        sEvent = "event_YZ"+sEventnum.str();
+        sEvent = "event_YZ_"+sEventnum.str();
         event_YZ[ih] = new TH2F(sEvent.c_str(),sEvent.c_str(), 48,0,48, 8,0,8);
+        event_YZ[ih]->GetYaxis()->SetTitle("Z axis");
+        event_YZ[ih]->GetXaxis()->SetTitle("Y axis]");
     }
 
     TH2F *event_XZ[NumberEvDis];
     for (Int_t ih=0; ih < NumberEvDis;ih++){
         sEventnum.str("");
         sEventnum << ih;
-        sEvent = "event_XZ"+sEventnum.str();
+        sEvent = "event_XZ_"+sEventnum.str();
         event_XZ[ih] = new TH2F(sEvent.c_str(),sEvent.c_str(), 24,0,24, 48,0,48);
+        event_XZ[ih]->GetYaxis()->SetTitle("X axis");
+        event_XZ[ih]->GetXaxis()->SetTitle("Z axis]");
     }
 
     TH1F *event_LY[NumberEvDis];
@@ -219,7 +225,7 @@ int main ()
     {
         sEventnum.str("");
         sEventnum << ih;
-        sEvent = "event_LY"+sEventnum.str();
+        sEvent = "event_LY_"+sEventnum.str();
         event_LY[ih] = new TH1F(sEvent.c_str(),sEvent.c_str(),48,0,48);
     }
 
@@ -228,7 +234,7 @@ int main ()
     {
         sEventnum.str("");
         sEventnum << ih;
-        sEvent = "event_LY_XZ"+sEventnum.str();
+        sEvent = "event_LY_XZ_"+sEventnum.str();
         event_LY_XZ[ih] = new TH1F(sEvent.c_str(),sEvent.c_str(),48,0,48);
     }
     TH1F *event_LY_YZ[NumberEvDis];
@@ -236,28 +242,76 @@ int main ()
     {
         sEventnum.str("");
         sEventnum << ih;
-        sEvent = "event_LY_YZ"+sEventnum.str();
+        sEvent = "event_LY_YZ_"+sEventnum.str();
         event_LY_YZ[ih] = new TH1F(sEvent.c_str(),sEvent.c_str(),48,0,48);
     }
+
     TH1F *CubeHitsCountZ[NumberEvDis];
     for (Int_t ih=0; ih < NumberEvDis;ih++)
     {
         sEventnum.str("");
         sEventnum << ih;
-        sEvent = "CubeHitsCountZ"+sEventnum.str();
+        sEvent = "CubeHitsCountZ_"+sEventnum.str();
         CubeHitsCountZ[ih] = new TH1F(sEvent.c_str(),sEvent.c_str(),48,0,48);
+    }
+    TH1F *CubeHitsCountZ_XZ[NumberEvDis];
+    for (Int_t ih=0; ih < NumberEvDis;ih++)
+    {
+        sEventnum.str("");
+        sEventnum << ih;
+        sEvent = "CubeHitsCountZ_XZ_"+sEventnum.str();
+        CubeHitsCountZ_XZ[ih] = new TH1F(sEvent.c_str(),sEvent.c_str(),48,0,48);
+    }
+
+    TH1F *StepCounterX[NumberEvDis];
+    for (Int_t ih=0; ih < NumberEvDis;ih++)
+    {
+        sEventnum.str("");
+        sEventnum << ih;
+        sEvent = "StepCounterX_"+sEventnum.str();
+        StepCounterX[ih] = new TH1F(sEvent.c_str(),sEvent.c_str(),24,0,24);
+    }
+    TH1F *StepCounterY[NumberEvDis];
+    for (Int_t ih=0; ih < NumberEvDis;ih++)
+    {
+        sEventnum.str("");
+        sEventnum << ih;
+        sEvent = "StepCounterY_"+sEventnum.str();
+        StepCounterY[ih] = new TH1F(sEvent.c_str(),sEvent.c_str(),8,0,8);
+    }
+    TH1F *StepCounterZ1[NumberEvDis];
+    for (Int_t ih=0; ih < NumberEvDis;ih++)
+    {
+        sEventnum.str("");
+        sEventnum << ih;
+        sEvent = "StepCounterZ1_"+sEventnum.str();
+        StepCounterZ1[ih] = new TH1F(sEvent.c_str(),sEvent.c_str(),48,0,48);
+    }
+        TH1F *StepCounterZ2[NumberEvDis];
+    for (Int_t ih=0; ih < NumberEvDis;ih++)
+    {
+        sEventnum.str("");
+        sEventnum << ih;
+        sEvent = "StepCounterZ2_"+sEventnum.str();
+        StepCounterZ2[ih] = new TH1F(sEvent.c_str(),sEvent.c_str(),48,0,48);
     }
 ////////////////////////////////////////////////////////////////////////////////
     Double_t energyDep[48];
     Double_t energyDepXZ[48];
     Double_t energyDepYZ[48];
     Double_t CubeHitCounterZ[48];
+    //test
+    Double_t CubeHitsCounterZ_XZ[48];
+    Double_t StepX[48];
+    Double_t Stepy[48];
+    Double_t StepZ1[48];
+    Double_t StepZ2[48];
     Int_t eventNum=0;
 
     bool LargehitTimeDif = 0;
 
-    TCanvas *c1 = new TCanvas("c1","c1", 1480, 1160);
-    TCanvas *c2 = new TCanvas("c2","c2", 1480, 1160);
+    TCanvas *DisplayCanvas = new TCanvas("DisplayCanvas","DisplayCanvas", 1480, 1160);
+    TCanvas *CrossCanvas = new TCanvas("CrossCanvas","CrossCanvas", 1480, 1160);
     bool SpillMised = false;
     for (Int_t subSpill = 0; subSpill<minEn; subSpill++)
     {
@@ -265,24 +319,30 @@ int main ()
         Int_t SpillNumber = subSpill;
 
         cout << "Getting Spill Number " << SpillNumber + 1 << endl;
-        for (int ik = 0; ik < 19; ik++){
+        for (int ik = 0; ik < 19; ik++)
+        {
             FEBtree[FEBs[ik]]->GetEntry(SpillNumber);
-            if (FEB[FEBs[ik]].SpillTag->back() != SpillNumber + 1){
+            if (FEB[FEBs[ik]].SpillTag->back() != SpillNumber + 1)
+            {
                 cout << "wtf" <<endl;
             }
-            if (FEB[FEBs[ik]].SpillTag->size() < 2 ){
+            if (FEB[FEBs[ik]].SpillTag->size() < 2 )
+            {
                 cout << "NULL"<<endl;
                 SpillMised = true;
                 break;
-            } else {
+            }
+            else
+            {
                 SpillMised = false;
             }
             //cout << "FEB_"<< FEBs[ik]<< " "<< FEB[FEBs[ik]].hitCharge_pe->size()<<endl;
         }
-        if (!SpillMised){
+        if (!SpillMised)
+        {
 
-
-            for ( int TOFtrigger = 0; TOFtrigger < FEB[12].FEBSN->size(); TOFtrigger++){
+            for ( int TOFtrigger = 0; TOFtrigger < FEB[12].FEBSN->size(); TOFtrigger++)
+            {
             if (FEB[12].hitTimeDif->at(TOFtrigger) > 0 && NumberEvDis > eventNum)
             {
                 for (int ik = 0; ik < 48; ik++ ) //zerowanie tablic przechowujace dane
@@ -291,6 +351,12 @@ int main ()
                     energyDepXZ[ik] = 0;
                     energyDepYZ[ik] = 0;
                     CubeHitCounterZ[ik] = 0;
+                    //
+                    CubeHitsCounterZ_XZ[ik] = 0;
+                    StepX[ik] = 0;
+                    Stepy[ik] = 0;
+                    StepZ1[ik] = 0;
+                    StepZ2[ik] = 0;
                 }
                     LargehitTimeDif = 0;
                     Int_t GTindex[2] = {0,0};
@@ -314,26 +380,33 @@ int main ()
                                     event_XY[eventNum]-> Fill( MapCon[FEBs[i]][0][(int)FEB[FEBs[i]].hitsChannel->at(check)],MapCon[FEBs[i]][1][(int)FEB[FEBs[i]].hitsChannel->at(check)],FEB[FEBs[i]].hitCharge_pe->at(check) );
                                     EventsMap_XY->Fill(MapCon[FEBs[i]][0][(int)FEB[FEBs[i]].hitsChannel->at(check)],MapCon[FEBs[i]][1][(int)FEB[FEBs[i]].hitsChannel->at(check)],1);
                                 }
-                                else if ( FEBs[i] == 1 || FEBs[i] == 2 || FEBs[i] == 17 || FEBs[i] ==24)
+                                else if ( FEBs[i] == 1 || FEBs[i] == 2 || FEBs[i] == 17 || FEBs[i] ==  24)
                                 {
                                     event_YZ[eventNum]->Fill(MapCon[FEBs[i]][0][(int)FEB[FEBs[i]].hitsChannel->at(check)], MapCon[FEBs[i]][1][(int)FEB[FEBs[i]].hitsChannel->at(check)],FEB[FEBs[i]].hitCharge_pe->at(check));
                                     EventsMap_YZ->Fill(MapCon[FEBs[i]][0][(int)FEB[FEBs[i]].hitsChannel->at(check)],MapCon[FEBs[i]][1][(int)FEB[FEBs[i]].hitsChannel->at(check)],1);
+
                                     if (FEB[FEBs[i]].hitCharge_pe->at(check) > 0  && FEB[FEBs[i]].hitCharge_pe->at(check) < 10000)// zmiana 0 and 10000
                                     {
                                         energyDep[MapCon[FEBs[i]][0][(int)FEB[FEBs[i]].hitsChannel->at(check)]] += FEB[FEBs[i]].hitCharge_pe->at(check);
                                         energyDepYZ[MapCon[FEBs[i]][0][(int)FEB[FEBs[i]].hitsChannel->at(check)]] += FEB[FEBs[i]].hitCharge_pe->at(check);
-                                        CubeHitCounterZ[MapCon[FEBs[i]][0][(int)FEB[FEBs[i]].hitsChannel->at(check)]]=+1;
+                                        CubeHitCounterZ[MapCon[FEBs[i]][0][(int)FEB[FEBs[i]].hitsChannel->at(check)]] += 1;
+                                        StepCounterZ1[eventNum]->Fill(MapCon[FEBs[i]][0][(int)FEB[FEBs[i]].hitsChannel->at(check)]);
+                                        StepCounterY[eventNum]->Fill(MapCon[FEBs[i]][1][(int)FEB[FEBs[i]].hitsChannel->at(check)]);
                                     }
                                 }
-                                 else
+                                else
                                 {
                                     event_XZ[eventNum]->Fill(MapCon[FEBs[i]][0][(int)FEB[FEBs[i]].hitsChannel->at(check)],MapCon[FEBs[i]][1][(int)FEB[FEBs[i]].hitsChannel->at(check)],FEB[FEBs[i]].hitCharge_pe->at(check)); /////////////////////////////
                                     EventsMap_XZ->Fill(MapCon[FEBs[i]][0][(int)FEB[FEBs[i]].hitsChannel->at(check)],MapCon[FEBs[i]][1][(int)FEB[FEBs[i]].hitsChannel->at(check)],1);
+
                                     if (FEB[FEBs[i]].hitCharge_pe->at(check) > 0  && FEB[FEBs[i]].hitCharge_pe->at(check) < 10000) //zmiana 0 and 10000
                                     {
                                         energyDep[MapCon[FEBs[i]][1][(int)FEB[FEBs[i]].hitsChannel->at(check)]] += FEB[FEBs[i]].hitCharge_pe->at(check);
                                         energyDepXZ[MapCon[FEBs[i]][1][(int)FEB[FEBs[i]].hitsChannel->at(check)]] += FEB[FEBs[i]].hitCharge_pe->at(check);
-                                        CubeHitCounterZ[MapCon[FEBs[i]][1][(int)FEB[FEBs[i]].hitsChannel->at(check)]]=+1;
+                                        CubeHitCounterZ[MapCon[FEBs[i]][1][(int)FEB[FEBs[i]].hitsChannel->at(check)]] += 1;
+                                        CubeHitsCounterZ_XZ[MapCon[FEBs[i]][1][(int)FEB[FEBs[i]].hitsChannel->at(check)]] += 1;
+                                        StepCounterZ2[eventNum]->Fill(MapCon[FEBs[i]][0][(int)FEB[FEBs[i]].hitsChannel->at(check)]);
+                                        StepCounterX[eventNum]->Fill(MapCon[FEBs[i]][1][(int)FEB[FEBs[i]].hitsChannel->at(check)]);
                                     }
                                 }
                             }
@@ -353,8 +426,9 @@ int main ()
             {
                 event_LY[eventNum]->Fill(ik,energyDep[ik]);
                 event_LY_YZ[eventNum]->Fill(ik,energyDepYZ[ik]);
-                event_LY_XZ[eventNum]->Fill(ik,energyDep[ik]-energyDepYZ[ik]);
+                event_LY_XZ[eventNum]->Fill(ik,energyDepXZ[ik]);
                 CubeHitsCountZ[eventNum]->Fill(ik,CubeHitCounterZ[ik]);
+                CubeHitsCountZ_XZ[eventNum]->Fill(ik,CubeHitsCounterZ_XZ[ik]);
                 if(energyDep[ik]>PeakEnergy)
                 {
                     PeakEnergy=energyDep[ik];
@@ -373,43 +447,61 @@ int main ()
 
             if ( LargehitTimeDif == 0 && StoppingParticle==1 && PeakEnergy>250 && DiscontinuityCut==1)
             {
-                c1->Clear();
-                c2->Clear();
+                DisplayCanvas->Clear();
+                CrossCanvas->Clear();
                 if (event_XZ[eventNum]->GetEntries()>10)
                 {
 
-                    c1->Divide(3,2);
+                    DisplayCanvas->Divide(3,2);
 
-                    c1 -> cd(1);
+                    DisplayCanvas -> cd(1);
                     event_XY[eventNum]-> Draw("colorz");
 
-                    c1 -> cd(2);
+                    DisplayCanvas -> cd(2);
                     event_XZ[eventNum]-> Draw("colorz");
 
-                    c1 -> cd(3);
+                    DisplayCanvas -> cd(3);
                     event_YZ[eventNum]-> Draw("colorz");
 
-                    c1 -> cd(4);
+                    DisplayCanvas -> cd(4);
                     event_LY[eventNum]->Draw("HIST");
 
-                    c1 -> cd(5);
+                    DisplayCanvas -> cd(5);
                     event_LY_XZ[eventNum]->Draw("HIST");
 
-                    c1 -> cd(6);
+                    DisplayCanvas -> cd(6);
                     event_LY_YZ[eventNum]->Draw("HIST");
 
-                    c1->Update();
+                    DisplayCanvas->Update();
                     events2D -> cd();
 
-                    c1->Write();
+                    DisplayCanvas->Write();
 
-                    c2->Divide(1,1);
+                    CrossCanvas->Divide(3,2);
 
-                    c2->cd(1);
+                    CrossCanvas->cd(1);
                     CubeHitsCountZ[eventNum]->Draw("HIST");
 
-                    c2->Update();
+                    CrossCanvas->cd(2);
+                    StepCounterY[eventNum]->Draw("HIST");
+
+                    CrossCanvas->cd(3);
+                    StepCounterX[eventNum]->Draw("HIST");
+
+                    CrossCanvas->cd(4);
+                    CubeHitsCountZ_XZ[eventNum]->Draw("HIST");
+
+                    CrossCanvas->cd(5);
+                    StepCounterZ1[eventNum]->Draw("HIST");
+
+                    CrossCanvas->cd(6);
+                    StepCounterZ2[eventNum]->Draw("HIST");
+
+
+                    CrossCanvas->Update();
                     CrossTalkPlots -> cd();
+
+                    CrossCanvas->Write();
 
             }
         }
@@ -420,6 +512,11 @@ int main ()
         delete event_LY_XZ[eventNum];
         delete event_LY_YZ[eventNum];
         delete CubeHitsCountZ[eventNum];
+        delete CubeHitsCountZ_XZ[eventNum];
+        delete StepCounterX[eventNum];
+        delete StepCounterY[eventNum];
+        delete StepCounterZ1[eventNum];
+        delete StepCounterZ2[eventNum];
         eventNum++;
     }
   }
