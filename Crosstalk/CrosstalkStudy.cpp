@@ -27,7 +27,6 @@ using namespace std;
 
 string GetLocation(string str)
 {
-
     int i = str.rfind("_Slot_");
     string way = str.substr(0,i);
     return way;
@@ -188,8 +187,33 @@ int main ()
     TH2F *EventsMap_YZ = new TH2F("All_events_map_YZ","All_events_map_YZ",  48,0,48, 8,0,8);
     TH2F *EventsMap_XZ = new TH2F("All_events_map_XZ","All_events_map_XZ",  24,0,24, 48,0,48);
 
-    TH1F *CrosstalkEnergyDepositX = new TH1F("CrosstalkEnergyDepositX", "CrosstalkEnergyDepositX",500,0,500);
-    TH1F *CrosstalkEnergyDepositY = new TH1F("CrosstalkEnergyDepositY", "CrosstalkEnergyDepositY",500,0,500);
+    TH1F *CrosstalkEnergyDepositX = new TH1F("CrosstalkEnergyDepositX", "Crosstalk energy in X plain",500,0,500);
+    CrosstalkEnergyDepositX->GetYaxis()->SetTitle("Number of events");
+    CrosstalkEnergyDepositX->GetXaxis()->SetTitle("Energy [p.e.]");
+    TH1F *CrosstalkEnergyDepositY = new TH1F("CrosstalkEnergyDepositY", "Crosstalk energy in Y plain",500,0,500);
+    CrosstalkEnergyDepositY->GetYaxis()->SetTitle("Number of events");
+    CrosstalkEnergyDepositY->GetXaxis()->SetTitle("Energy [p.e.]");
+
+    TH1F *HistogramHighestEnergyDeposit = new TH1F("HighestEnergyDepositHistogram", "Histogram of highest value deposit",1000,0,1000);
+    HistogramHighestEnergyDeposit->GetYaxis()->SetTitle("Number of events");
+    HistogramHighestEnergyDeposit->GetXaxis()->SetTitle("Energy [p.e.]");
+    TH1F *HistogramRealPeakEnergyDeposit = new TH1F("RealPeakEnergyDepositHistogram", "Histogram of found stopping proton deposit",1000,0,1000);
+    HistogramRealPeakEnergyDeposit->GetYaxis()->SetTitle("Number of events");
+    HistogramRealPeakEnergyDeposit->GetXaxis()->SetTitle("Energy [p.e.]");
+
+    TH1F *HistogramCrosstalkDistanceX= new TH1F("HistogramCrosstalkDistanceX", "Cube distance of energy deposit from peak X axis",48,-24,24);
+    HistogramCrosstalkDistanceX->GetYaxis()->SetTitle("Number of events");
+    HistogramCrosstalkDistanceX->GetXaxis()->SetTitle("X detector axis");
+    TH1F *HistogramCrosstalkDistanceY = new TH1F("HistogramCrosstalkDistanceY", "Cube distance of energy deposit from peak Y axis",16,-8,8);
+    HistogramCrosstalkDistanceY->GetYaxis()->SetTitle("Number of events");
+    HistogramCrosstalkDistanceY->GetXaxis()->SetTitle("Y detector axis");
+
+    TH1F *CrosstalkEnergyDepositRestrictedX= new TH1F("CrosstalkEnergyDepositRestrictedX", "Crosstalk energy in X plain maximaly 2 cubes from deposit",500,0,500);
+    CrosstalkEnergyDepositRestrictedX->GetYaxis()->SetTitle("Number of events");
+    CrosstalkEnergyDepositRestrictedX->GetXaxis()->SetTitle("Energy [p.e.]");
+    TH1F *CrosstalkEnergyDepositRestrictedY= new TH1F("CrosstalkEnergyDepositRestrictedY", "Crosstalk energy in Y plain maximaly 2 cubes from deposit",500,0,500);
+    CrosstalkEnergyDepositRestrictedY->GetYaxis()->SetTitle("Number of events");
+    CrosstalkEnergyDepositRestrictedY->GetXaxis()->SetTitle("Energy [p.e.]");
 
     TDirectory *events2D = wfile.mkdir("events2D");
     TDirectory *CrossEnergy = wfile.mkdir("CrossEnergy");
@@ -238,6 +262,8 @@ int main ()
         sEventnum << ih;
         sEvent = "energy_Z_"+sEventnum.str();
         energy_Z[ih] = new TH1F(sEvent.c_str(),sEvent.c_str(),48,0,48);
+        energy_Z[ih]->GetYaxis()->SetTitle("Energy deposit [p.e.]");
+        energy_Z[ih]->GetXaxis()->SetTitle("Z axis");
     }
 ///////////Energy
     TH1F *energyZ_XZ[NumberEvDis];
@@ -247,6 +273,8 @@ int main ()
         sEventnum << ih;
         sEvent = "energyZ_XZ_"+sEventnum.str();
         energyZ_XZ[ih] = new TH1F(sEvent.c_str(),sEvent.c_str(),48,0,48);
+        energyZ_XZ[ih]->GetYaxis()->SetTitle("Energy deposit [p.e.]");
+        energyZ_XZ[ih]->GetXaxis()->SetTitle("Z axis");
     }
 
     TH1F *energyZ_YZ[NumberEvDis];
@@ -256,6 +284,8 @@ int main ()
         sEventnum << ih;
         sEvent = "energyZ_YZ_"+sEventnum.str();
         energyZ_YZ[ih] = new TH1F(sEvent.c_str(),sEvent.c_str(),48,0,48);
+        energyZ_YZ[ih]->GetYaxis()->SetTitle("Energy deposit [p.e.]");
+        energyZ_YZ[ih]->GetXaxis()->SetTitle("Z axis");
     }
 
     TH1F *energyX_XZ[NumberEvDis];
@@ -265,6 +295,8 @@ int main ()
         sEventnum << ih;
         sEvent = "energyX_XZ_"+sEventnum.str();
         energyX_XZ[ih] = new TH1F(sEvent.c_str(),sEvent.c_str(),24,0,24);
+        energyX_XZ[ih]->GetYaxis()->SetTitle("Energy deposit [p.e.]");
+        energyX_XZ[ih]->GetXaxis()->SetTitle("X axis");
     }
 
     TH1F *energyY_YZ[NumberEvDis];
@@ -274,6 +306,8 @@ int main ()
         sEventnum << ih;
         sEvent = "energyY_YZ"+sEventnum.str();
         energyY_YZ[ih] = new TH1F(sEvent.c_str(),sEvent.c_str(),8,0,8);
+        energyY_YZ[ih]->GetYaxis()->SetTitle("Energy deposit [p.e.]");
+        energyY_YZ[ih]->GetXaxis()->SetTitle("Y axis");
     }
 ////////////////////////
     TH1F *StepCounterX_XZ[NumberEvDis];
@@ -320,25 +354,32 @@ int main ()
         sEvent = "StepCounterZ"+sEventnum.str();
         StepCounterZ[ih] = new TH1F(sEvent.c_str(),sEvent.c_str(),48,0,48);
     }
-    Double_t energyDepZ[48];
-    Double_t energyDepZ_XZ[48];
-    Double_t energyDepZ_YZ[48];
-    Double_t energyDepX_XZ[24];
-    Double_t energyDepY_YZ[8];
+    double energyDepZ[48];
+    double energyDepZ_XZ[48];
+    double energyDepZ_YZ[48];
+    double energyDepX_XZ[24];
+    double energyDepY_YZ[8];
 
-    Double_t StepX_XZ[24];
-    Double_t StepY_YZ[8];
-    Double_t StepZ_XZ[48];
-    Double_t StepZ_YZ[48];
-    Double_t StepZ[48];
-    Int_t eventNum=0;
+    double StepX_XZ[24];
+    double StepY_YZ[8];
+    double StepZ_XZ[48];
+    double StepZ_YZ[48];
+    double StepZ[48];
+
+    double energyDepX_XZ_Plain[24];
+    double energyDepY_YZ_Plain[8];
+
+    int eventNum=0;
 
     int licznik=1;
+    int licznikPoprawnosciX=0;
+    int licznikPoprawnosciY=0;
+
     bool LargehitTimeDif = 0;
 
-    TCanvas *DisplayCanvas = new TCanvas("DisplayCanvas","DisplayCanvas", 1480, 1160);
-    TCanvas *CrossEnergyCanvas = new TCanvas("CrossEnergyCanvas","CrossEnergyCanvas", 1480, 1160);
-    TCanvas *CrossHitCanvas = new TCanvas("CrossHitCanvas","CrossHitCanvas", 1480, 1160);
+    TCanvas *DisplayCanvas = new TCanvas("DisplayCanvas","DisplayCanvas", 1400, 1000);
+    TCanvas *CrossEnergyCanvas = new TCanvas("CrossEnergyCanvas","CrossEnergyCanvas", 1400, 1000);
+    TCanvas *CrossHitCanvas = new TCanvas("CrossHitCanvas","CrossHitCanvas", 1400, 1000);
     bool SpillMised = false;
     for (Int_t subSpill = 0; subSpill<minEn; subSpill++)
     {
@@ -385,11 +426,13 @@ int main ()
                 for (int ik = 0; ik < 24; ik++ ) //zerowanie tablic przechowujace dane, X
                 {
                     energyDepX_XZ[ik] = 0;
+                    energyDepX_XZ_Plain[ik] = 0;
                     StepX_XZ[ik] = 0;
                 }
                 for (int ik = 0; ik < 8; ik++ ) //zerowanie tablic przechowujace dane, X
                 {
                     energyDepY_YZ[ik] = 0;
+                    energyDepY_YZ_Plain[ik] = 0;
                     StepY_YZ[ik] = 0;
                 }
                 LargehitTimeDif = 0;
@@ -451,14 +494,18 @@ int main ()
                     }
                 }
             }
-
-            int StoppingParticle = 0; //ciecie usuwajace czastki które sie nie zatrzymaly
-            if(energyDepZ[47]==0)
-            {
-                StoppingParticle=1;
-            }
+//////////Zmienne pomocnicze
             double PeakEnergy=0;
             int PeakNumber=0;
+
+            double RealPeakEnergy=0;
+            int RealPeakNumber=0;
+
+            double RealPeakEnergyX=0;
+            int RealPeakNumberX=0;
+
+            double RealPeakEnergyY=0;
+            int RealPeakNumberY=0;
 
             double HighestEnergyY=0;
             int HighestEnergyNumberY=0;
@@ -466,7 +513,18 @@ int main ()
             double HighestEnergyX=0;
             int HighestEnergyNumberX=0;
 
-            for (int ik = 0; ik < 48; ik++ )
+            int CrosstalkDistance=0;
+            double DepozytPomocniczy=0;
+            int PomocniczyNumerKostki=0;
+
+            double epsilon=0;
+  ///////////Ciecia
+            int StoppingParticle = 0; //ciecie usuwajace czastki które sie nie zatrzymaly
+            if(energyDepZ[47]==0)
+            {
+                StoppingParticle=1;
+            }
+            for(int ik = 0; ik < 48; ik++ )
             {
                 energy_Z[eventNum]->Fill(ik,energyDepZ[ik]);
                 energyZ_XZ[eventNum]->Fill(ik,energyDepZ_XZ[ik]);
@@ -481,7 +539,24 @@ int main ()
                     PeakNumber=ik;
                 }
             }
-            for (int ik = 0; ik < 24; ik++ )
+            RealPeakEnergy=PeakEnergy;
+            RealPeakNumber=PeakNumber;
+            if(PeakNumber+1!=48)
+            {
+                for(int ik = PeakNumber+1; ik < 48; ik++ )
+                {
+                    if(energyDepZ[ik]>RealPeakEnergy*0.75)
+                    {
+                        RealPeakEnergy=energyDepZ[ik];
+                        RealPeakNumber=ik;
+                    }
+                }
+            }
+            ////Znalezienie wartosci depozytu i numer dla X i Y
+            RealPeakEnergyX=energyDepZ_XZ[RealPeakNumber];
+            RealPeakEnergyY=energyDepZ_YZ[RealPeakNumber];
+
+            for(int ik = 0; ik < 24; ik++ )
             {
                 energyX_XZ[eventNum]->Fill(ik,energyDepX_XZ[ik]);
                 StepCounterX_XZ[eventNum]->Fill(ik,StepX_XZ[ik]);
@@ -492,7 +567,7 @@ int main ()
                 }
             }
 
-            for (int ik = 0; ik < 8; ik++ )
+            for(int ik = 0; ik < 8; ik++ )
             {
                 energyY_YZ[eventNum]->Fill(ik,energyDepY_YZ[ik]);
                 StepCounterY_YZ[eventNum]->Fill(ik,StepY_YZ[ik]);
@@ -504,9 +579,9 @@ int main ()
             }
 
             int DiscontinuityCut=0; // maximally two layers before peak can have 0 deposit
-            if(PeakNumber>3)
+            if(RealPeakNumber>3)
             {
-                if(energyDepZ[PeakNumber-1]!=0 || energyDepZ[PeakNumber-2]!=0 || energyDepZ[PeakNumber-3]!=0)
+                if(energyDepZ[RealPeakNumber-1]!=0 || energyDepZ[RealPeakNumber-2]!=0 || energyDepZ[RealPeakNumber-3]!=0)
                 {
                     DiscontinuityCut=1;
                 }
@@ -535,6 +610,7 @@ int main ()
             }
             if(LargehitTimeDif == 0 && StoppingParticle==1 && PeakEnergy>250 && DiscontinuityCut==1 && TrackBeginningCut==1 && BorderCutY==1 && sigma < 2)
             {
+                Int_t GTindex[2] = {0,0};
                 for (int i = 0; i < 19; i++) //loop over FEB
                 {
                     if (FEBs[i]!=12)
@@ -553,32 +629,122 @@ int main ()
                                 }
                                 else if( FEBs[i] == 1 || FEBs[i] == 2 || FEBs[i] == 17 || FEBs[i] ==  24) //Plaszczyzna YZ
                                 {
-
-                                    if (MapCon[FEBs[i]][0][(int)FEB[FEBs[i]].hitsChannel->at(check)] == PeakNumber && FEB[FEBs[i]].hitCharge_pe->at(check) > 0  && FEB[FEBs[i]].hitCharge_pe->at(check) < 10000)// zmiana 0 and 10000
+                                    DepozytPomocniczy = FEB[FEBs[i]].hitCharge_pe->at(check);
+                                    PomocniczyNumerKostki = MapCon[FEBs[i]][0][(int)FEB[FEBs[i]].hitsChannel->at(check)];
+                                    epsilon=abs(RealPeakEnergyY-DepozytPomocniczy);
+                                    if(PomocniczyNumerKostki == RealPeakNumber && FEB[FEBs[i]].hitCharge_pe->at(check) > 0)
                                     {
-                                    CrosstalkEnergyDepositY->Fill( FEB[FEBs[i]].hitCharge_pe->at(check) );
+                                        if (FEB[FEBs[i]].hitCharge_pe->at(check) < 10000)// zmiana 0 and 10000
+                                        {
+                                            energyDepY_YZ[MapCon[FEBs[i]][1][(int)FEB[FEBs[i]].hitsChannel->at(check)]] += FEB[FEBs[i]].hitCharge_pe->at(check);
+                                            if( epsilon < 0.1 )
+                                            {
+                                                RealPeakNumberY = MapCon[FEBs[i]][1][(int)FEB[FEBs[i]].hitsChannel->at(check)];
+                                                if(RealPeakEnergyY!=0)
+                                                {
+                                                    licznikPoprawnosciY++;
+                                                }
+                                            }
+                                            if(epsilon > 0.1)
+                                            {
+                                                CrosstalkEnergyDepositY->Fill( FEB[FEBs[i]].hitCharge_pe->at(check) );
+                                            }
+                                        }
                                     }
                                 }
                                 else //Plaszczyzna XZ
                                 {
-                                    if(MapCon[FEBs[i]][1][(int)FEB[FEBs[i]].hitsChannel->at(check)] == PeakNumber && FEB[FEBs[i]].hitCharge_pe->at(check) > 0  && FEB[FEBs[i]].hitCharge_pe->at(check) < 10000) //zmiana 0 and 10000
+                                    PomocniczyNumerKostki = MapCon[FEBs[i]][1][(int)FEB[FEBs[i]].hitsChannel->at(check)];
+                                    DepozytPomocniczy=FEB[FEBs[i]].hitCharge_pe->at(check);
+                                    //epsilon=abs(RealPeakEnergyX-DepozytPomocniczy);
+                                    if(PomocniczyNumerKostki == RealPeakNumber)
                                     {
-                                    CrosstalkEnergyDepositX->Fill( FEB[FEBs[i]].hitCharge_pe->at(check) );
+
+                                        if(FEB[FEBs[i]].hitCharge_pe->at(check) > 0  && FEB[FEBs[i]].hitCharge_pe->at(check) < 10000) //zmiana 0 and 10000
+                                        {
+                                            if(epsilon < 0.001)
+                                            {
+                                                RealPeakNumberX = MapCon[FEBs[i]][0][(int)FEB[FEBs[i]].hitsChannel->at(check)];
+                                                if(RealPeakEnergyX!=0)
+                                                {
+                                                    licznikPoprawnosciX++;
+                                                }
+                                            }
+                                            if(epsilon > 0.001)
+                                            {
+                                            CrosstalkEnergyDepositX->Fill( FEB[FEBs[i]].hitCharge_pe->at(check) );
+                                            }
+                                        }
                                     }
                                 }
                             }
                         }
                     }
                 }
-
             }
 
+            if(LargehitTimeDif == 0 && StoppingParticle==1 && PeakEnergy>250 && DiscontinuityCut==1 && TrackBeginningCut==1 && BorderCutY==1 && sigma < 2)
+            {
+                Int_t GTindex[2] = {0,0};
+                for (int i = 0; i < 19; i++) //loop over FEB
+                {
+                    if (FEBs[i]!=12)
+                    {
+                        auto bounds=std::equal_range (FEB[FEBs[i]].GTrigTag->begin(), FEB[FEBs[i]].GTrigTag->end(), FEB[12].GTrigTag->at(TOFtrigger));
+                        GTindex[0] = bounds.first - FEB[FEBs[i]].GTrigTag->begin();
+                        GTindex[1] = bounds.second - FEB[FEBs[i]].GTrigTag->begin();
+
+                        for (int check = GTindex[0]; check <  GTindex[1]; check++)
+                        {
+                            if (abs(FEB[12].hitTimefromSpill->at(TOFtrigger) - FEB[FEBs[i]].hitTimefromSpill->at(check)) < 100)
+                            {
+                                if ( FEBs[i] == 0 || FEBs[i] == 16) //Plaszczyzna XY
+                                {
+
+                                }
+                                else if( FEBs[i] == 1 || FEBs[i] == 2 || FEBs[i] == 17 || FEBs[i] ==  24) //Plaszczyzna YZ
+                                {
+                                    PomocniczyNumerKostki = MapCon[FEBs[i]][0][(int)FEB[FEBs[i]].hitsChannel->at(check)];
+                                    if ( PomocniczyNumerKostki == RealPeakNumber && FEB[FEBs[i]].hitCharge_pe->at(check) > 0  && FEB[FEBs[i]].hitCharge_pe->at(check) < 10000)// zmiana 0 and 10000
+                                    {
+                                         CrosstalkDistance = RealPeakNumberY - MapCon[FEBs[i]][1][(int)FEB[FEBs[i]].hitsChannel->at(check)];
+                                         HistogramCrosstalkDistanceY->Fill(CrosstalkDistance);
+                                         if( abs(CrosstalkDistance)<=2 && abs(CrosstalkDistance)>0)
+                                         {
+                                             CrosstalkEnergyDepositRestrictedY->Fill( FEB[FEBs[i]].hitCharge_pe->at(check) );
+                                         }
+                                    }
+                                }
+                                else //Plaszczyzna XZ
+                                {
+                                    PomocniczyNumerKostki = MapCon[FEBs[i]][1][(int)FEB[FEBs[i]].hitsChannel->at(check)];
+                                    if( PomocniczyNumerKostki == RealPeakNumber && FEB[FEBs[i]].hitCharge_pe->at(check) > 0  && FEB[FEBs[i]].hitCharge_pe->at(check) < 10000) //zmiana 0 and 10000
+                                    {
+                                        CrosstalkDistance = RealPeakNumberX - MapCon[FEBs[i]][0][(int)FEB[FEBs[i]].hitsChannel->at(check)];
+                                        HistogramCrosstalkDistanceX->Fill(CrosstalkDistance);
+                                        if( abs(CrosstalkDistance)<=2 && abs(CrosstalkDistance)>0)
+                                         {
+                                             CrosstalkEnergyDepositRestrictedX->Fill( FEB[FEBs[i]].hitCharge_pe->at(check) );
+                                         }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
 
             if(LargehitTimeDif == 0 && StoppingParticle==1 && PeakEnergy>250 && DiscontinuityCut==1 && TrackBeginningCut==1 && BorderCutY==1 && sigma < 2)
             {
 
-                cout <<"licznik "<<licznik <<" sigma " << sigma <<endl;
+                cout <<"licznik "<<licznik <<" sigma " << sigma <<" RealPeakNumber "<<RealPeakNumber<<endl;
+                cout <<"licznik "<<licznik<< " RealPeakEnergyX " << RealPeakEnergyX <<" RealPeakEnergyY " << RealPeakEnergyY<<endl;
+                cout <<"licznik "<<licznik<< " RealPeakNumberX " << RealPeakNumberX <<" RealPeakNumberY " << RealPeakNumberY<<endl;
                 licznik++;
+
+
+                HistogramHighestEnergyDeposit->Fill(PeakEnergy);
+                HistogramRealPeakEnergyDeposit->Fill(RealPeakEnergy);
 
                 DisplayCanvas->Clear();
                 CrossEnergyCanvas->Clear();
@@ -695,6 +861,7 @@ int main ()
             }
         }
     }
+    cout<<" licznikPoprawnosciX "<<licznikPoprawnosciX<<" licznikPoprawnosciY "<<licznikPoprawnosciY<<endl;
     wfile.cd();
     EventsMap_XY->Write();
     EventsMap_YZ->Write();
@@ -702,6 +869,15 @@ int main ()
 
     CrosstalkEnergyDepositX->Write();
     CrosstalkEnergyDepositY->Write();
+
+    CrosstalkEnergyDepositRestrictedX->Write();
+    CrosstalkEnergyDepositRestrictedY->Write();
+
+    HistogramHighestEnergyDeposit->Write();
+    HistogramRealPeakEnergyDeposit->Write();
+
+    HistogramCrosstalkDistanceX->Write();
+    HistogramCrosstalkDistanceY->Write();
 
     wfile.Close();
 
