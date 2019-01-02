@@ -20,17 +20,17 @@ void ADCanalisis(){
     //creating vector<double> to set branch adress//
 	vector<double>  amplituda;
 	vector<double> *amplitude= &amplituda;
-    vector<double>  amplitudaLG;
+	vector<double>  amplitudaLG;
 	vector<double> *amplitudeLG= &amplitudaLG;
-    vector<double>  kanal;
+    	vector<double>  kanal;
 	vector<double> *channel= &kanal;
-    vector<double>  czas;
-    vector<double> *ToT= &czas;
+	vector<double>  czas;
+    	vector<double> *ToT= &czas;
 ///////////setting branches/////////////////////
   	FEB->SetBranchAddress( Form("FEB_%d_hitAmpl",FEBnumber), &amplitude);
-    FEB->SetBranchAddress( Form("FEB_%d_hitLGAmpl",FEBnumber), &amplitudeLG);
+    	FEB->SetBranchAddress( Form("FEB_%d_hitLGAmpl",FEBnumber), &amplitudeLG);
   	FEB->SetBranchAddress( Form("FEB_%d_hitsChannel",FEBnumber), &channel);
-    FEB->SetBranchAddress( Form("FEB_%d_hitTimeDif",FEBnumber), &ToT);
+    	FEB->SetBranchAddress( Form("FEB_%d_hitTimeDif",FEBnumber), &ToT);
 /////////JUST TO LOOK NICE BUT FOR NOW DOESNT MATTER/////
     int Eventy = FEB->GetEntries();
 //////////////////////////CREATING HISTOGRAM AMPLITUDE HG x ToT////////
