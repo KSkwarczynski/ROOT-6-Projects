@@ -218,6 +218,7 @@ int main ()
     TDirectory *events2D = wfile.mkdir("events2D");
     TDirectory *CrossEnergy = wfile.mkdir("CrossEnergy");
     TDirectory *CrossStep = wfile.mkdir("CrossStep");
+    TDirectory *CrossEnergyPlain = wfile.mkdir("CrossEnergyPlain");
     int NumberEvDis = 10000; // zmiana 10000
 
     ostringstream sEventnum;
@@ -354,6 +355,28 @@ int main ()
         sEvent = "StepCounterZ"+sEventnum.str();
         StepCounterZ[ih] = new TH1F(sEvent.c_str(),sEvent.c_str(),48,0,48);
     }
+//////
+    TH1F *energyY_YZ_Plain[NumberEvDis];
+    for (Int_t ih=0; ih < NumberEvDis;ih++)
+    {
+        sEventnum.str("");
+        sEventnum << ih;
+        sEvent = "energyY_YZ_Plain_"+sEventnum.str();
+        energyY_YZ_Plain[ih] = new TH1F(sEvent.c_str(),sEvent.c_str(),8,0,8);
+        energyY_YZ_Plain[ih]->GetYaxis()->SetTitle("Energy deposit [p.e.]");
+        energyY_YZ_Plain[ih]->GetXaxis()->SetTitle("Y axis");
+    }
+    TH1F *energyX_XZ_Plain[NumberEvDis];
+    for (Int_t ih=0; ih < NumberEvDis;ih++)
+    {
+        sEventnum.str("");
+        sEventnum << ih;
+        sEvent = "energyX_XZ_Plain_"+sEventnum.str();
+        energyX_XZ_Plain[ih] = new TH1F(sEvent.c_str(),sEvent.c_str(),24,0,24);
+        energyX_XZ_Plain[ih]->GetYaxis()->SetTitle("Energy deposit [p.e.]");
+        energyX_XZ_Plain[ih]->GetXaxis()->SetTitle("Y axis");
+    }
+
     double energyDepZ[48];
     double energyDepZ_XZ[48];
     double energyDepZ_YZ[48];
@@ -372,14 +395,13 @@ int main ()
     int eventNum=0;
 
     int licznik=1;
-    int licznikPoprawnosciX=0;
-    int licznikPoprawnosciY=0;
 
     bool LargehitTimeDif = 0;
 
     TCanvas *DisplayCanvas = new TCanvas("DisplayCanvas","DisplayCanvas", 1400, 1000);
     TCanvas *CrossEnergyCanvas = new TCanvas("CrossEnergyCanvas","CrossEnergyCanvas", 1400, 1000);
     TCanvas *CrossHitCanvas = new TCanvas("CrossHitCanvas","CrossHitCanvas", 1400, 1000);
+    TCanvas *CrossEnergyPlainCanvas = new TCanvas("CrossEnergyPlainCanvas","CrossEnergyPlainCanvas", 1400, 1000);
     bool SpillMised = false;
     for (Int_t subSpill = 0; subSpill<minEn; subSpill++)
     {
@@ -552,9 +574,6 @@ int main ()
                     }
                 }
             }
-            ////Znalezienie wartosci depozytu i numer dla X i Y
-            RealPeakEnergyX=energyDepZ_XZ[RealPeakNumber];
-            RealPeakEnergyY=energyDepZ_YZ[RealPeakNumber];
 
             for(int ik = 0; ik < 24; ik++ )
             {
@@ -629,51 +648,26 @@ int main ()
                                 }
                                 else if( FEBs[i] == 1 || FEBs[i] == 2 || FEBs[i] == 17 || FEBs[i] ==  24) //Plaszczyzna YZ
                                 {
-                                    DepozytPomocniczy = FEB[FEBs[i]].hitCharge_pe->at(check);
                                     PomocniczyNumerKostki = MapCon[FEBs[i]][0][(int)FEB[FEBs[i]].hitsChannel->at(check)];
-                                    epsilon=abs(RealPeakEnergyY-DepozytPomocniczy);
                                     if(PomocniczyNumerKostki == RealPeakNumber && FEB[FEBs[i]].hitCharge_pe->at(check) > 0)
                                     {
-                                        if (FEB[FEBs[i]].hitCharge_pe->at(check) < 10000)// zmiana 0 and 10000
+                                        if (FEB[FEBs[i]].hitCharge_pe->at(check) > 0  && FEB[FEBs[i]].hitCharge_pe->at(check) < 10000)// zmiana 0 and 10000
                                         {
-                                            energyDepY_YZ[MapCon[FEBs[i]][1][(int)FEB[FEBs[i]].hitsChannel->at(check)]] += FEB[FEBs[i]].hitCharge_pe->at(check);
-                                            if( epsilon < 0.1 )
-                                            {
-                                                RealPeakNumberY = MapCon[FEBs[i]][1][(int)FEB[FEBs[i]].hitsChannel->at(check)];
-                                                if(RealPeakEnergyY!=0)
-                                                {
-                                                    licznikPoprawnosciY++;
-                                                }
-                                            }
-                                            if(epsilon > 0.1)
-                                            {
-                                                CrosstalkEnergyDepositY->Fill( FEB[FEBs[i]].hitCharge_pe->at(check) );
-                                            }
+                                            energyDepY_YZ_Plain[MapCon[FEBs[i]][1][(int)FEB[FEBs[i]].hitsChannel->at(check)]] += FEB[FEBs[i]].hitCharge_pe->at(check);
+                                            //CrosstalkEnergyDepositY->Fill( FEB[FEBs[i]].hitCharge_pe->at(check) );
                                         }
                                     }
                                 }
                                 else //Plaszczyzna XZ
                                 {
                                     PomocniczyNumerKostki = MapCon[FEBs[i]][1][(int)FEB[FEBs[i]].hitsChannel->at(check)];
-                                    DepozytPomocniczy=FEB[FEBs[i]].hitCharge_pe->at(check);
-                                    //epsilon=abs(RealPeakEnergyX-DepozytPomocniczy);
+
                                     if(PomocniczyNumerKostki == RealPeakNumber)
                                     {
-
                                         if(FEB[FEBs[i]].hitCharge_pe->at(check) > 0  && FEB[FEBs[i]].hitCharge_pe->at(check) < 10000) //zmiana 0 and 10000
                                         {
-                                            if(epsilon < 0.001)
-                                            {
-                                                RealPeakNumberX = MapCon[FEBs[i]][0][(int)FEB[FEBs[i]].hitsChannel->at(check)];
-                                                if(RealPeakEnergyX!=0)
-                                                {
-                                                    licznikPoprawnosciX++;
-                                                }
-                                            }
-                                            if(epsilon > 0.001)
-                                            {
-                                            CrosstalkEnergyDepositX->Fill( FEB[FEBs[i]].hitCharge_pe->at(check) );
-                                            }
+                                            energyDepX_XZ_Plain[MapCon[FEBs[i]][0][(int)FEB[FEBs[i]].hitsChannel->at(check)]] += FEB[FEBs[i]].hitCharge_pe->at(check);
+                                            //CrosstalkEnergyDepositX->Fill( FEB[FEBs[i]].hitCharge_pe->at(check) );
                                         }
                                     }
                                 }
@@ -681,8 +675,26 @@ int main ()
                         }
                     }
                 }
-            }
+                for(int ik = 0; ik < 24; ik++ )
+                {
+                    energyX_XZ_Plain[eventNum] ->Fill(ik,energyDepX_XZ_Plain[ik]);
+                    if(energyDepX_XZ_Plain[ik]>RealPeakEnergyX)
+                    {
+                        RealPeakEnergyX=energyDepX_XZ_Plain[ik];
+                        RealPeakNumberX=ik;
+                    }
+                }
 
+                for(int ik = 0; ik < 8; ik++ )
+                {
+                    energyY_YZ_Plain[eventNum] ->Fill(ik,energyDepY_YZ_Plain[ik]);
+                    if(energyDepY_YZ_Plain[ik]>RealPeakEnergyY)
+                    {
+                        RealPeakEnergyY=energyDepY_YZ_Plain[ik];
+                        RealPeakNumberY=ik;
+                    }
+                }
+            }
             if(LargehitTimeDif == 0 && StoppingParticle==1 && PeakEnergy>250 && DiscontinuityCut==1 && TrackBeginningCut==1 && BorderCutY==1 && sigma < 2)
             {
                 Int_t GTindex[2] = {0,0};
@@ -707,12 +719,16 @@ int main ()
                                     PomocniczyNumerKostki = MapCon[FEBs[i]][0][(int)FEB[FEBs[i]].hitsChannel->at(check)];
                                     if ( PomocniczyNumerKostki == RealPeakNumber && FEB[FEBs[i]].hitCharge_pe->at(check) > 0  && FEB[FEBs[i]].hitCharge_pe->at(check) < 10000)// zmiana 0 and 10000
                                     {
-                                         CrosstalkDistance = RealPeakNumberY - MapCon[FEBs[i]][1][(int)FEB[FEBs[i]].hitsChannel->at(check)];
-                                         HistogramCrosstalkDistanceY->Fill(CrosstalkDistance);
-                                         if( abs(CrosstalkDistance)<=2 && abs(CrosstalkDistance)>0)
-                                         {
+                                        CrosstalkDistance = RealPeakNumberY - MapCon[FEBs[i]][1][(int)FEB[FEBs[i]].hitsChannel->at(check)];
+                                        HistogramCrosstalkDistanceY->Fill(CrosstalkDistance);
+                                        if( abs(CrosstalkDistance)<=2 && abs(CrosstalkDistance)>0)
+                                        {
                                              CrosstalkEnergyDepositRestrictedY->Fill( FEB[FEBs[i]].hitCharge_pe->at(check) );
-                                         }
+                                        }
+                                        if(MapCon[FEBs[i]][1][(int)FEB[FEBs[i]].hitsChannel->at(check)] == RealPeakNumberY)
+                                        {
+                                         CrosstalkEnergyDepositY->Fill( FEB[FEBs[i]].hitCharge_pe->at(check) );
+                                        }
                                     }
                                 }
                                 else //Plaszczyzna XZ
@@ -726,16 +742,16 @@ int main ()
                                          {
                                              CrosstalkEnergyDepositRestrictedX->Fill( FEB[FEBs[i]].hitCharge_pe->at(check) );
                                          }
+                                        if(MapCon[FEBs[i]][0][(int)FEB[FEBs[i]].hitsChannel->at(check)] == RealPeakNumberX)
+                                        {
+                                         CrosstalkEnergyDepositX->Fill( FEB[FEBs[i]].hitCharge_pe->at(check) );
+                                        }
                                     }
                                 }
                             }
                         }
                     }
                 }
-            }
-
-            if(LargehitTimeDif == 0 && StoppingParticle==1 && PeakEnergy>250 && DiscontinuityCut==1 && TrackBeginningCut==1 && BorderCutY==1 && sigma < 2)
-            {
 
                 cout <<"licznik "<<licznik <<" sigma " << sigma <<" RealPeakNumber "<<RealPeakNumber<<endl;
                 cout <<"licznik "<<licznik<< " RealPeakEnergyX " << RealPeakEnergyX <<" RealPeakEnergyY " << RealPeakEnergyY<<endl;
@@ -749,8 +765,8 @@ int main ()
                 DisplayCanvas->Clear();
                 CrossEnergyCanvas->Clear();
                 CrossHitCanvas->Clear();
-                //if (event_XZ[eventNum]->GetEntries()>10)
-                //{
+                CrossEnergyPlainCanvas->Clear();
+
                     DisplayCanvas->Divide(2,2);
 
 
@@ -816,8 +832,20 @@ int main ()
                     CrossStep -> cd();
 
                     CrossHitCanvas->Write();
+                    //////
+                    CrossEnergyPlainCanvas->Divide(2,1);
 
-            //}
+                    CrossEnergyPlainCanvas->cd(1);
+                    energyX_XZ_Plain[eventNum]->Draw("HIST");
+
+                    CrossEnergyPlainCanvas->cd(2);
+                    energyY_YZ_Plain[eventNum]->Draw("HIST");
+
+                    CrossEnergyPlainCanvas->Update();
+                    CrossEnergyPlain -> cd();
+
+                    CrossEnergyPlainCanvas->Write();
+                    //////
         }
         delete event_XY[eventNum];
         delete event_YZ[eventNum];
@@ -834,6 +862,9 @@ int main ()
         delete StepCounterZ[eventNum];
         delete StepCounterZ_XZ[eventNum];
         delete StepCounterZ_YZ[eventNum];
+
+        delete energyX_XZ_Plain[eventNum];
+        delete energyY_YZ_Plain[eventNum];
 
         eventNum++;
     }
@@ -861,7 +892,6 @@ int main ()
             }
         }
     }
-    cout<<" licznikPoprawnosciX "<<licznikPoprawnosciX<<" licznikPoprawnosciY "<<licznikPoprawnosciY<<endl;
     wfile.cd();
     EventsMap_XY->Write();
     EventsMap_YZ->Write();
@@ -880,7 +910,6 @@ int main ()
     HistogramCrosstalkDistanceY->Write();
 
     wfile.Close();
-
 
     FileInput->Close();
     return 0;
