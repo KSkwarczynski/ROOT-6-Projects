@@ -7,3 +7,6 @@ replace CMakeLists.txt in examples with this one.
 go build
 cmake ../
 make
+
+
+PlotMaker.cpp makes nice 2D histograms from created ROOT files
