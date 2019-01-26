@@ -9,4 +9,4 @@ cmake ../
 make
 
 
-PlotMaker.cpp makes nice 2D histograms from created ROOT files
+PlotMaker.cpp makes nice histograms from created ROOT files
