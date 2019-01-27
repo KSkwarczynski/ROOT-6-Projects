@@ -20,16 +20,18 @@ void PlotMaker()
     
     TH2F* EnergyTrigTimeTestX = (TH2F*) file->Get("EnergyTrigTimeTestX");
     TH2F* EnergyTrigTimeTestY = (TH2F*) file->Get("EnergyTrigTimeTestY");
+    TH2F* EnergyTrigTimeTestUpgradeX = (TH2F*) file->Get("EnergyTrigTimeTestUpgradeX");
+    TH2F* EnergyTrigTimeTestUpgradeY = (TH2F*) file->Get("EnergyTrigTimeTestUpgradeY");
     TH2F* EnergyTrigTimeTestLowX = (TH2F*) file->Get("EnergyTrigTimeTestLowX");
     TH2F* EnergyTrigTimeTestLowY = (TH2F*) file->Get("EnergyTrigTimeTestLowY");
 
     TH1F* CrosstalkEnergyDepositX = (TH1F*) file->Get("CrosstalkEnergyDepositX");
     TH1F* CrosstalkEnergyDepositY = (TH1F*) file->Get("CrosstalkEnergyDepositY");
+    TH1F* CrosstalkEnergyDepositMinus1X = (TH1F*) file->Get("CrosstalkEnergyDepositMinus1X");
+    TH1F* CrosstalkEnergyDepositMinus1Y = (TH1F*) file->Get("CrosstalkEnergyDepositMinus1Y");
     TH1F* CrosstalkEnergyDepositMiddleX = (TH1F*) file->Get("CrosstalkEnergyDepositMiddleX");
     TH1F* CrosstalkEnergyDepositMiddleY = (TH1F*) file->Get("CrosstalkEnergyDepositMiddleY");
 
-    
-    CrosstalkEnergyDepositX
     TCanvas *Canvas = new TCanvas("Canvas","Canvas", 1400, 1000);
     Canvas->Divide(3,2);
     Canvas -> cd(1);
@@ -45,23 +47,33 @@ void PlotMaker()
     Canvas -> cd(6);
     EnergyTrigTimeSignalY->Draw("COLZ");
     
-    Canvas->Print("/Users/kolos/Desktop/Studia/CIS/Data/Output/TimeTriggerEnergy.pdf");
+    Canvas->Print("/Users/kolos/Desktop/Studia/CIS/Output/TimeTriggerEnergy.pdf");
+    
+    delete Canvas;
     
     TCanvas *Canvas2 = new TCanvas("Canvas2","Canvas2", 1400, 1000);
-    Canvas2->Divide(2,2);
+    Canvas2->Divide(3,2);
     
     Canvas2 -> cd(1);
     EnergyTrigTimeTestX->Draw("COLZ");
     Canvas2 -> cd(2);
     EnergyTrigTimeTestY->Draw("COLZ");
     Canvas2 -> cd(3);
-    EnergyTrigTimeTestLowX->Draw("COLZ");
+    EnergyTrigTimeTestUpgradeX->Draw("COLZ");
     Canvas2 -> cd(4);
+    EnergyTrigTimeTestLowX->Draw("COLZ");
+    Canvas2 -> cd(5);
     EnergyTrigTimeTestLowY->Draw("COLZ");
+    Canvas2 -> cd(6);
+    EnergyTrigTimeTestUpgradeY->Draw("COLZ");
     
-    Canvas2->Print("/Users/kolos/Desktop/Studia/CIS/Data/Output/WierdPlot.pdf");
+    Canvas2->Print("/Users/kolos/Desktop/Studia/CIS/Output/WierdPlot.pdf");
+    
+    delete Canvas2;
     
     TCanvas *Canvas3 = new TCanvas("Canvas3","Canvas3", 1400, 1000);
+    gStyle->SetOptTitle(kFALSE);
+    gStyle->SetOptStat(0);
     Canvas3->Divide(2,1);
         
     CrosstalkEnergyDepositX->SetLineColorAlpha(kRed, 1);
@@ -70,27 +82,39 @@ void PlotMaker()
     CrosstalkEnergyDepositMiddleX->SetLineColorAlpha(kGreen, 1);
     CrosstalkEnergyDepositMiddleX->SetLineWidth(1.5);
     
+    CrosstalkEnergyDepositMinus1X->SetLineColorAlpha(kBlue, 1);
+    CrosstalkEnergyDepositMinus1X->SetLineWidth(1.5);
+    
     CrosstalkEnergyDepositY->SetLineColorAlpha(kRed, 1);
     CrosstalkEnergyDepositY->SetLineWidth(1.5);
+    
+    CrosstalkEnergyDepositMinus1Y->SetLineColorAlpha(kBlue, 1);
+    CrosstalkEnergyDepositMinus1Y->SetLineWidth(1.5);
     
     CrosstalkEnergyDepositMiddleY->SetLineColorAlpha(kGreen, 1);
     CrosstalkEnergyDepositMiddleY->SetLineWidth(1.5);
         
     Canvas3 -> cd(1);
     CrosstalkEnergyDepositX->Draw("");
+    CrosstalkEnergyDepositMinus1X->Draw("SAME");
     CrosstalkEnergyDepositMiddleX->Draw("SAME");
     
-    TLegend *legend1 = new TLegend(0.7482117,0.6940452,0.9799714,0.9353183);
-    legend1->AddEntry(CrosstalkEnergyDepositX,"CrosstalkEnergyDepositX","l");
-    legend1->AddEntry(CrosstalkEnergyDepositMiddleX,"CrosstalkEnergyDepositMiddleX","l");
+    TLegend *legend1 = new TLegend(0.65,0.8,0.9,0.9);
+    legend1->AddEntry(CrosstalkEnergyDepositX,"Stopping Point","l");
+    legend1->AddEntry(CrosstalkEnergyDepositMinus1X,"One Cube Backward","l");
+    legend1->AddEntry(CrosstalkEnergyDepositMiddleX,"Middle of Track","l");
+    legend1->Draw();
     
-    Canvas2 -> cd(2);
+    Canvas3 -> cd(2);
     CrosstalkEnergyDepositY->Draw("");
+    CrosstalkEnergyDepositMinus1Y->Draw("SAME");
     CrosstalkEnergyDepositMiddleY->Draw("SAME");
     
-    TLegend *legend2 = new TLegend(0.7482117,0.6940452,0.9799714,0.9353183);
-    legend2->AddEntry(CrosstalkEnergyDepositY,"CrosstalkEnergyDepositY","l");
-    legend2->AddEntry(CrosstalkEnergyDepositMiddleY,"CrosstalkEnergyDepositMiddleY","l");
+    TLegend *legend2 = new TLegend(0.65,0.8,0.9,0.9);
+    legend2->AddEntry(CrosstalkEnergyDepositY,"Stopping Point","l");
+    legend2->AddEntry(CrosstalkEnergyDepositMinus1Y,"One Cube Backward","l");
+    legend2->AddEntry(CrosstalkEnergyDepositMiddleY,"Middle of Track","l");
+    legend2->Draw();
     
-    Canvas3->Print("/Users/kolos/Desktop/Studia/CIS/Data/Output/CrosstalkComparison.pdf");
+    Canvas3->Print("/Users/kolos/Desktop/Studia/CIS/Output/CrosstalkComparison.pdf");
 }

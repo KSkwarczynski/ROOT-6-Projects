@@ -308,6 +308,9 @@ int main ()
     TH2F *EnergyTrigTimeTestX = new TH2F("EnergyTrigTimeTestX","X", 100,-100,100,500,0,1500);
     TH2F *EnergyTrigTimeTestY = new TH2F("EnergyTrigTimeTestY","Y", 100,-100,100,500,0,1500);
     
+    TH2F *EnergyTrigTimeTestUpgradeX = new TH2F("EnergyTrigTimeTestUpgradeX","Upgrade X", 100,-100,100,500,0,1500);
+    TH2F *EnergyTrigTimeTestUpgradeY = new TH2F("EnergyTrigTimeTestUpgradeY","Upgrade Y", 100,-100,100,500,0,1500);
+    
     TH2F *EnergyTrigTimeTestLowX = new TH2F("EnergyTrigTimeTestLowX","X low", 100,-100,100,500,0,1500);
     TH2F *EnergyTrigTimeTestLowY = new TH2F("EnergyTrigTimeTestLowY","Y low", 100,-100,100,500,0,1500);
     
@@ -894,7 +897,7 @@ int main ()
                                         }
                                         if(MapCon[FEBs[i]][1][(int)FEB[FEBs[i]].hitsChannel->at(check)] == RealPeakNumberY[0])
                                         {
-                                            EnergyTrigTimeSignalY->Fill(FEB[FEBs[i]].hitLeadTime->at(check)-TriggerTime, FEB[FEBs[i]].hitCharge_pe->at(check));
+                                            //EnergyTrigTimeSignalY->Fill(FEB[FEBs[i]].hitLeadTime->at(check)-TriggerTime, FEB[FEBs[i]].hitCharge_pe->at(check));
 //cout<<"Y licznik"<<licznik<<" Trigger "<< FEB[FEBs[i]].hitLeadTime->at(check)-TriggerTime<<" energia "<<FEB[FEBs[i]].hitCharge_pe->at(check)<<endl;
                                             WierdTestY[WierdLicznikY][0]=FEB[FEBs[i]].hitLeadTime->at(check)-TriggerTime;
                                             WierdTestY[WierdLicznikY][1]=FEB[FEBs[i]].hitCharge_pe->at(check);
@@ -938,10 +941,6 @@ int main ()
                                         if(MapCon[FEBs[i]][1][(int)FEB[FEBs[i]].hitsChannel->at(check)] != RealPeakNumberY[2])
                                         {
                                             CrosstalkEnergyDepositMiddleY->Fill( FEB[FEBs[i]].hitCharge_pe->at(check) );
-                                            if(FEB[FEBs[i]].hitCharge_pe->at(check)>250)
-                                            {
-                                            //cout<<"dziwna energia "<<licznik<<" Stopping point-15 "<<RealPeakNumber-15<<endl;
-                                            }
                                         }
                                     }
                                 }
@@ -962,6 +961,7 @@ int main ()
                                         if(MapCon[FEBs[i]][0][(int)FEB[FEBs[i]].hitsChannel->at(check)] == RealPeakNumberX[0])
                                         {
                                             //EnergyTrigTimeSignalX->Fill(FEB[FEBs[i]].hitLeadTime->at(check)-TriggerTime, FEB[FEBs[i]].hitCharge_pe->at(check));
+                                            
 //cout<<"X licznik"<<licznik<<" Trigger "<< FEB[FEBs[i]].hitLeadTime->at(check)-TriggerTime<<" energia "<<FEB[FEBs[i]].hitCharge_pe->at(check)<<endl;
                                             WierdTestX[WierdLicznikX][0]=FEB[FEBs[i]].hitLeadTime->at(check)-TriggerTime;
                                             WierdTestX[WierdLicznikX][1]=FEB[FEBs[i]].hitCharge_pe->at(check);
@@ -1008,10 +1008,6 @@ int main ()
                                         {
                                             CrosstalkEnergyDepositMiddleX->Fill( FEB[FEBs[i]].hitCharge_pe->at(check) );
                                         } 
-                                        if(MapCon[FEBs[i]][0][(int)FEB[FEBs[i]].hitsChannel->at(check)] != RealPeakNumberX[2])
-                                        {
-                                        HistogramRealPeakEnergyDepositMiddle->Fill( FEB[FEBs[i]].hitCharge_pe->at(check) );
-                                        }
                                     }
                                 }
                             }
@@ -1031,59 +1027,62 @@ int main ()
                 HistogramCrosstalkDistanceTypeX->Fill(CrossEventTypeCounterX);
                 HistogramCrosstalkDistanceTypeY->Fill(CrossEventTypeCounterY);
                 
-                cout <<"licznik "<<licznik <<" sigma " << sigma <<" RealPeakNumber "<<RealPeakNumber<<endl;
-                cout <<"licznik "<<licznik<< " RealPeakEnergyX " << RealPeakEnergyX[0] <<" RealPeakEnergyY " << RealPeakEnergyY[0]<<endl;
-                cout <<"licznik "<<licznik<< " RealPeakNumberX " << RealPeakNumberX[0] <<" RealPeakNumberY " << RealPeakNumberY[0]<<endl;
+                cout <<"licznik "<<licznik<<" sigma " << sigma <<" RealPeakNumber "<<RealPeakNumber<<endl;
+                cout <<"licznik "<<licznik<<" RealPeakEnergyX "<< RealPeakEnergyX[0]<<" RealPeakEnergyY "<<RealPeakEnergyY[0]<<endl;
+                cout <<"licznik "<<licznik<<" RealPeakNumberX "<< RealPeakNumberX[0]<<" RealPeakNumberY "<<RealPeakNumberY[0]<<endl;
+                if(energyDepZ[RealPeakNumber-15]>0 && RealPeakNumber>15)
+                {
+                    cout <<"licznik "<<licznik<<" RealPeakNumber-15: "<<RealPeakNumber-15<<" RealPeakEnergy-15: "<<energyDepZ[RealPeakNumber-15]<<endl;
+                }
                 licznik++;
                 
                 StoppingPointLocation->Fill(RealPeakNumber);
                 HistogramHighestEnergyDeposit->Fill(PeakEnergy);
                 HistogramRealPeakEnergyDeposit->Fill(RealPeakEnergy);
+                if(energyDepZ[RealPeakNumber-15]>0 && RealPeakNumber>15)
+                {
+                    HistogramRealPeakEnergyDepositMiddle->Fill(energyDepZ[RealPeakNumber-15]);
+                }
                 double TemporaryTime=0;
                 double TemporaryEnergy=0;
                 if(WierdLicznikX==2)
                 {
                     EnergyTrigTimeTestX->Fill(WierdTestX[0][0],WierdTestX[0][1]);
                     EnergyTrigTimeTestX->Fill(WierdTestX[1][0],WierdTestX[1][1]);
-                    if(WierdTestX[0][1]>=150 && WierdTestX[1][1]<150)
+                    
+                    TemporaryEnergy=WierdTestX[0][1];
+                    if(WierdTestX[1][1]>TemporaryEnergy)
                     {
-                       TemporaryEnergy=WierdTestX[0][1];
+                        TemporaryEnergy=WierdTestX[1][1];
                     }
-                    if(WierdTestX[0][1]<150 && WierdTestX[1][1]>=150)
-                    {
-                       TemporaryEnergy=WierdTestX[1][1];
-                    }
-                    if(WierdTestX[0][0]< -20 && WierdTestX[1][0]>= -20)
-                    {
-                       TemporaryTime=WierdTestX[0][0];
-                    }
-                    if(WierdTestX[0][1]>= -20 && WierdTestX[1][1]< -20)
+                    TemporaryTime=WierdTestX[0][0];
+                    if(TemporaryTime>WierdTestX[1][0])
                     {
                        TemporaryTime=WierdTestX[1][0];
                     }
                     EnergyTrigTimeSignalX->Fill(TemporaryTime, TemporaryEnergy);
+                    EnergyTrigTimeTestUpgradeX->Fill(TemporaryTime, TemporaryEnergy);
+                    //cout<<"X Time "<<TemporaryTime<<" Energy "<<TemporaryEnergy<<" Time 1 "<<WierdTestX[0][0]<<" Time 2 "<<WierdTestX[1][0]<<endl;
                 }
                 if(WierdLicznikY==2)
                 {
                     EnergyTrigTimeTestY->Fill(WierdTestY[0][0],WierdTestY[0][1]);
                     EnergyTrigTimeTestY->Fill(WierdTestY[1][0],WierdTestY[1][1]);
-                    if(WierdTestY[0][1]>=150 && WierdTestY[1][1]<150)
+                    
+                    TemporaryEnergy=WierdTestY[0][1];
+                    if(WierdTestY[1][1]>TemporaryEnergy)
                     {
-                       TemporaryEnergy=WierdTestY[0][1];
+                        TemporaryEnergy=WierdTestY[1][1];
                     }
-                    if(WierdTestY[0][1]<150 && WierdTestY[1][1]>=150)
-                    {
-                       TemporaryEnergy=WierdTestX[1][1];
-                    }
-                    if(WierdTestY[0][0]< -20 && WierdTestY[1][0]>= -20)
-                    {
-                       TemporaryTime=WierdTestY[0][0];
-                    }
-                    if(WierdTestY[0][1]>= -20 && WierdTestY[1][1]< -20)
+                    
+                    TemporaryTime=WierdTestY[0][0];
+                    if(TemporaryTime>WierdTestY[1][0])
                     {
                        TemporaryTime=WierdTestY[1][0];
                     }
                     EnergyTrigTimeSignalY->Fill(TemporaryTime, TemporaryEnergy);
+                    EnergyTrigTimeTestUpgradeY->Fill(TemporaryTime, TemporaryEnergy);
+                    //cout<<"Y Time "<<TemporaryTime<<" Energy "<<TemporaryEnergy<<" Time 1 "<<WierdTestY[0][0]<<" Time 2 "<<WierdTestY[1][0]<<endl;
                 }
                 if(WierdLicznikX==1)
                 {
@@ -1100,15 +1099,6 @@ int main ()
                     {
                         EnergyTrigTimeTestLowY->Fill(WierdTestY[0][0],WierdTestY[0][1]);
                     }
-                }
-                
-                if(WierdLicznikX!=1 && WierdLicznikX!=2)
-                {
-                    cout<<"Uwazaj KURWA X "<<WierdLicznikX<<endl;
-                }
-                if(WierdLicznikY!=1 && WierdLicznikY!=2)
-                {
-                    cout<<"Uwazaj KURWA Y "<<WierdLicznikY<<endl;
                 }
                 DisplayCanvas->Clear();
                 CrossEnergyCanvas->Clear();
@@ -1294,6 +1284,9 @@ int main ()
     
     EnergyTrigTimeTestX->Write();
     EnergyTrigTimeTestY->Write();
+    
+    EnergyTrigTimeTestUpgradeX->Write();
+    EnergyTrigTimeTestUpgradeY->Write();
     
     EnergyTrigTimeTestLowX->Write();
     EnergyTrigTimeTestLowY->Write();
