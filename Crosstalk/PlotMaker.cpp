@@ -91,10 +91,6 @@ void PlotMaker()
     HistogramCrosstalkDistanceX->GetYaxis()->SetTitleOffset(1.4);
     TH1F* HistogramCrosstalkDistanceY = (TH1F*) file->Get("HistogramCrosstalkDistanceY");
     HistogramCrosstalkDistanceY->GetYaxis()->SetTitleOffset(1.4);
-    TH1F* CrosstalkEnergyDepositCUTGX = (TH1F*) file->Get("CrosstalkEnergyDepositCUTGX");
-    CrosstalkEnergyDepositCUTGX->GetYaxis()->SetTitleOffset(1.4);
-    TH1F* CrosstalkEnergyDepositCUTGY = (TH1F*) file->Get("CrosstalkEnergyDepositCUTGY");
-    CrosstalkEnergyDepositCUTGY->GetYaxis()->SetTitleOffset(1.4);
     TH1F* HistogramCrosstalkDistanceCUTGX = (TH1F*) file->Get("HistogramCrosstalkDistanceCUTGX");
     HistogramCrosstalkDistanceCUTGX->GetYaxis()->SetTitleOffset(1.4);
     TH1F* HistogramCrosstalkDistanceCUTGY = (TH1F*) file->Get("HistogramCrosstalkDistanceCUTGY");
@@ -117,6 +113,50 @@ void PlotMaker()
     EnergyTrigTimeMiddleX->GetYaxis()->SetTitleOffset(1.4);
     TH1F* EnergyTrigTimeMiddleY = (TH1F*) file->Get("EnergyTrigTimeMiddleY");
     EnergyTrigTimeMiddleY->GetYaxis()->SetTitleOffset(1.4);
+    
+    TH1F* HistogramCrosstalkDistanceTypeX = (TH1F*) file->Get("HistogramCrosstalkDistanceTypeX");
+    HistogramCrosstalkDistanceTypeX->GetYaxis()->SetTitleOffset(1.4);
+    TH1F* HistogramCrosstalkDistanceTypeY = (TH1F*) file->Get("HistogramCrosstalkDistanceTypeY");
+    HistogramCrosstalkDistanceTypeY->GetYaxis()->SetTitleOffset(1.4);
+    TH1F* HistogramCrosstalkDistanceTypeMinus1X = (TH1F*) file->Get("HistogramCrosstalkDistanceTypeMinus1X");
+    HistogramCrosstalkDistanceTypeMinus1X->GetYaxis()->SetTitleOffset(1.4);
+    TH1F* HistogramCrosstalkDistanceTypeMinus1Y = (TH1F*) file->Get("HistogramCrosstalkDistanceTypeMinus1Y");
+    HistogramCrosstalkDistanceTypeMinus1Y->GetYaxis()->SetTitleOffset(1.4);
+    TH1F* HistogramCrosstalkDistanceTypeMiddleX = (TH1F*) file->Get("HistogramCrosstalkDistanceTypeMiddleX");
+    HistogramCrosstalkDistanceTypeMiddleX->GetYaxis()->SetTitleOffset(1.4);
+    TH1F* HistogramCrosstalkDistanceTypeMiddleY = (TH1F*) file->Get("HistogramCrosstalkDistanceTypeMiddleY");
+    HistogramCrosstalkDistanceTypeMiddleY->GetYaxis()->SetTitleOffset(1.4);
+    
+    TH1F* CrosstalkEnergyDepositMinus1CUTGX = (TH1F*) file->Get("CrosstalkEnergyDepositMinus1CUTGX");
+    CrosstalkEnergyDepositMinus1CUTGX->GetYaxis()->SetTitleOffset(1.4);
+    TH1F* CrosstalkEnergyDepositMinus1CUTGY = (TH1F*) file->Get("CrosstalkEnergyDepositMinus1CUTGY");
+    CrosstalkEnergyDepositMinus1CUTGY->GetYaxis()->SetTitleOffset(1.4);
+    TH1F* CrosstalkEnergyDepositMiddleCUTGX = (TH1F*) file->Get("CrosstalkEnergyDepositMiddleCUTGX");
+    CrosstalkEnergyDepositMiddleCUTGX->GetYaxis()->SetTitleOffset(1.4);
+    TH1F* CrosstalkEnergyDepositMiddleCUTGY = (TH1F*) file->Get("CrosstalkEnergyDepositMiddleCUTGY");
+    CrosstalkEnergyDepositMiddleCUTGY->GetYaxis()->SetTitleOffset(1.4);
+    
+    TH1F* HistogramCrosstalkDistanceMinus1CUTGX = (TH1F*) file->Get("HistogramCrosstalkDistanceMinus1CUTGX");
+    HistogramCrosstalkDistanceMinus1CUTGX->GetYaxis()->SetTitleOffset(1.4);
+    TH1F* HistogramCrosstalkDistanceMinus1CUTGY = (TH1F*) file->Get("HistogramCrosstalkDistanceMinus1CUTGY");
+    HistogramCrosstalkDistanceMinus1CUTGY->GetYaxis()->SetTitleOffset(1.4);
+    TH1F* HistogramCrosstalkDistanceMiddleCUTGX = (TH1F*) file->Get("HistogramCrosstalkDistanceMiddleCUTGX");
+    HistogramCrosstalkDistanceMiddleCUTGX->GetYaxis()->SetTitleOffset(1.4);
+    TH1F* HistogramCrosstalkDistanceMiddleCUTGY = (TH1F*) file->Get("HistogramCrosstalkDistanceMiddleCUTGY");
+    HistogramCrosstalkDistanceMiddleCUTGY->GetYaxis()->SetTitleOffset(1.4);
+    
+    TH1F* CrosstalkEnergyDepositPercentageCUTGX = (TH1F*) file->Get("CrosstalkEnergyDepositPercentageCUTGX");
+    CrosstalkEnergyDepositPercentageCUTGX->GetYaxis()->SetTitleOffset(1.4);
+    TH1F* CrosstalkEnergyDepositPercentageCUTGY = (TH1F*) file->Get("CrosstalkEnergyDepositPercentageCUTGY");
+    CrosstalkEnergyDepositPercentageCUTGY->GetYaxis()->SetTitleOffset(1.4);
+    TH1F* CrosstalkEnergyPercentageMinus1CUTGX = (TH1F*) file->Get("CrosstalkEnergyPercentageMinus1CUTGX");
+    CrosstalkEnergyPercentageMinus1CUTGX->GetYaxis()->SetTitleOffset(1.4);
+    TH1F* CrosstalkEnergyPercentageMinus1CUTGY = (TH1F*) file->Get("CrosstalkEnergyPercentageMinus1CUTGY");
+    CrosstalkEnergyPercentageMinus1CUTGY->GetYaxis()->SetTitleOffset(1.4);
+    TH1F* CrosstalkEnergyPercentageMiddleCUTGX = (TH1F*) file->Get("CrosstalkEnergyPercentageMiddleCUTGX");
+    CrosstalkEnergyPercentageMiddleCUTGX->GetYaxis()->SetTitleOffset(1.4);
+    TH1F* CrosstalkEnergyPercentageMiddleCUTGY = (TH1F*) file->Get("CrosstalkEnergyPercentageMiddleCUTGY");
+    CrosstalkEnergyPercentageMiddleCUTGY->GetYaxis()->SetTitleOffset(1.4);
 ////////////////////////////////
     TCanvas *Canvas = new TCanvas("Canvas","Canvas", 1400, 1000);
     Canvas->Divide(3,2);
@@ -525,6 +565,235 @@ void PlotMaker()
     CanvasCutG->ToggleToolBar();
     */
     
+    TCanvas *Canvas9 = new TCanvas("Canvas9","Canvas9", 1400, 1000);
+    Canvas9->Divide(2,1);
     
+    HistogramCrosstalkDistanceTypeX->SetLineColorAlpha(kRed, 1);
+    HistogramCrosstalkDistanceTypeX->SetLineWidth(1.5);
+    
+    HistogramCrosstalkDistanceTypeMinus1X->SetLineColorAlpha(kBlue, 1);
+    HistogramCrosstalkDistanceTypeMinus1X->SetLineWidth(1.5);
+    
+    HistogramCrosstalkDistanceTypeMiddleX->SetLineColorAlpha(kGreen, 1);
+    HistogramCrosstalkDistanceTypeMiddleX->SetLineWidth(1.5);
+    
+    HistogramCrosstalkDistanceTypeY->SetLineColorAlpha(kRed, 1);
+    HistogramCrosstalkDistanceTypeY->SetLineWidth(1.5);
+    
+    HistogramCrosstalkDistanceTypeMinus1Y->SetLineColorAlpha(kBlue, 1);
+    HistogramCrosstalkDistanceTypeMinus1Y->SetLineWidth(1.5);
+    
+    HistogramCrosstalkDistanceTypeMiddleY->SetLineColorAlpha(kGreen, 1);
+    HistogramCrosstalkDistanceTypeMiddleY->SetLineWidth(1.5);
+    
+    Canvas9->cd(1);
+    HistogramCrosstalkDistanceTypeX->Draw("");
+    HistogramCrosstalkDistanceTypeMinus1X->Draw("SAME");
+    HistogramCrosstalkDistanceTypeMiddleX->Draw("SAME");
+    
+    TLegend *legend41 = new TLegend(0.65,0.8,0.9,0.9);
+    legend41->AddEntry(HistogramCrosstalkDistanceTypeX,"Stopping Point","l");
+    legend41->AddEntry(HistogramCrosstalkDistanceTypeMinus1X,"One Cube Backward","l");
+    legend41->AddEntry(HistogramCrosstalkDistanceTypeMiddleX,"Middle of Track","l");
+    legend41->Draw();
+    
+    Canvas9->cd(2);
+    HistogramCrosstalkDistanceTypeY->Draw("");
+    HistogramCrosstalkDistanceTypeMinus1Y->Draw("SAME");
+    HistogramCrosstalkDistanceTypeMiddleY->Draw("SAME");
+    
+    TLegend *legend42 = new TLegend(0.65,0.8,0.9,0.9);
+    legend42->AddEntry(HistogramCrosstalkDistanceTypeY,"Stopping Point","l");
+    legend42->AddEntry(HistogramCrosstalkDistanceTypeMinus1Y,"One Cube Backward","l");
+    legend42->AddEntry(HistogramCrosstalkDistanceTypeMiddleY,"Middle of Track","l");
+    legend42->Draw();
+    
+    Canvas9->Print("/Users/kolos/Desktop/Studia/CIS/Output/CrosstalkTypeComparison.pdf");
+    
+    TCanvas *Canvas10 = new TCanvas("Canvas10","Canvas10", 1400, 1000);
+    Canvas10->Divide(3,2);
+    
+    CrosstalkEnergyDepositCUTGX->SetLineColorAlpha(kRed, 1);
+    CrosstalkEnergyDepositCUTGX->SetLineWidth(1.5);
+    CrosstalkEnergyDepositCUTGX->GetXaxis()->SetRangeUser(0., 100.);
+    
+    CrosstalkEnergyDepositMinus1CUTGX->SetLineColorAlpha(kBlue, 1);
+    CrosstalkEnergyDepositMinus1CUTGX->SetLineWidth(1.5);
+    CrosstalkEnergyDepositMinus1CUTGX->GetXaxis()->SetRangeUser(0., 100.);
+        
+    CrosstalkEnergyDepositMiddleCUTGX->SetLineColorAlpha(kGreen, 1);
+    CrosstalkEnergyDepositMiddleCUTGX->SetLineWidth(1.5);
+    CrosstalkEnergyDepositMiddleCUTGX->GetXaxis()->SetRangeUser(0., 100.);
+        
+    Canvas10->cd(1);
+    CrosstalkEnergyDepositCUTGX->Draw("");
+    CrosstalkEnergyDepositMinus1CUTGX->Draw("SAME");
+    CrosstalkEnergyDepositMiddleCUTGX->Draw("SAME");
+    
+    TLegend *legend51 = new TLegend(0.65,0.8,0.9,0.9);
+    legend51->AddEntry(CrosstalkEnergyDepositCUTGX,"Stopping Point","l");
+    legend51->AddEntry(CrosstalkEnergyDepositMinus1CUTGX,"One Cube Backward","l");
+    legend51->AddEntry(CrosstalkEnergyDepositMiddleCUTGX,"Middle of Track","l");
+    legend51->Draw();
+    
+    HistogramCrosstalkDistanceCUTGX->SetLineColorAlpha(kRed, 1);
+    HistogramCrosstalkDistanceCUTGX->SetLineWidth(1.5);
+    
+    HistogramCrosstalkDistanceMinus1CUTGX->SetLineColorAlpha(kBlue, 1);
+    HistogramCrosstalkDistanceMinus1CUTGX->SetLineWidth(1.5);
+    
+    HistogramCrosstalkDistanceMiddleCUTGX->SetLineColorAlpha(kGreen, 1);
+    HistogramCrosstalkDistanceMiddleCUTGX->SetLineWidth(1.5);
+    
+    long double normalizacja[6];
+    for(int i=0;i<=5;i++)
+    {
+       normalizacja[i]=0;
+    }
+    int binowanie=HistogramCrosstalkDistanceCUTGX->GetNbinsX();
+
+    for(int i=1;i<=binowanie;i++)
+    {
+        normalizacja[0]+=HistogramCrosstalkDistanceCUTGX->GetBinContent(i);
+        normalizacja[1]+=HistogramCrosstalkDistanceMinus1CUTGX->GetBinContent(i);
+        normalizacja[2]+=HistogramCrosstalkDistanceMiddleCUTGX->GetBinContent(i);
+        normalizacja[3]+=HistogramCrosstalkDistanceCUTGY->GetBinContent(i);
+        normalizacja[4]+=HistogramCrosstalkDistanceMinus1CUTGY->GetBinContent(i);
+        normalizacja[5]+=HistogramCrosstalkDistanceMiddleCUTGY->GetBinContent(i);
+    }
+    int norma=1000;
+    HistogramCrosstalkDistanceCUTGX->Scale(norma/normalizacja[0]);
+    HistogramCrosstalkDistanceMinus1CUTGX->Scale(norma/normalizacja[1]);
+    HistogramCrosstalkDistanceMiddleCUTGX->Scale(norma/normalizacja[2]);
+    HistogramCrosstalkDistanceCUTGY->Scale(norma/normalizacja[3]);
+    HistogramCrosstalkDistanceMinus1CUTGY->Scale(norma/normalizacja[4]);
+    HistogramCrosstalkDistanceMiddleCUTGY->Scale(norma/normalizacja[5]);
+    
+    Canvas10->cd(2);
+    HistogramCrosstalkDistanceMiddleCUTGX->Draw("");
+    HistogramCrosstalkDistanceCUTGX->Draw("SAME");
+    HistogramCrosstalkDistanceMinus1CUTGX->Draw("SAME");
+
+    
+    TLegend *legend52 = new TLegend(0.65,0.8,0.9,0.9);
+    legend52->AddEntry(HistogramCrosstalkDistanceCUTGX,"Stopping Point","l");
+    legend52->AddEntry(HistogramCrosstalkDistanceMinus1CUTGX,"One Cube Backward","l");
+    legend52->AddEntry(HistogramCrosstalkDistanceMiddleCUTGX,"Middle of Track","l");
+    legend52->Draw();
+    
+    CrosstalkEnergyDepositPercentageCUTGX->SetLineColorAlpha(kRed, 1);
+    CrosstalkEnergyDepositPercentageCUTGX->SetLineWidth(1.5);
+    CrosstalkEnergyDepositPercentageCUTGX->GetXaxis()->SetRangeUser(0., 20.);
+    
+    CrosstalkEnergyPercentageMinus1CUTGX->SetLineColorAlpha(kBlue, 1);
+    CrosstalkEnergyPercentageMinus1CUTGX->SetLineWidth(1.5);
+    CrosstalkEnergyPercentageMinus1CUTGX->GetXaxis()->SetRangeUser(0., 20.);
+    
+    CrosstalkEnergyPercentageMiddleCUTGX->SetLineColorAlpha(kGreen, 1);
+    CrosstalkEnergyPercentageMiddleCUTGX->SetLineWidth(1.5);
+    CrosstalkEnergyPercentageMiddleCUTGX->GetXaxis()->SetRangeUser(0., 20.);
+    long double normalizacja[6];
+    for(int i=0;i<=5;i++)
+    {
+       normalizacja[i]=0;
+    }
+    int binowanie=CrosstalkEnergyDepositPercentageCUTGX->GetNbinsX();
+
+    for(int i=1;i<=binowanie;i++)
+    {
+        normalizacja[0]+=CrosstalkEnergyDepositPercentageCUTGX->GetBinContent(i);
+        normalizacja[1]+=CrosstalkEnergyPercentageMinus1CUTGX->GetBinContent(i);
+        normalizacja[2]+=CrosstalkEnergyPercentageMiddleCUTGX->GetBinContent(i);
+        normalizacja[3]+=CrosstalkEnergyDepositPercentageCUTGY->GetBinContent(i);
+        normalizacja[4]+=CrosstalkEnergyPercentageMinus1CUTGY->GetBinContent(i);
+        normalizacja[5]+=CrosstalkEnergyPercentageMiddleCUTGY->GetBinContent(i);
+    }
+    int norma=1000;
+    CrosstalkEnergyDepositPercentageCUTGX->Scale(norma/normalizacja[0]);
+    CrosstalkEnergyPercentageMinus1CUTGX->Scale(norma/normalizacja[1]);
+    CrosstalkEnergyPercentageMiddleCUTGX->Scale(norma/normalizacja[2]);
+    CrosstalkEnergyDepositPercentageCUTGY->Scale(norma/normalizacja[3]);
+    CrosstalkEnergyPercentageMinus1CUTGY->Scale(norma/normalizacja[4]);
+    CrosstalkEnergyPercentageMiddleCUTGY->Scale(norma/normalizacja[5]);
+    
+    Canvas10->cd(3);
+    CrosstalkEnergyPercentageMiddleCUTGX->Draw("");
+    CrosstalkEnergyDepositPercentageCUTGX->Draw("SAME");
+    CrosstalkEnergyPercentageMinus1CUTGX->Draw("SAME");
+
+    
+    TLegend *legend53 = new TLegend(0.65,0.8,0.9,0.9);
+    legend53->AddEntry(CrosstalkEnergyDepositPercentageCUTGX,"Stopping Point","l");
+    legend53->AddEntry(CrosstalkEnergyPercentageMinus1CUTGX,"One Cube Backward","l");
+    legend53->AddEntry(CrosstalkEnergyPercentageMiddleCUTGX,"Middle of Track","l");
+    legend53->Draw();
+    
+    CrosstalkEnergyDepositCUTGY->SetLineColorAlpha(kRed, 1);
+    CrosstalkEnergyDepositCUTGY->SetLineWidth(1.5);
+    CrosstalkEnergyDepositCUTGY->GetXaxis()->SetRangeUser(0., 100.);
+        
+    CrosstalkEnergyDepositMinus1CUTGY->SetLineColorAlpha(kBlue, 1);
+    CrosstalkEnergyDepositMinus1CUTGY->SetLineWidth(1.5);
+    CrosstalkEnergyDepositMinus1CUTGY->GetXaxis()->SetRangeUser(0., 100.);
+        
+    CrosstalkEnergyDepositMiddleCUTGY->SetLineColorAlpha(kGreen, 1);
+    CrosstalkEnergyDepositMiddleCUTGY->SetLineWidth(1.5);
+    CrosstalkEnergyDepositMiddleCUTGY->GetXaxis()->SetRangeUser(0., 100.);
+        
+    Canvas10->cd(4);
+    CrosstalkEnergyDepositCUTGY->Draw("");
+    CrosstalkEnergyDepositMinus1CUTGY->Draw("SAME");
+    CrosstalkEnergyDepositMiddleCUTGY->Draw("SAME");
+    
+    TLegend *legend54 = new TLegend(0.65,0.8,0.9,0.9);
+    legend54->AddEntry(CrosstalkEnergyDepositCUTGY,"Stopping Point","l");
+    legend54->AddEntry(CrosstalkEnergyDepositMinus1CUTGY,"One Cube Backward","l");
+    legend54->AddEntry(CrosstalkEnergyDepositMiddleCUTGY,"Middle of Track","l");
+    legend54->Draw();
+        
+    HistogramCrosstalkDistanceCUTGY->SetLineColorAlpha(kRed, 1);
+    HistogramCrosstalkDistanceCUTGY->SetLineWidth(1.5);
+    
+    HistogramCrosstalkDistanceMinus1CUTGY->SetLineColorAlpha(kBlue, 1);
+    HistogramCrosstalkDistanceMinus1CUTGY->SetLineWidth(1.5);
+    
+    HistogramCrosstalkDistanceMiddleCUTGY->SetLineColorAlpha(kGreen, 1);
+    HistogramCrosstalkDistanceMiddleCUTGY->SetLineWidth(1.5);
+    
+    Canvas10->cd(5);
+    HistogramCrosstalkDistanceMiddleCUTGY->Draw("");
+    HistogramCrosstalkDistanceCUTGY->Draw("SAME");
+    HistogramCrosstalkDistanceMinus1CUTGY->Draw("SAME");
+
+    TLegend *legend55 = new TLegend(0.65,0.8,0.9,0.9);
+    legend55->AddEntry(HistogramCrosstalkDistanceCUTGY,"Stopping Point","l");
+    legend55->AddEntry(HistogramCrosstalkDistanceMinus1CUTGY,"One Cube Backward","l");
+    legend55->AddEntry(HistogramCrosstalkDistanceMiddleCUTGY,"Middle of Track","l");
+    legend55->Draw();
+    
+    CrosstalkEnergyDepositPercentageCUTGY->SetLineColorAlpha(kRed, 1);
+    CrosstalkEnergyDepositPercentageCUTGY->SetLineWidth(1.5);
+    CrosstalkEnergyDepositPercentageCUTGY->GetXaxis()->SetRangeUser(0., 20.);
+    
+    CrosstalkEnergyPercentageMinus1CUTGY->SetLineColorAlpha(kBlue, 1);
+    CrosstalkEnergyPercentageMinus1CUTGY->SetLineWidth(1.5);
+    CrosstalkEnergyPercentageMinus1CUTGY->GetXaxis()->SetRangeUser(0., 20.);
+    
+    CrosstalkEnergyPercentageMiddleCUTGY->SetLineColorAlpha(kGreen, 1);
+    CrosstalkEnergyPercentageMiddleCUTGY->SetLineWidth(1.5);
+    CrosstalkEnergyPercentageMiddleCUTGY->GetXaxis()->SetRangeUser(0., 20.);
+
+    Canvas10->cd(6);
+    CrosstalkEnergyDepositPercentageCUTGY->Draw("");
+    CrosstalkEnergyPercentageMinus1CUTGY->Draw("SAME");
+    CrosstalkEnergyPercentageMiddleCUTGY->Draw("SAME");
+    
+    TLegend *legend56 = new TLegend(0.65,0.8,0.9,0.9);
+    legend56->AddEntry(CrosstalkEnergyDepositPercentageCUTGY,"Stopping Point","l");
+    legend56->AddEntry(CrosstalkEnergyPercentageMinus1CUTGY,"One Cube Backward","l");
+    legend56->AddEntry(CrosstalkEnergyPercentageMiddleCUTGY,"Middle of Track","l");
+    legend56->Draw();
+    
+    Canvas10->Print("/Users/kolos/Desktop/Studia/CIS/Output/FullCrosstalkAfterCUTGComparison.pdf"); 
 }
 
