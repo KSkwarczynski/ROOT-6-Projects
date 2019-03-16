@@ -797,3 +797,4 @@ void PlotMaker()
     Canvas10->Print("/Users/kolos/Desktop/Studia/CIS/Output/FullCrosstalkAfterCUTGComparison.pdf"); 
 }
 
+/////KURWA pAMIETAJ ABY ABY PRZE C1->pRINT,,,,,, DAC     gPad->Modified();
