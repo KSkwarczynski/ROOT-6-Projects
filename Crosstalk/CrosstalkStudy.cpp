@@ -169,15 +169,15 @@ int main ()
             fmap.close();
        }
     }
-    TH2F *EventsMap_XY = new TH2F("All_events_map_XY","All_events_map_XY",  24,0,24, 8,0,8);
-    TH2F *EventsMap_YZ = new TH2F("All_events_map_YZ","All_events_map_YZ",  48,0,48, 8,0,8);
-    TH2F *EventsMap_XZ = new TH2F("All_events_map_XZ","All_events_map_XZ",  24,0,24, 48,0,48);
+    TH2F *EventsMap_XY = new TH2F("EventsMap_XY","All_events_map_XY",  24,0,24, 8,0,8);
+    TH2F *EventsMap_YZ = new TH2F("EventsMap_YZ","All_events_map_YZ",  48,0,48, 8,0,8);
+    TH2F *EventsMap_XZ = new TH2F("EventsMap_XZ","All_events_map_XZ",  24,0,24, 48,0,48);
     
     TH2F *EnergyTrigTimeAll = new TH2F("EnergyTrigTimeAll","Energy and Time of Trigger whole run", 100,-100,100,500,0,1500);
     EnergyTrigTimeAll->GetYaxis()->SetTitle("Energy [p.e.]");
     EnergyTrigTimeAll->GetXaxis()->SetTitle("Time from Trigger [2.5 ns]");
     
-    TH1F *HistogramHighestEnergyDeposit = new TH1F("HighestEnergyDepositHistogram", "Histogram of highest value deposit",100,0,2500);
+    TH1F *HistogramHighestEnergyDeposit = new TH1F("HistogramHighestEnergyDeposit", "Histogram of highest value deposit",100,0,2500);
     HistogramHighestEnergyDeposit->GetYaxis()->SetTitle("Number of events");
     HistogramHighestEnergyDeposit->GetXaxis()->SetTitle("Energy [p.e.]");
    
@@ -253,19 +253,19 @@ int main ()
     StoppingPointLocation->GetYaxis()->SetTitle("Number of events");
     StoppingPointLocation->GetXaxis()->SetTitle("Z detector axis [cm]");
 
-    TH1F *HistogramCrosstalkDistanceX= new TH1F("HistogramCrosstalkDistanceX", "Cube distance of energy deposit from peak X axis",48,-24,24);
+    TH1F *HistogramCrosstalkDistanceX= new TH1F("HistogramCrosstalkDistanceX", "Cube distance of energy deposit from peak X axis",10,-5,5);
     HistogramCrosstalkDistanceX->GetYaxis()->SetTitle("Number of events");
     HistogramCrosstalkDistanceX->GetXaxis()->SetTitle("X detector axis [cm]");
     
-    TH1F *HistogramCrosstalkDistanceY = new TH1F("HistogramCrosstalkDistanceY", "Cube distance of energy deposit from peak Y axis",16,-8,8);
+    TH1F *HistogramCrosstalkDistanceY = new TH1F("HistogramCrosstalkDistanceY", "Cube distance of energy deposit from peak Y axis",10,-5,5);
     HistogramCrosstalkDistanceY->GetYaxis()->SetTitle("Number of events");
     HistogramCrosstalkDistanceY->GetXaxis()->SetTitle("Y detector axis [cm]");
 
-    TH1F *HistogramCrosstalkDistanceCUTGX= new TH1F("HistogramCrosstalkDistanceCUTGX", "Cube distance in stopping point plain from peak X axis, after CUTG",48,-24,24);
+    TH1F *HistogramCrosstalkDistanceCUTGX= new TH1F("HistogramCrosstalkDistanceCUTGX", "Cube distance in stopping point plain from peak X axis, after CUTG",10,-5,5);
     HistogramCrosstalkDistanceCUTGX->GetYaxis()->SetTitle("Number of events");
     HistogramCrosstalkDistanceCUTGX->GetXaxis()->SetTitle("X detector axis [cm]");
     
-    TH1F *HistogramCrosstalkDistanceCUTGY = new TH1F("HistogramCrosstalkDistanceCUTGY", "Cube distance in stopping point plain from peak Y axis, after CUTG",16,-8,8);
+    TH1F *HistogramCrosstalkDistanceCUTGY = new TH1F("HistogramCrosstalkDistanceCUTGY", "Cube distance in stopping point plain from peak Y axis, after CUTG",10,-5,5);
     HistogramCrosstalkDistanceCUTGY->GetYaxis()->SetTitle("Number of events");
     HistogramCrosstalkDistanceCUTGY->GetXaxis()->SetTitle("Y detector axis [cm]");
     
@@ -285,21 +285,21 @@ int main ()
     CrosstalkEnergyDepositRestrictedY->GetYaxis()->SetTitle("Number of events");
     CrosstalkEnergyDepositRestrictedY->GetXaxis()->SetTitle("Energy [p.e.]");
     
-    TH1F *HistogramCrosstalkDistanceEnergyHigherThanY= new TH1F("HistogramCrosstalkDistanceEnergyHigherThanY", "Cube distance of energy deposit from peak Y axis if energy higher than 50",16,-8,8);
-    HistogramCrosstalkDistanceEnergyHigherThanY->GetYaxis()->SetTitle("Number of events");
-    HistogramCrosstalkDistanceEnergyHigherThanY->GetXaxis()->SetTitle("Y detector axis [cm]");
-    
-    TH1F *HistogramCrosstalkDistanceEnergyHigherThanX= new TH1F("HistogramCrosstalkDistanceEnergyHigherThanX", "Cube distance of energy deposit from peak X axis if energy higher than 50",48,-24,24);
+    TH1F *HistogramCrosstalkDistanceEnergyHigherThanX= new TH1F("HistogramCrosstalkDistanceEnergyHigherThanX", "Cube distance of energy deposit from peak X axis if energy higher than 50",10,-5,5);
     HistogramCrosstalkDistanceEnergyHigherThanX->GetYaxis()->SetTitle("Number of events");
     HistogramCrosstalkDistanceEnergyHigherThanX->GetXaxis()->SetTitle("X detector axis [cm]");
     
-    TH1F *HistogramCrosstalkDistanceCutY= new TH1F("HistogramCrosstalkDistanceCutY", "Cube distance of energy deposit from peak Y axis if energy higher than 1",16,-8,8);
+    TH1F *HistogramCrosstalkDistanceEnergyHigherThanY= new TH1F("HistogramCrosstalkDistanceEnergyHigherThanY", "Cube distance of energy deposit from peak Y axis if energy higher than 50",10,-5,5);
+    HistogramCrosstalkDistanceEnergyHigherThanY->GetYaxis()->SetTitle("Number of events");
+    HistogramCrosstalkDistanceEnergyHigherThanY->GetXaxis()->SetTitle("Y detector axis [cm]");
+    
+    TH1F *HistogramCrosstalkDistanceCutX= new TH1F("HistogramCrosstalkDistanceCutX", "Cube distance of energy deposit from peak X axis if energy higher than 1",10,-5,5);
+    HistogramCrosstalkDistanceCutX->GetYaxis()->SetTitle("Number of events");
+    HistogramCrosstalkDistanceCutX->GetXaxis()->SetTitle("X detector axis [cm]");  
+    
+    TH1F *HistogramCrosstalkDistanceCutY= new TH1F("HistogramCrosstalkDistanceCutY", "Cube distance of energy deposit from peak Y axis if energy higher than 1",10,-5,5);
     HistogramCrosstalkDistanceCutY->GetYaxis()->SetTitle("Y detector axis [cm]");
     HistogramCrosstalkDistanceCutY->GetXaxis()->SetTitle("Energy [p.e.]");
-    
-    TH1F *HistogramCrosstalkDistanceCutX= new TH1F("HistogramCrosstalkDistanceCutX", "Cube distance of energy deposit from peak X axis if energy higher than 1",48,-24,24);
-    HistogramCrosstalkDistanceCutX->GetYaxis()->SetTitle("Number of events");
-    HistogramCrosstalkDistanceCutX->GetXaxis()->SetTitle("X detector axis [cm]");   
     
     TH1F *HistogramCrosstalkDistanceTypeX= new TH1F("HistogramCrosstalkDistanceTypeX", "Number of cubes that recieved signal X axis, stopping point",48,0,48);
     HistogramCrosstalkDistanceTypeX->GetYaxis()->SetTitle("Number of events");
@@ -381,11 +381,11 @@ int main ()
     CrosstalkEnergyPercentageMinus1OneCubeY->GetYaxis()->SetTitle("Number of events");
     CrosstalkEnergyPercentageMinus1OneCubeY->GetXaxis()->SetTitle("Percentage %"); 
     
-    TH1F *HistogramCrosstalkDistanceMinus1X= new TH1F("HistogramCrosstalkDistanceMinus1X", "Cube distance of energy deposit from peak X axis, one cube backward",48,-24,24);
+    TH1F *HistogramCrosstalkDistanceMinus1X= new TH1F("HistogramCrosstalkDistanceMinus1X", "Cube distance of energy deposit from peak X axis, one cube backward",10,-5,5);
     HistogramCrosstalkDistanceMinus1X->GetYaxis()->SetTitle("Number of events");
     HistogramCrosstalkDistanceMinus1X->GetXaxis()->SetTitle("X detector axis [cm]");
     
-    TH1F *HistogramCrosstalkDistanceMinus1Y = new TH1F("HistogramCrosstalkDistanceMinus1Y", "Cube distance of energy deposit from peak Y axis, one cube backward",16,-8,8);
+    TH1F *HistogramCrosstalkDistanceMinus1Y = new TH1F("HistogramCrosstalkDistanceMinus1Y", "Cube distance of energy deposit from peak Y axis, one cube backward",10,-5,5);
     HistogramCrosstalkDistanceMinus1Y->GetYaxis()->SetTitle("Number of events");
     HistogramCrosstalkDistanceMinus1Y->GetXaxis()->SetTitle("Y detector axis [cm]");
     
@@ -421,11 +421,11 @@ int main ()
     CrosstalkEnergyPercentageMinus1CUTGY->GetYaxis()->SetTitle("Number of events");
     CrosstalkEnergyPercentageMinus1CUTGY->GetXaxis()->SetTitle("Percentage %"); 
     
-    TH1F *HistogramCrosstalkDistanceMinus1CUTGX= new TH1F("HistogramCrosstalkDistanceMinus1CUTGX", "Cube distance of energy deposit from peak X axis, one cube backward, after CUTG",48,-24,24);
+    TH1F *HistogramCrosstalkDistanceMinus1CUTGX= new TH1F("HistogramCrosstalkDistanceMinus1CUTGX", "Cube distance of energy deposit from peak X axis, one cube backward, after CUTG",10,-5,5);
     HistogramCrosstalkDistanceMinus1CUTGX->GetYaxis()->SetTitle("Number of events");
     HistogramCrosstalkDistanceMinus1CUTGX->GetXaxis()->SetTitle("X detector axis [cm]");
     
-    TH1F *HistogramCrosstalkDistanceMinus1CUTGY = new TH1F("HistogramCrosstalkDistanceMinus1CUTGY", "Cube distance of energy deposit from peak Y axis, one cube backward after CUTG",16,-8,8);
+    TH1F *HistogramCrosstalkDistanceMinus1CUTGY = new TH1F("HistogramCrosstalkDistanceMinus1CUTGY", "Cube distance of energy deposit from peak Y axis, one cube backward after CUTG",10,-5,5);
     HistogramCrosstalkDistanceMinus1CUTGY->GetYaxis()->SetTitle("Number of events");
     HistogramCrosstalkDistanceMinus1CUTGY->GetXaxis()->SetTitle("Y detector axis [cm]");
     
@@ -453,7 +453,7 @@ int main ()
     CrosstalkEnergyDepositMiddleX->GetYaxis()->SetTitle("Number of events");
     CrosstalkEnergyDepositMiddleX->GetXaxis()->SetTitle("Energy [p.e.]");
     
-    TH1F *CrosstalkEnergyDepositMiddleY = new TH1F("CrosstalkEnergyDepositMiddleY", "Crosstalk energy in Y plain, 15 cubes away from stopping poin..",500,0,500);
+    TH1F *CrosstalkEnergyDepositMiddleY = new TH1F("CrosstalkEnergyDepositMiddleY", "Crosstalk energy in Y plain, 15 cubes away from stopping poin.",500,0,500);
     CrosstalkEnergyDepositMiddleY->GetYaxis()->SetTitle("Number of events");
     CrosstalkEnergyDepositMiddleY->GetXaxis()->SetTitle("Energy [p.e.]"); 
     
@@ -489,11 +489,11 @@ int main ()
     CrosstalkEnergyPercentageMiddleOneCubeY->GetYaxis()->SetTitle("Number of events");
     CrosstalkEnergyPercentageMiddleOneCubeY->GetXaxis()->SetTitle("Percentage %"); 
     
-    TH1F *HistogramCrosstalkDistanceMiddleX= new TH1F("HistogramCrosstalkDistanceMiddleX", "Cube distance of energy deposit from peak X axis, 15 cubes away from stopping poin.",48,-24,24);
+    TH1F *HistogramCrosstalkDistanceMiddleX= new TH1F("HistogramCrosstalkDistanceMiddleX", "Cube distance of energy deposit from peak X axis, 15 cubes away from stopping poin.",10,-5,5);
     HistogramCrosstalkDistanceMiddleX->GetYaxis()->SetTitle("Number of events");
     HistogramCrosstalkDistanceMiddleX->GetXaxis()->SetTitle("X detector axis [cm]");
     
-    TH1F *HistogramCrosstalkDistanceMiddleY = new TH1F("HistogramCrosstalkDistanceMiddleY", "Cube distance of energy deposit from peak Y axis, 15 cubes away from stopping poin.",16,-8,8);
+    TH1F *HistogramCrosstalkDistanceMiddleY = new TH1F("HistogramCrosstalkDistanceMiddleY", "Cube distance of energy deposit from peak Y axis, 15 cubes away from stopping poin.",10,-5,5);
     HistogramCrosstalkDistanceMiddleY->GetYaxis()->SetTitle("Number of events");
     HistogramCrosstalkDistanceMiddleY->GetXaxis()->SetTitle("Y detector axis [cm]");
     
@@ -541,11 +541,11 @@ int main ()
     CrosstalkEnergyPercentageMiddleCUTGY->GetYaxis()->SetTitle("Number of events");
     CrosstalkEnergyPercentageMiddleCUTGY->GetXaxis()->SetTitle("Percentage %"); 
     
-    TH1F *HistogramCrosstalkDistanceMiddleCUTGX= new TH1F("HistogramCrosstalkDistanceMiddleCUTGX", "Cube distance of energy deposit from peak X axis, 15 cubes away from stopping point, after CUTG.",48,-24,24);
+    TH1F *HistogramCrosstalkDistanceMiddleCUTGX= new TH1F("HistogramCrosstalkDistanceMiddleCUTGX", "Cube distance of energy deposit from peak X axis, 15 cubes away from stopping point, after CUTG.",10,-5,5);
     HistogramCrosstalkDistanceMiddleCUTGX->GetYaxis()->SetTitle("Number of events");
     HistogramCrosstalkDistanceMiddleCUTGX->GetXaxis()->SetTitle("X detector axis [cm]");
     
-    TH1F *HistogramCrosstalkDistanceMiddleCUTGY = new TH1F("HistogramCrosstalkDistanceMiddleCUTGY", "Cube distance of energy deposit from peak Y axis, 15 cubes away from stopping point, after CUTG.",16,-8,8);
+    TH1F *HistogramCrosstalkDistanceMiddleCUTGY = new TH1F("HistogramCrosstalkDistanceMiddleCUTGY", "Cube distance of energy deposit from peak Y axis, 15 cubes away from stopping point, after CUTG.",10,-5,5);
     HistogramCrosstalkDistanceMiddleCUTGY->GetYaxis()->SetTitle("Number of events");
     HistogramCrosstalkDistanceMiddleCUTGY->GetXaxis()->SetTitle("Y detector axis [cm]");
     /////
@@ -1222,10 +1222,8 @@ int main ()
                                         }
                                         if(MapCon[FEBs[i]][1][(int)FEB[FEBs[i]].hitsChannel->at(check)] == RealPeakNumberY[1])
                                         {
-//cout<<"Y Main "<<MapCon[FEBs[i]][1][(int)FEB[FEBs[i]].hitsChannel->at(check)]<<" TriggerTime "<<PomicniczyTriggerTime<<" Depozty "<<DepozytPomocniczy<<endl;
                                             WierdTestY[1][WierdLicznikY[1]][0]=PomicniczyTriggerTime;
-                                            WierdTestY[1][WierdLicznikY[1]][1]=DepozytPomocniczy;
-//cout<<"Y Tablica Test "<<MapCon[FEBs[i]][1][(int)FEB[FEBs[i]].hitsChannel->at(check)]<<" TriggerTime "<<WierdTestY[1][WierdLicznikY[1]][0]<<" Depozty "<<WierdTestY[1][WierdLicznikY[1]][1]<<endl;                                      
+                                            WierdTestY[1][WierdLicznikY[1]][1]=DepozytPomocniczy;                                     
                                             WierdLicznikY[1]++;
                                         }
                                     }
@@ -1269,11 +1267,11 @@ int main ()
                                                 CrosstalkEnergyPercentageMiddleCUTGY->Fill( 100*DepozytPomocniczy/RealPeakEnergyResult[2] );
                                                 if(CrosstalkDistance==1 || CrosstalkDistance==-1)
                                                 {
-                                                    CrosstalkEnergyDepositMiddleOneCubeCUTGX->Fill(DepozytPomocniczy);
+                                                    CrosstalkEnergyDepositMiddleOneCubeCUTGY->Fill(DepozytPomocniczy);
                                                 }
                                                 if(CrosstalkDistance==2 || CrosstalkDistance==-2)
                                                 {
-                                                    CrosstalkEnergyDepositMiddleTwoCubesCUTGX->Fill(DepozytPomocniczy);
+                                                    CrosstalkEnergyDepositMiddleTwoCubesCUTGY->Fill(DepozytPomocniczy);
                                                 }
                                             }
                                         }
@@ -1456,11 +1454,11 @@ int main ()
                                                 CrosstalkEnergyPercentageMiddleCUTGX->Fill( 100*DepozytPomocniczy/RealPeakEnergyResult[2] );
                                                 if(CrosstalkDistance == 1 || CrosstalkDistance == -1)
                                                 {
-                                                    CrosstalkEnergyDepositMiddleOneCubeCUTGY->Fill(DepozytPomocniczy);
+                                                    CrosstalkEnergyDepositMiddleOneCubeCUTGX->Fill(DepozytPomocniczy);
                                                 }
                                                 if(CrosstalkDistance == 2 || CrosstalkDistance == -2)
                                                 {
-                                                    CrosstalkEnergyDepositMiddleTwoCubesCUTGY->Fill(DepozytPomocniczy);
+                                                    CrosstalkEnergyDepositMiddleTwoCubesCUTGX->Fill(DepozytPomocniczy);
                                                 }
                                             }
                                         }

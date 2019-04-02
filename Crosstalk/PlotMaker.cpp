@@ -993,22 +993,28 @@ void PlotMaker()
     
     CrosstalkEnergyDepositTwoCubesX->SetLineColorAlpha(kRed, 1);
     CrosstalkEnergyDepositTwoCubesX->SetLineWidth(1.5);
-    
+    CrosstalkEnergyDepositTwoCubesX->GetXaxis()->SetRangeUser(0., 20.);
+        
     CrosstalkEnergyDepositMinus1TwoCubesX->SetLineColorAlpha(kBlue, 1);
     CrosstalkEnergyDepositMinus1TwoCubesX->SetLineWidth(1.5);
-    
+    CrosstalkEnergyDepositMinus1TwoCubesX->GetXaxis()->SetRangeUser(0., 20.);
+        
     CrosstalkEnergyDepositMiddleTwoCubesX->SetLineColorAlpha(kGreen, 1);
     CrosstalkEnergyDepositMiddleTwoCubesX->SetLineWidth(1.5);
-    
+    CrosstalkEnergyDepositMiddleTwoCubesX->GetXaxis()->SetRangeUser(0., 20.);
+        
     CrosstalkEnergyDepositTwoCubesY->SetLineColorAlpha(kRed, 1);
     CrosstalkEnergyDepositTwoCubesY->SetLineWidth(1.5);
-    
+    CrosstalkEnergyDepositTwoCubesY->GetXaxis()->SetRangeUser(0., 20.);
+        
     CrosstalkEnergyDepositMinus1TwoCubesY->SetLineColorAlpha(kBlue, 1);
     CrosstalkEnergyDepositMinus1TwoCubesY->SetLineWidth(1.5);
-    
+    CrosstalkEnergyDepositMinus1TwoCubesY->GetXaxis()->SetRangeUser(0., 20.);
+        
     CrosstalkEnergyDepositMiddleTwoCubesY->SetLineColorAlpha(kGreen, 1);
     CrosstalkEnergyDepositMiddleTwoCubesY->SetLineWidth(1.5);
-    
+    CrosstalkEnergyDepositMiddleTwoCubesY->GetXaxis()->SetRangeUser(0., 20.);
+        
     Canvas12->cd(1);
     CrosstalkEnergyDepositOneCubeX->Draw("");
     CrosstalkEnergyDepositMinus1OneCubeX->Draw("SAME");
@@ -1063,25 +1069,25 @@ void PlotMaker()
     CrosstalkEnergyDepositPercentageOneCubeX->SetLineColorAlpha(kRed, 1);
     CrosstalkEnergyDepositPercentageOneCubeX->SetLineWidth(1.5);
     
-    CrosstalkEnergyDepositPercentageOneCubeY->SetLineColorAlpha(kBlue, 1);
-    CrosstalkEnergyDepositPercentageOneCubeY->SetLineWidth(1.5);
-    
-    CrosstalkEnergyPercentageMinus1OneCubeX->SetLineColorAlpha(kGreen, 1);
+    CrosstalkEnergyPercentageMinus1OneCubeX->SetLineColorAlpha(kBlue, 1);
     CrosstalkEnergyPercentageMinus1OneCubeX->SetLineWidth(1.5);
     
-    CrosstalkEnergyPercentageMinus1OneCubeY->SetLineColorAlpha(kRed, 1);
-    CrosstalkEnergyPercentageMinus1OneCubeY->SetLineWidth(1.5);
+    CrosstalkEnergyPercentageMiddleOneCubeX->SetLineColorAlpha(kGreen, 1);
+    CrosstalkEnergyPercentageMinus1OneCubeX->SetLineWidth(1.5);
     
-    CrosstalkEnergyPercentageMiddleOneCubeX->SetLineColorAlpha(kBlue, 1);
-    CrosstalkEnergyPercentageMiddleOneCubeX->SetLineWidth(1.5);
+    CrosstalkEnergyDepositPercentageOneCubeY->SetLineColorAlpha(kRed, 1);
+    CrosstalkEnergyDepositPercentageOneCubeY->SetLineWidth(1.5);
+    
+    CrosstalkEnergyPercentageMinus1OneCubeY->SetLineColorAlpha(kBlue, 1);
+    CrosstalkEnergyPercentageMinus1OneCubeY->SetLineWidth(1.5);
     
     CrosstalkEnergyPercentageMiddleOneCubeY->SetLineColorAlpha(kGreen, 1);
     CrosstalkEnergyPercentageMiddleOneCubeY->SetLineWidth(1.5);
     
     Canvas13->cd(1);
-    CrosstalkEnergyDepositOneCubeX->Draw("");
-    CrosstalkEnergyDepositMinus1OneCubeX->Draw("SAME");
-    CrosstalkEnergyDepositMiddleOneCubeX->Draw("SAME");
+    CrosstalkEnergyDepositPercentageOneCubeX->Draw("");
+    CrosstalkEnergyPercentageMinus1OneCubeX->Draw("SAME");
+    CrosstalkEnergyPercentageMiddleOneCubeX->Draw("SAME");
     
     TLegend *legend81 = new TLegend(0.65,0.8,0.9,0.9);
     legend81->AddEntry(CrosstalkEnergyDepositPercentageOneCubeX,"Stopping Point","l");
@@ -1090,9 +1096,9 @@ void PlotMaker()
     legend81->Draw();
     
     Canvas13->cd(2);
-    CrosstalkEnergyDepositOneCubeY->Draw("");
-    CrosstalkEnergyDepositMinus1OneCubeY->Draw("SAME");
-    CrosstalkEnergyDepositMiddleOneCubeY->Draw("SAME");
+    CrosstalkEnergyDepositPercentageOneCubeY->Draw("");
+    CrosstalkEnergyPercentageMinus1OneCubeY->Draw("SAME");
+    CrosstalkEnergyPercentageMiddleOneCubeY->Draw("SAME");
     
     TLegend *legend82 = new TLegend(0.65,0.8,0.9,0.9);
     legend82->AddEntry(CrosstalkEnergyDepositPercentageOneCubeY,"Stopping Point","l");
