@@ -13,7 +13,7 @@ void PlotMaker()
     gStyle->SetCanvasColor(0);
     
     char filename[200];
-    sprintf(filename,"/Users/kolos/Desktop/Studia/CIS/Data/26August_14_MCR0_hadrons_0pt8Gev_0pt0T_Beam___Crosstalk.root");
+    sprintf(filename,"/Users/kolos/Desktop/Studia/CIS/Data/MergedCrosstalk.root");
     TFile *file = new TFile(filename,"READ");
     if ( file->IsOpen() )
     {
@@ -200,6 +200,19 @@ void PlotMaker()
     TH1F* CrosstalkEnergyDepositMiddleOneCubeY = (TH1F*) file->Get("CrosstalkEnergyDepositMiddleOneCubeY");
     CrosstalkEnergyDepositMiddleOneCubeY->GetYaxis()->SetTitleOffset(1.4);
     
+    TH1F* CrosstalkEnergyDepositTwoCubesX = (TH1F*) file->Get("CrosstalkEnergyDepositTwoCubesX");
+    CrosstalkEnergyDepositTwoCubesX->GetYaxis()->SetTitleOffset(1.4);
+    TH1F* CrosstalkEnergyDepositTwoCubesY = (TH1F*) file->Get("CrosstalkEnergyDepositTwoCubesY");
+    CrosstalkEnergyDepositTwoCubesY->GetYaxis()->SetTitleOffset(1.4);
+    TH1F* CrosstalkEnergyDepositMinus1TwoCubesX = (TH1F*) file->Get("CrosstalkEnergyDepositMinus1TwoCubesX");
+    CrosstalkEnergyDepositMinus1TwoCubesX->GetYaxis()->SetTitleOffset(1.4);
+    TH1F* CrosstalkEnergyDepositMinus1TwoCubesY = (TH1F*) file->Get("CrosstalkEnergyDepositMinus1TwoCubesY");
+    CrosstalkEnergyDepositMinus1TwoCubesY->GetYaxis()->SetTitleOffset(1.4);
+    TH1F* CrosstalkEnergyDepositMiddleTwoCubesX = (TH1F*) file->Get("CrosstalkEnergyDepositMiddleTwoCubesX");
+    CrosstalkEnergyDepositMiddleTwoCubesX->GetYaxis()->SetTitleOffset(1.4);
+    TH1F* CrosstalkEnergyDepositMiddleTwoCubesY = (TH1F*) file->Get("CrosstalkEnergyDepositMiddleTwoCubesY");
+    CrosstalkEnergyDepositMiddleTwoCubesY->GetYaxis()->SetTitleOffset(1.4);
+    
     TH1F* CrosstalkEnergyDepositPercentageOneCubeX = (TH1F*) file->Get("CrosstalkEnergyDepositPercentageOneCubeX");
     CrosstalkEnergyDepositPercentageOneCubeX->GetYaxis()->SetTitleOffset(1.4);
     TH1F* CrosstalkEnergyDepositPercentageOneCubeY = (TH1F*) file->Get("CrosstalkEnergyDepositPercentageOneCubeY");
@@ -212,7 +225,27 @@ void PlotMaker()
     CrosstalkEnergyPercentageMiddleOneCubeX->GetYaxis()->SetTitleOffset(1.4);
     TH1F* CrosstalkEnergyPercentageMiddleOneCubeY = (TH1F*) file->Get("CrosstalkEnergyPercentageMiddleOneCubeY");
     CrosstalkEnergyPercentageMiddleOneCubeY->GetYaxis()->SetTitleOffset(1.4);
+
+    TH1F* CrosstalkEnergyDepositPercentageTwoCubesX = (TH1F*) file->Get("CrosstalkEnergyDepositPercentageTwoCubesX");
+    CrosstalkEnergyDepositPercentageTwoCubesX->GetYaxis()->SetTitleOffset(1.4);
+    TH1F* CrosstalkEnergyDepositPercentageTwoCubesY = (TH1F*) file->Get("CrosstalkEnergyDepositPercentageTwoCubesY");
+    CrosstalkEnergyDepositPercentageTwoCubesY->GetYaxis()->SetTitleOffset(1.4);
+    TH1F* CrosstalkEnergyPercentageMinus1TwoCubesX = (TH1F*) file->Get("CrosstalkEnergyPercentageMinus1TwoCubesX");
+    CrosstalkEnergyPercentageMinus1TwoCubesX->GetYaxis()->SetTitleOffset(1.4);
+    TH1F* CrosstalkEnergyPercentageMinus1TwoCubesY = (TH1F*) file->Get("CrosstalkEnergyPercentageMinus1TwoCubesY");
+    CrosstalkEnergyPercentageMinus1TwoCubesY->GetYaxis()->SetTitleOffset(1.4);
+    TH1F* CrosstalkEnergyPercentageMiddleTwoCubesX = (TH1F*) file->Get("CrosstalkEnergyPercentageMiddleTwoCubesX");
+    CrosstalkEnergyPercentageMiddleTwoCubesX->GetYaxis()->SetTitleOffset(1.4);
+    TH1F* CrosstalkEnergyPercentageMiddleTwoCubesY = (TH1F*) file->Get("CrosstalkEnergyPercentageMiddleTwoCubesY");
+    CrosstalkEnergyPercentageMiddleTwoCubesY->GetYaxis()->SetTitleOffset(1.4);
     
+    TH1F* CrosstalkEnergyDepositPercentageSecondCubeNewX = (TH1F*) file->Get("CrosstalkEnergyDepositPercentageSecondCubeNewX");
+    CrosstalkEnergyDepositPercentageSecondCubeNewX->GetYaxis()->SetTitleOffset(1.4);
+    TH1F* CrosstalkEnergyDepositPercentageMinus1SecondCubeNewX = (TH1F*) file->Get("CrosstalkEnergyDepositPercentageMinus1SecondCubeNewX");
+    CrosstalkEnergyDepositPercentageMinus1SecondCubeNewX->GetYaxis()->SetTitleOffset(1.4);
+    TH1F* CrosstalkEnergyDepositPercentageMiddleSecondCubeNewX = (TH1F*) file->Get("CrosstalkEnergyDepositPercentageMiddleSecondCubeNewX");
+    CrosstalkEnergyDepositPercentageMiddleSecondCubeNewX->GetYaxis()->SetTitleOffset(1.4);
+
 ////////////////////////////////
     TCanvas *Canvas = new TCanvas("Canvas","Canvas", 1400, 1000);
     Canvas->Divide(3,2);
@@ -426,10 +459,9 @@ void PlotMaker()
     legend13->Draw();
     
     Canvas4->cd(4);
-    CloneMiddlercentageY->Draw("");
-    CloneStoppingPercentageY->Draw("SAME");
+    CloneStoppingPercentageY->Draw("");
     CloneMinus1ercentageY->Draw("SAME");
-   
+    CloneMiddlercentageY->Draw("SAME");
     
     TLegend *legend14 = new TLegend(0.65,0.8,0.9,0.9);
     legend14->AddEntry(CloneStoppingPercentageY,"Stopping Point","l");
@@ -552,16 +584,16 @@ void PlotMaker()
     
     HistogramCrosstalkDistanceX->SetLineColorAlpha(kRed, 1);
     HistogramCrosstalkDistanceX->SetLineWidth(1.5);
-    HistogramCrosstalkDistanceMinus1X->SetLineColorAlpha(kGreen, 1);
+    HistogramCrosstalkDistanceMinus1X->SetLineColorAlpha(kBlue, 1);
     HistogramCrosstalkDistanceMinus1X->SetLineWidth(1.5);
-    HistogramCrosstalkDistanceMiddleX->SetLineColorAlpha(kBlue, 1);
+    HistogramCrosstalkDistanceMiddleX->SetLineColorAlpha(kGreen, 1);
     HistogramCrosstalkDistanceMiddleX->SetLineWidth(1.5);
     
     HistogramCrosstalkDistanceY->SetLineColorAlpha(kRed, 1);
     HistogramCrosstalkDistanceY->SetLineWidth(1.5);
-    HistogramCrosstalkDistanceMinus1Y->SetLineColorAlpha(kGreen, 1);
+    HistogramCrosstalkDistanceMinus1Y->SetLineColorAlpha(kBlue, 1);
     HistogramCrosstalkDistanceMinus1Y->SetLineWidth(1.5);
-    HistogramCrosstalkDistanceMiddleY->SetLineColorAlpha(kBlue, 1);
+    HistogramCrosstalkDistanceMiddleY->SetLineColorAlpha(kGreen, 1);
     HistogramCrosstalkDistanceMiddleY->SetLineWidth(1.5);
     
     Canvas7->cd(1);
@@ -993,27 +1025,21 @@ void PlotMaker()
     
     CrosstalkEnergyDepositTwoCubesX->SetLineColorAlpha(kRed, 1);
     CrosstalkEnergyDepositTwoCubesX->SetLineWidth(1.5);
-    CrosstalkEnergyDepositTwoCubesX->GetXaxis()->SetRangeUser(0., 20.);
         
     CrosstalkEnergyDepositMinus1TwoCubesX->SetLineColorAlpha(kBlue, 1);
     CrosstalkEnergyDepositMinus1TwoCubesX->SetLineWidth(1.5);
-    CrosstalkEnergyDepositMinus1TwoCubesX->GetXaxis()->SetRangeUser(0., 20.);
         
     CrosstalkEnergyDepositMiddleTwoCubesX->SetLineColorAlpha(kGreen, 1);
     CrosstalkEnergyDepositMiddleTwoCubesX->SetLineWidth(1.5);
-    CrosstalkEnergyDepositMiddleTwoCubesX->GetXaxis()->SetRangeUser(0., 20.);
         
     CrosstalkEnergyDepositTwoCubesY->SetLineColorAlpha(kRed, 1);
     CrosstalkEnergyDepositTwoCubesY->SetLineWidth(1.5);
-    CrosstalkEnergyDepositTwoCubesY->GetXaxis()->SetRangeUser(0., 20.);
         
     CrosstalkEnergyDepositMinus1TwoCubesY->SetLineColorAlpha(kBlue, 1);
     CrosstalkEnergyDepositMinus1TwoCubesY->SetLineWidth(1.5);
-    CrosstalkEnergyDepositMinus1TwoCubesY->GetXaxis()->SetRangeUser(0., 20.);
         
     CrosstalkEnergyDepositMiddleTwoCubesY->SetLineColorAlpha(kGreen, 1);
     CrosstalkEnergyDepositMiddleTwoCubesY->SetLineWidth(1.5);
-    CrosstalkEnergyDepositMiddleTwoCubesY->GetXaxis()->SetRangeUser(0., 20.);
         
     Canvas12->cd(1);
     CrosstalkEnergyDepositOneCubeX->Draw("");
@@ -1064,26 +1090,99 @@ void PlotMaker()
     delete Canvas12;
 /////////////
     TCanvas *Canvas13 = new TCanvas("Canvas13","Canvas13", 1400, 1000);
-    Canvas13->Divide(2,1);
+    Canvas13->Divide(2,2);
     
     CrosstalkEnergyDepositPercentageOneCubeX->SetLineColorAlpha(kRed, 1);
     CrosstalkEnergyDepositPercentageOneCubeX->SetLineWidth(1.5);
+    CrosstalkEnergyDepositPercentageOneCubeX->GetXaxis()->SetRangeUser(0., 20.);
     
     CrosstalkEnergyPercentageMinus1OneCubeX->SetLineColorAlpha(kBlue, 1);
     CrosstalkEnergyPercentageMinus1OneCubeX->SetLineWidth(1.5);
+    CrosstalkEnergyPercentageMinus1OneCubeX->GetXaxis()->SetRangeUser(0., 20.);
     
     CrosstalkEnergyPercentageMiddleOneCubeX->SetLineColorAlpha(kGreen, 1);
-    CrosstalkEnergyPercentageMinus1OneCubeX->SetLineWidth(1.5);
+    CrosstalkEnergyPercentageMiddleOneCubeX->SetLineWidth(1.5);
+    CrosstalkEnergyPercentageMiddleOneCubeX->GetXaxis()->SetRangeUser(0., 20.);
     
     CrosstalkEnergyDepositPercentageOneCubeY->SetLineColorAlpha(kRed, 1);
     CrosstalkEnergyDepositPercentageOneCubeY->SetLineWidth(1.5);
+    CrosstalkEnergyDepositPercentageOneCubeY->GetXaxis()->SetRangeUser(0., 20.);
     
     CrosstalkEnergyPercentageMinus1OneCubeY->SetLineColorAlpha(kBlue, 1);
     CrosstalkEnergyPercentageMinus1OneCubeY->SetLineWidth(1.5);
+    CrosstalkEnergyPercentageMinus1OneCubeY->GetXaxis()->SetRangeUser(0., 20.);
     
     CrosstalkEnergyPercentageMiddleOneCubeY->SetLineColorAlpha(kGreen, 1);
     CrosstalkEnergyPercentageMiddleOneCubeY->SetLineWidth(1.5);
+    CrosstalkEnergyPercentageMiddleOneCubeY->GetXaxis()->SetRangeUser(0., 20.);
     
+    ///
+
+    CrosstalkEnergyDepositPercentageTwoCubesX->SetLineColorAlpha(kRed, 1);
+    CrosstalkEnergyDepositPercentageTwoCubesX->SetLineWidth(1.5);
+    CrosstalkEnergyDepositPercentageTwoCubesX->GetXaxis()->SetRangeUser(0., 20.);
+    
+    CrosstalkEnergyDepositPercentageTwoCubesY->SetLineColorAlpha(kBlue, 1);
+    CrosstalkEnergyDepositPercentageTwoCubesY->SetLineWidth(1.5);
+    CrosstalkEnergyDepositPercentageTwoCubesY->GetXaxis()->SetRangeUser(0., 20.);
+    
+    CrosstalkEnergyPercentageMinus1TwoCubesX->SetLineColorAlpha(kGreen, 1);
+    CrosstalkEnergyPercentageMinus1TwoCubesX->SetLineWidth(1.5);
+    CrosstalkEnergyPercentageMinus1TwoCubesX->GetXaxis()->SetRangeUser(0., 20.);
+    
+    CrosstalkEnergyPercentageMinus1TwoCubesY->SetLineColorAlpha(kRed, 1);
+    CrosstalkEnergyPercentageMinus1TwoCubesY->SetLineWidth(1.5);
+    CrosstalkEnergyPercentageMinus1TwoCubesY->GetXaxis()->SetRangeUser(0., 20.);
+    
+    CrosstalkEnergyPercentageMiddleTwoCubesX->SetLineColorAlpha(kBlue, 1);
+    CrosstalkEnergyPercentageMiddleTwoCubesX->SetLineWidth(1.5);
+    CrosstalkEnergyPercentageMiddleTwoCubesX->GetXaxis()->SetRangeUser(0., 20.);
+    
+    CrosstalkEnergyPercentageMiddleTwoCubesY->SetLineColorAlpha(kGreen, 1);
+    CrosstalkEnergyPercentageMiddleTwoCubesY->SetLineWidth(1.5);
+    CrosstalkEnergyPercentageMiddleTwoCubesY->GetXaxis()->SetRangeUser(0., 20.);
+
+    long double normalizacja2[12];
+    for(int i=0;i<=11;i++)
+    {
+       normalizacja2[i]=0;
+    }
+    int binowanie=CrosstalkEnergyDepositPercentageOneCubeX->GetNbinsX();
+    for(int i=1;i<=binowanie;i++)
+    {
+        normalizacja2[0]+=CrosstalkEnergyDepositPercentageOneCubeX->GetBinContent(i);
+        normalizacja2[1]+=CrosstalkEnergyPercentageMinus1OneCubeX->GetBinContent(i);
+        normalizacja2[2]+=CrosstalkEnergyPercentageMiddleOneCubeX->GetBinContent(i);
+        normalizacja2[3]+=CrosstalkEnergyDepositPercentageOneCubeY->GetBinContent(i);
+        normalizacja2[4]+=CrosstalkEnergyPercentageMinus1OneCubeY->GetBinContent(i);
+        normalizacja2[5]+=CrosstalkEnergyPercentageMiddleOneCubeY->GetBinContent(i);
+    }
+    int binowanie=CrosstalkEnergyDepositPercentageOneCubeX->GetNbinsX();
+    for(int i=1;i<=binowanie;i++)
+    {
+        normalizacja2[6]+=CrosstalkEnergyDepositPercentageTwoCubesX->GetBinContent(i);
+        normalizacja2[7]+=CrosstalkEnergyPercentageMinus1TwoCubesX->GetBinContent(i);
+        normalizacja2[8]+=CrosstalkEnergyPercentageMiddleTwoCubesX->GetBinContent(i);
+        normalizacja2[9]+=CrosstalkEnergyDepositPercentageTwoCubesY->GetBinContent(i);
+        normalizacja2[10]+=CrosstalkEnergyPercentageMinus1TwoCubesY->GetBinContent(i);
+        normalizacja2[11]+=CrosstalkEnergyPercentageMiddleTwoCubesY->GetBinContent(i);
+    }
+    
+    int norma=1000;
+    CrosstalkEnergyDepositPercentageOneCubeX->Scale(norma/normalizacja2[0]);
+    CrosstalkEnergyPercentageMinus1OneCubeX->Scale(norma/normalizacja2[1]);
+    CrosstalkEnergyPercentageMiddleOneCubeX->Scale(norma/normalizacja2[2]);
+    CrosstalkEnergyDepositPercentageOneCubeY->Scale(norma/normalizacja2[3]);
+    CrosstalkEnergyPercentageMinus1OneCubeY->Scale(norma/normalizacja2[4]);
+    CrosstalkEnergyPercentageMiddleOneCubeY->Scale(norma/normalizacja2[5]);
+    
+    CrosstalkEnergyDepositPercentageTwoCubesX->Scale(norma/normalizacja2[6]);
+    CrosstalkEnergyPercentageMinus1TwoCubesX->Scale(norma/normalizacja2[7]);
+    CrosstalkEnergyPercentageMiddleTwoCubesX->Scale(norma/normalizacja2[8]);
+    CrosstalkEnergyDepositPercentageTwoCubesY->Scale(norma/normalizacja2[9]);
+    CrosstalkEnergyPercentageMinus1TwoCubesY->Scale(norma/normalizacja2[10]);
+    CrosstalkEnergyPercentageMiddleTwoCubesY->Scale(norma/normalizacja2[11]);
+
     Canvas13->cd(1);
     CrosstalkEnergyDepositPercentageOneCubeX->Draw("");
     CrosstalkEnergyPercentageMinus1OneCubeX->Draw("SAME");
@@ -1106,8 +1205,151 @@ void PlotMaker()
     legend82->AddEntry(CrosstalkEnergyPercentageMiddleOneCubeY,"15 Cubes Backward","l");
     legend82->Draw();
     
+    Canvas13->cd(3);
+    CrosstalkEnergyDepositPercentageTwoCubesX->Draw("");
+    CrosstalkEnergyPercentageMinus1TwoCubesX->Draw("SAME");
+    CrosstalkEnergyPercentageMiddleTwoCubesX->Draw("SAME");
+    
+    TLegend *legend81 = new TLegend(0.65,0.8,0.9,0.9);
+    legend81->AddEntry(CrosstalkEnergyDepositPercentageTwoCubesX,"Stopping Point","l");
+    legend81->AddEntry(CrosstalkEnergyPercentageMinus1TwoCubesX,"One Cube Backward","l");
+    legend81->AddEntry(CrosstalkEnergyPercentageMiddleTwoCubesX,"15 Cubes Backward","l");
+    legend81->Draw();
+    
+    Canvas13->cd(4);
+    CrosstalkEnergyDepositPercentageTwoCubesY->Draw("");
+    CrosstalkEnergyPercentageMinus1TwoCubesY->Draw("SAME");
+    CrosstalkEnergyPercentageMiddleTwoCubesY->Draw("SAME");
+    
+    TLegend *legend82 = new TLegend(0.65,0.8,0.9,0.9);
+    legend82->AddEntry(CrosstalkEnergyDepositPercentageTwoCubesY,"Stopping Point","l");
+    legend82->AddEntry(CrosstalkEnergyPercentageMinus1TwoCubesY,"One Cube Backward","l");
+    legend82->AddEntry(CrosstalkEnergyPercentageMiddleTwoCubesY,"15 Cubes Backward","l");
+    legend82->Draw();
+    
     gPad->Modified();
     Canvas13->Print("/Users/kolos/Desktop/Studia/CIS/Output/CrosstalkPercentageDistance.pdf");  
     delete Canvas13;
     
+    /////////////////
+    TCanvas *Canvas14 = new TCanvas("Canvas14","Canvas14", 1400, 1000);
+    Canvas14->Divide(1,1);
+    
+    CrosstalkEnergyDepositPercentageSecondCubeNewX->SetLineColorAlpha(kRed, 1);
+    CrosstalkEnergyDepositPercentageSecondCubeNewX->SetLineWidth(1.5);
+    
+    CrosstalkEnergyDepositPercentageMinus1SecondCubeNewX->SetLineColorAlpha(kBlue, 1);
+    CrosstalkEnergyDepositPercentageMinus1SecondCubeNewX->SetLineWidth(1.5);
+    
+    CrosstalkEnergyDepositPercentageMiddleSecondCubeNewX->SetLineColorAlpha(kGreen, 1);
+    CrosstalkEnergyDepositPercentageMiddleSecondCubeNewX->SetLineWidth(1.5);
+    
+    long double normalizacja[6];
+    for(int i=0;i<=2;i++)
+    {
+       normalizacja[i]=0;
+    }
+    int binowanie=CrosstalkEnergyDepositPercentageSecondCubeNewX->GetNbinsX();
+
+    for(int i=1;i<=binowanie;i++)
+    {
+        normalizacja[0]+=CrosstalkEnergyDepositPercentageSecondCubeNewX->GetBinContent(i);
+        normalizacja[1]+=CrosstalkEnergyDepositPercentageMinus1SecondCubeNewX->GetBinContent(i);
+        normalizacja[2]+=CrosstalkEnergyDepositPercentageMiddleSecondCubeNewX->GetBinContent(i);
+    }
+   
+    int norma=1000;
+    CrosstalkEnergyDepositPercentageSecondCubeNewX->Scale(norma/normalizacja[0]);
+    CrosstalkEnergyDepositPercentageMinus1SecondCubeNewX->Scale(norma/normalizacja[1]);
+    CrosstalkEnergyDepositPercentageMiddleSecondCubeNewX->Scale(norma/normalizacja[2]);
+
+    Canvas14->cd(1);
+    CrosstalkEnergyDepositPercentageSecondCubeNewX->Draw("");
+    CrosstalkEnergyDepositPercentageMinus1SecondCubeNewX->Draw("SAME");
+    CrosstalkEnergyDepositPercentageMiddleSecondCubeNewX->Draw("SAME");
+    
+    TLegend *legend91 = new TLegend(0.65,0.8,0.9,0.9);
+    legend91->AddEntry(CrosstalkEnergyDepositPercentageSecondCubeNewX,"Stopping Point","l");
+    legend91->AddEntry(CrosstalkEnergyDepositPercentageMinus1SecondCubeNewX,"One Cube Backward","l");
+    legend91->AddEntry(CrosstalkEnergyDepositPercentageMiddleSecondCubeNewX,"15 Cubes Backward","l");
+    legend91->Draw();
+    
+    gPad->Modified();
+    Canvas14->Print("/Users/kolos/Desktop/Studia/CIS/Output/CrosstalkPercentageSecondCubeNew.pdf");  
+    delete Canvas14;
+    
+    ///////////////
+    TCanvas *Canvas15 = new TCanvas("Canvas15","Canvas15", 1400, 1000);
+    Canvas15->Divide(3,1);
+    
+    CrosstalkEnergyDepositOneCubeX->SetLineColorAlpha(kRed, 1);
+    CrosstalkEnergyDepositMinus1OneCubeX->SetLineColorAlpha(kRed, 1);
+    CrosstalkEnergyDepositMiddleOneCubeX->SetLineColorAlpha(kRed, 1);
+    ////
+    CrosstalkEnergyDepositTwoCubesX->SetLineColorAlpha(kBlue, 1);
+    CrosstalkEnergyDepositMinus1TwoCubesX->SetLineColorAlpha(kBlue, 1);
+    CrosstalkEnergyDepositMiddleTwoCubesX->SetLineColorAlpha(kBlue, 1);
+     
+    long double normalizacja[6];
+    for(int i=0;i<=5;i++)
+    {
+       normalizacja[i]=0;
+    }
+    int binowanie=CrosstalkEnergyDepositOneCubeX->GetNbinsX();
+    int binowanie2=CrosstalkEnergyDepositTwoCubesX->GetNbinsX();
+    for(int i=1;i<=binowanie;i++)
+    {
+        normalizacja[0]+=CrosstalkEnergyDepositOneCubeX->GetBinContent(i);
+        normalizacja[1]+=CrosstalkEnergyDepositMinus1OneCubeX->GetBinContent(i);
+        normalizacja[2]+=CrosstalkEnergyDepositMiddleOneCubeX->GetBinContent(i);
+    }
+     for(int i=1;i<=binowanie2;i++)
+    {
+        normalizacja[3]+=CrosstalkEnergyDepositTwoCubesX->GetBinContent(i);
+        normalizacja[4]+=CrosstalkEnergyDepositMinus1TwoCubesX->GetBinContent(i);
+        normalizacja[5]+=CrosstalkEnergyDepositMiddleTwoCubesX->GetBinContent(i);
+    }
+    float normalization[3];
+    normalization[0]=CrosstalkEnergyDepositTwoCubesX->GetEntries();
+    normalization[1]=CrosstalkEnergyDepositMinus1TwoCubesX->GetEntries();
+    normalization[2]=CrosstalkEnergyDepositMiddleTwoCubesX->GetEntries();
+    
+    CrosstalkEnergyDepositOneCubeX->Scale(normalization[0]/normalizacja[0]);
+    CrosstalkEnergyDepositMinus1OneCubeX->Scale(normalization[1]/normalizacja[1]);
+    CrosstalkEnergyDepositMiddleOneCubeX->Scale(normalization[2]/normalizacja[2]);
+    CrosstalkEnergyDepositTwoCubesX->Scale(normalization[0]/normalizacja[3]);
+    CrosstalkEnergyDepositMinus1TwoCubesX->Scale(normalization[1]/normalizacja[4]);
+    CrosstalkEnergyDepositMiddleTwoCubesX->Scale(normalization[2]/normalizacja[5]);
+    
+    Canvas15->cd(1);
+    CrosstalkEnergyDepositOneCubeX->Draw("");
+    CrosstalkEnergyDepositTwoCubesX->Draw("SAME");
+    
+    TLegend *legend101 = new TLegend(0.65,0.8,0.9,0.9);
+    legend101->AddEntry(CrosstalkEnergyDepositOneCubeX,"First Cube","l");
+    legend101->AddEntry(CrosstalkEnergyDepositTwoCubesX,"Second Cube","l");
+    legend101->Draw();
+    
+    Canvas15->cd(2);
+    CrosstalkEnergyDepositMinus1OneCubeX->Draw("");
+    CrosstalkEnergyDepositMinus1TwoCubesX->Draw("SAME");
+    
+    TLegend *legend102 = new TLegend(0.65,0.8,0.9,0.9);
+    legend102->AddEntry(CrosstalkEnergyDepositMinus1OneCubeX,"First Cube","l");
+    legend102->AddEntry(CrosstalkEnergyDepositMinus1TwoCubesX,"Second Cube","l");
+    legend102->Draw();
+    
+    Canvas15->cd(3);
+    CrosstalkEnergyDepositMiddleOneCubeX->Draw("");
+    CrosstalkEnergyDepositMiddleTwoCubesX->Draw("SAME");
+    
+    TLegend *legend103 = new TLegend(0.65,0.8,0.9,0.9);
+    legend103->AddEntry(CrosstalkEnergyDepositMiddleOneCubeX,"First Cube","l");
+    legend103->AddEntry(CrosstalkEnergyDepositMiddleTwoCubesX,"Second Cube","l");
+    legend103->Draw();
+    
+    gPad->Modified();
+    Canvas15->Print("/Users/kolos/Desktop/Studia/CIS/Output/CrosstalkDepositFirstAndSecondCube.pdf");  
+    delete Canvas15;
+
 }
