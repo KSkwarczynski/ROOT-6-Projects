@@ -1661,7 +1661,10 @@ int main ()
                 }
                 if(energyDepZ[RealPeakNumber-1]>0)
                 {
-                    HistogramRealPeakEnergyDepositMinus1->Fill(energyDepZ[RealPeakNumber-1]);
+                    if(RealPeakEnergyResult[1]>40)
+                    {
+                        HistogramRealPeakEnergyDepositMinus1->Fill(RealPeakEnergyResult[1]);
+                    }
                     if(RealPeakEnergyX[1]>40)
                     {
                         HistogramCrosstalkDistanceTypeMinus1X->Fill(CrossEventTypeCounterX[1]);
@@ -1673,7 +1676,10 @@ int main ()
                 }
                 if(energyDepZ[RealPeakNumber-15]>0 && RealPeakNumber>15)
                 {
-                    HistogramRealPeakEnergyDepositMiddle->Fill(energyDepZ[RealPeakNumber-15]);
+                    if(RealPeakEnergyResult[2]>40)
+                    {
+                        HistogramRealPeakEnergyDepositMiddle->Fill(RealPeakEnergyResult[2]);
+                    }
                     if(RealPeakEnergyX[2]>40)
                     {
                         HistogramCrosstalkDistanceTypeMiddleX->Fill(CrossEventTypeCounterX[2]);
@@ -1788,7 +1794,7 @@ int main ()
                 
                 StoppingPointLocation->Fill(RealPeakNumber);
                 HistogramHighestEnergyDeposit->Fill(PeakEnergy);
-                HistogramRealPeakEnergyDeposit->Fill(RealPeakEnergy);
+                HistogramRealPeakEnergyDeposit->Fill(RealPeakEnergyResult[0]);
                 
                 cout <<"licznik "<<licznik<<" sigma " << sigma <<" RealPeakNumber "<<RealPeakNumber<<endl;
                 cout <<"licznik "<<licznik<<" RealPeakEnergyX "<< RealPeakEnergyX[0]<<" RealPeakEnergyY "<<RealPeakEnergyY[0]<<endl;

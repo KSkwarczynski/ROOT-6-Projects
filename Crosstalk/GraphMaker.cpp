@@ -601,6 +601,6 @@ void GraphMaker()
     legend9->Draw();
     
     Canvas8->Print("/Users/kolos/Desktop/Studia/CIS/OutputGraph/TwoCubesYconverted.pdf");
-    delete Canvas7;
+    delete Canvas8;
     
 }

@@ -1184,8 +1184,8 @@ void PlotMaker()
     CrosstalkEnergyPercentageMiddleTwoCubesY->Scale(norma/normalizacja2[11]);
 
     Canvas13->cd(1);
-    CrosstalkEnergyDepositPercentageOneCubeX->Draw("");
-    CrosstalkEnergyPercentageMinus1OneCubeX->Draw("SAME");
+    CrosstalkEnergyPercentageMinus1OneCubeX->Draw("");
+    CrosstalkEnergyDepositPercentageOneCubeX->Draw("SAME");
     CrosstalkEnergyPercentageMiddleOneCubeX->Draw("SAME");
     
     TLegend *legend81 = new TLegend(0.65,0.8,0.9,0.9);
