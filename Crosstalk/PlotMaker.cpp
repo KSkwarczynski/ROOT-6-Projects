@@ -11,6 +11,7 @@ void PlotMaker()
     gStyle->SetPalette(1,0);
     gStyle->SetPadColor(0);
     gStyle->SetCanvasColor(0);
+    gStyle->SetOptStat(0);
     
     char filename[200];
     sprintf(filename,"/Users/kolos/Desktop/Studia/CIS/Data/MergedCrosstalk.root");
@@ -247,6 +248,34 @@ void PlotMaker()
     CrosstalkEnergyDepositPercentageMiddleSecondCubeNewX->GetYaxis()->SetTitleOffset(1.4);
 
 ////////////////////////////////
+    EnergyTrigTimeX->GetYaxis()->SetTitleOffset(1.4);
+    EnergyTrigTimeX->GetXaxis()->SetTitleSize(0.04);
+    EnergyTrigTimeX->GetYaxis()->SetTitleSize(0.04);
+    
+    EnergyTrigTimeCrosstalkX->GetYaxis()->SetTitleOffset(1.3);
+    EnergyTrigTimeCrosstalkX->GetXaxis()->SetTitleSize(0.04);
+    EnergyTrigTimeCrosstalkX->GetYaxis()->SetTitleSize(0.04);
+    
+    EnergyTrigTimeSignalX->GetYaxis()->SetTitleOffset(1.3);
+    EnergyTrigTimeSignalX->GetXaxis()->SetTitleSize(0.04);
+    EnergyTrigTimeSignalX->GetYaxis()->SetTitleSize(0.04);
+    
+    EnergyTrigTimeX->GetYaxis()->SetTitleOffset(1.3);
+    EnergyTrigTimeX->GetXaxis()->SetTitleSize(0.04);
+    EnergyTrigTimeX->GetYaxis()->SetTitleSize(0.04);
+        
+    EnergyTrigTimeY->GetYaxis()->SetTitleOffset(1.3);
+    EnergyTrigTimeY->GetXaxis()->SetTitleSize(0.04);
+    EnergyTrigTimeY->GetYaxis()->SetTitleSize(0.04);
+    
+    EnergyTrigTimeCrosstalkY->GetYaxis()->SetTitleOffset(1.3);
+    EnergyTrigTimeCrosstalkY->GetXaxis()->SetTitleSize(0.04);
+    EnergyTrigTimeCrosstalkY->GetYaxis()->SetTitleSize(0.04);
+    
+    EnergyTrigTimeSignalY->GetYaxis()->SetTitleOffset(1.3);
+    EnergyTrigTimeSignalY->GetXaxis()->SetTitleSize(0.04);
+    EnergyTrigTimeSignalY->GetYaxis()->SetTitleSize(0.04);
+    
     TCanvas *Canvas = new TCanvas("Canvas","Canvas", 1400, 1000);
     Canvas->Divide(3,2);
     Canvas->cd(1);
@@ -317,34 +346,51 @@ void PlotMaker()
     
     HistogramRealPeakEnergyDeposit->SetLineColorAlpha(kRed, 1);
     HistogramRealPeakEnergyDeposit->SetLineWidth(1.5);
+    HistogramRealPeakEnergyDeposit->GetXaxis()->SetRangeUser(0., 1200.);
     
     HistogramRealPeakEnergyDepositMinus1->SetLineColorAlpha(kBlue, 1);
     HistogramRealPeakEnergyDepositMinus1->SetLineWidth(1.5);
+    HistogramRealPeakEnergyDepositMinus1->GetXaxis()->SetRangeUser(0., 1200.);
     
     HistogramRealPeakEnergyDepositMiddle->SetLineColorAlpha(kGreen, 1);
     HistogramRealPeakEnergyDepositMiddle->SetLineWidth(1.5);
+    HistogramRealPeakEnergyDepositMiddle->GetXaxis()->SetRangeUser(0., 1200.);
+        
+    CrosstalkEnergyDepositX->GetYaxis()->SetTitleOffset(1.0);
+    CrosstalkEnergyDepositX->GetXaxis()->SetTitleSize(0.05);
+    CrosstalkEnergyDepositX->GetYaxis()->SetTitleSize(0.05);
     
     Canvas3->cd(1);
     CrosstalkEnergyDepositX->Draw("");
     CrosstalkEnergyDepositMinus1X->Draw("SAME");
     CrosstalkEnergyDepositMiddleX->Draw("SAME");
     
-    TLegend *legend1 = new TLegend(0.65,0.8,0.9,0.9);
+    TLegend *legend1 = new TLegend(0.48,0.6,0.9,0.9);
     legend1->AddEntry(CrosstalkEnergyDepositX,"Stopping Point","l");
     legend1->AddEntry(CrosstalkEnergyDepositMinus1X,"One Cube Backward","l");
     legend1->AddEntry(CrosstalkEnergyDepositMiddleX,"15 Cubes Backward","l");
+    legend1->SetTextSize(0.05);
     legend1->Draw();
+    
+    CrosstalkEnergyDepositY->GetYaxis()->SetTitleOffset(1.0);
+    CrosstalkEnergyDepositY->GetXaxis()->SetTitleSize(0.05);
+    CrosstalkEnergyDepositY->GetYaxis()->SetTitleSize(0.05);
     
     Canvas3->cd(2);
     CrosstalkEnergyDepositY->Draw("");
     CrosstalkEnergyDepositMinus1Y->Draw("SAME");
     CrosstalkEnergyDepositMiddleY->Draw("SAME");
     
-    TLegend *legend2 = new TLegend(0.65,0.8,0.9,0.9);
+    TLegend *legend2 = new TLegend(0.48,0.6,0.9,0.9);
     legend2->AddEntry(CrosstalkEnergyDepositY,"Stopping Point","l");
     legend2->AddEntry(CrosstalkEnergyDepositMinus1Y,"One Cube Backward","l");
     legend2->AddEntry(CrosstalkEnergyDepositMiddleY,"15 Cubes Backward","l");
+    legend2->SetTextSize(0.05);
     legend2->Draw();
+    
+    HistogramRealPeakEnergyDepositMiddle->GetYaxis()->SetTitleOffset(1.0);
+    HistogramRealPeakEnergyDepositMiddle->GetXaxis()->SetTitleSize(0.05);
+    HistogramRealPeakEnergyDepositMiddle->GetYaxis()->SetTitleSize(0.05);
     
     Canvas3->cd(3);
     HistogramRealPeakEnergyDepositMiddle->Draw("");
@@ -352,10 +398,11 @@ void PlotMaker()
     HistogramRealPeakEnergyDepositMinus1->Draw("SAME");
 
     
-    TLegend *legend3 = new TLegend(0.65,0.8,0.9,0.9);
+    TLegend *legend3 = new TLegend(0.65,0.6,1.0,0.9);
     legend3->AddEntry(HistogramRealPeakEnergyDeposit,"Stopping Point","l");
     legend3->AddEntry(HistogramRealPeakEnergyDepositMinus1,"One Cube Backward","l");
     legend3->AddEntry(HistogramRealPeakEnergyDepositMiddle,"15 Cubes Backward","l");
+    legend3->SetTextSize(0.04);
     legend3->Draw();
     
     gPad->Modified();
@@ -375,19 +422,19 @@ void PlotMaker()
     CrosstalkEnergyDepositPercentageY->SetLineWidth(1.5);
     CrosstalkEnergyDepositPercentageY->GetXaxis()->SetRangeUser(0., 20.);
         
-    CrosstalkEnergyPercentageMinus1X->SetLineColorAlpha(kGreen, 1);
+    CrosstalkEnergyPercentageMinus1X->SetLineColorAlpha(kBlue, 1);
     CrosstalkEnergyPercentageMinus1X->SetLineWidth(1.5);
     CrosstalkEnergyPercentageMinus1X->GetXaxis()->SetRangeUser(0., 20.);
         
-    CrosstalkEnergyPercentageMinus1Y->SetLineColorAlpha(kGreen, 1);
+    CrosstalkEnergyPercentageMinus1Y->SetLineColorAlpha(kBlue, 1);
     CrosstalkEnergyPercentageMinus1Y->SetLineWidth(1.5);
     CrosstalkEnergyPercentageMinus1Y->GetXaxis()->SetRangeUser(0., 20.);
         
-    CrosstalkEnergyPercentageMiddleX->SetLineColorAlpha(kBlue, 1);
+    CrosstalkEnergyPercentageMiddleX->SetLineColorAlpha(kGreen, 1);
     CrosstalkEnergyPercentageMiddleX->SetLineWidth(1.5);
     CrosstalkEnergyPercentageMiddleX->GetXaxis()->SetRangeUser(0., 20.);
         
-    CrosstalkEnergyPercentageMiddleY->SetLineColorAlpha(kBlue, 1);
+    CrosstalkEnergyPercentageMiddleY->SetLineColorAlpha(kGreen, 1);
     CrosstalkEnergyPercentageMiddleY->SetLineWidth(1.5);
     CrosstalkEnergyPercentageMiddleY->GetXaxis()->SetRangeUser(0., 20.);
     
@@ -422,29 +469,41 @@ void PlotMaker()
     CloneMinus1ercentageY->Scale(norma/normalizacja[4]);
     CloneMiddlercentageY->Scale(norma/normalizacja[5]);
     
+    CrosstalkEnergyDepositPercentageX->GetYaxis()->SetTitleOffset(1.0);
+    CrosstalkEnergyDepositPercentageX->GetXaxis()->SetTitleSize(0.05);
+    CrosstalkEnergyDepositPercentageX->GetYaxis()->SetTitleSize(0.05);
+    
     Canvas4->cd(1);
     CrosstalkEnergyDepositPercentageX->Draw("");
     CrosstalkEnergyPercentageMiddleX->Draw("SAME");
     CrosstalkEnergyPercentageMinus1X->Draw("SAME");
 
-    
-    TLegend *legend11 = new TLegend(0.65,0.8,0.9,0.9);
+    TLegend *legend11 = new TLegend(0.48,0.6,0.9,0.9);
     legend11->AddEntry(CrosstalkEnergyDepositPercentageX,"Stopping Point","l");
     legend11->AddEntry(CrosstalkEnergyPercentageMinus1X,"One Cube Backward","l");
     legend11->AddEntry(CrosstalkEnergyPercentageMiddleX,"15 Cubes Backward","l");
+    legend11->SetTextSize(0.05);
     legend11->Draw();
+    
+    CrosstalkEnergyDepositPercentageY->GetYaxis()->SetTitleOffset(1.0);
+    CrosstalkEnergyDepositPercentageY->GetXaxis()->SetTitleSize(0.05);
+    CrosstalkEnergyDepositPercentageY->GetYaxis()->SetTitleSize(0.05);
     
     Canvas4->cd(2);
     CrosstalkEnergyDepositPercentageY->Draw("");
     CrosstalkEnergyPercentageMiddleY->Draw("SAME");
     CrosstalkEnergyPercentageMinus1Y->Draw("SAME");
 
-    
-    TLegend *legend12 = new TLegend(0.65,0.8,0.9,0.9);
+    TLegend *legend12 = new TLegend(0.48,0.6,0.9,0.9);
     legend12->AddEntry(CrosstalkEnergyDepositPercentageY,"Stopping Point","l");
     legend12->AddEntry(CrosstalkEnergyPercentageMinus1Y,"One Cube Backward","l");
     legend12->AddEntry(CrosstalkEnergyPercentageMiddleY,"15 Cubes Backward","l");
+    legend12->SetTextSize(0.05);
     legend12->Draw();
+    
+    CloneMiddlercentageX->GetYaxis()->SetTitleOffset(1.0);
+    CloneMiddlercentageX->GetXaxis()->SetTitleSize(0.05);
+    CloneMiddlercentageX->GetYaxis()->SetTitleSize(0.05);
     
     Canvas4->cd(3);
     CloneMiddlercentageX->Draw("");
@@ -452,21 +511,27 @@ void PlotMaker()
     CloneMinus1ercentageX->Draw("SAME");
     
     
-    TLegend *legend13 = new TLegend(0.65,0.8,0.9,0.9);
+    TLegend *legend13 = new TLegend(0.48,0.6,0.9,0.9);
     legend13->AddEntry(CloneStoppingPercentageX,"Stopping Point","l");
     legend13->AddEntry(CloneMinus1ercentageX,"One Cube Backward","l");
     legend13->AddEntry(CloneMiddlercentageX,"15 Cubes Backward","l");
+    legend13->SetTextSize(0.05);
     legend13->Draw();
+    
+    CloneStoppingPercentageY->GetYaxis()->SetTitleOffset(1.0);
+    CloneStoppingPercentageY->GetXaxis()->SetTitleSize(0.05);
+    CloneStoppingPercentageY->GetYaxis()->SetTitleSize(0.05);
     
     Canvas4->cd(4);
     CloneStoppingPercentageY->Draw("");
     CloneMinus1ercentageY->Draw("SAME");
     CloneMiddlercentageY->Draw("SAME");
     
-    TLegend *legend14 = new TLegend(0.65,0.8,0.9,0.9);
+    TLegend *legend14 = new TLegend(0.48,0.6,0.9,0.9);
     legend14->AddEntry(CloneStoppingPercentageY,"Stopping Point","l");
     legend14->AddEntry(CloneMinus1ercentageY,"One Cube Backward","l");
     legend14->AddEntry(CloneMiddlercentageY,"15 Cubes Backward","l");
+    legend14->SetTextSize(0.05);
     legend14->Draw();
     
     gPad->Modified();
@@ -558,7 +623,7 @@ void PlotMaker()
     
     //////////////////
     TCanvas *Canvas7 = new TCanvas("Canvas7","Canvas7", 1400, 1000);
-    Canvas7->Divide(2,1);
+    Canvas7->Divide(2,2);
     
     for(int i=0;i<=5;i++)
     {
@@ -596,26 +661,36 @@ void PlotMaker()
     HistogramCrosstalkDistanceMiddleY->SetLineColorAlpha(kGreen, 1);
     HistogramCrosstalkDistanceMiddleY->SetLineWidth(1.5);
     
+    HistogramCrosstalkDistanceMiddleX->GetYaxis()->SetTitleOffset(1.0);
+    HistogramCrosstalkDistanceMiddleX->GetXaxis()->SetTitleSize(0.05);
+    HistogramCrosstalkDistanceMiddleX->GetYaxis()->SetTitleSize(0.05);
+    
     Canvas7->cd(1);
     HistogramCrosstalkDistanceMiddleX->Draw("");
     HistogramCrosstalkDistanceMinus1X->Draw("SAME");
     HistogramCrosstalkDistanceX->Draw("SAME");
         
-    TLegend *legend31 = new TLegend(0.65,0.8,0.9,0.9);
+    TLegend *legend31 = new TLegend(0.1,0.6,0.40,0.9);
     legend31->AddEntry(HistogramCrosstalkDistanceX,"Stopping Point","l");
     legend31->AddEntry(HistogramCrosstalkDistanceMinus1X,"One Cube Backward","l");
     legend31->AddEntry(HistogramCrosstalkDistanceMiddleX,"15 Cubes Backward","l");
+    legend31->SetTextSize(0.03);
     legend31->Draw();
+    
+    HistogramCrosstalkDistanceMiddleY->GetYaxis()->SetTitleOffset(1.0);
+    HistogramCrosstalkDistanceMiddleY->GetXaxis()->SetTitleSize(0.05);
+    HistogramCrosstalkDistanceMiddleY->GetYaxis()->SetTitleSize(0.05);
     
     Canvas7->cd(2);
     HistogramCrosstalkDistanceMiddleY->Draw("");
     HistogramCrosstalkDistanceMinus1Y->Draw("SAME");
     HistogramCrosstalkDistanceY->Draw("SAME");
         
-    TLegend *legend32 = new TLegend(0.65,0.8,0.9,0.9);
+    TLegend *legend32 = new TLegend(0.1,0.6,0.40,0.9);
     legend32->AddEntry(HistogramCrosstalkDistanceY,"Stopping Point","l");
     legend32->AddEntry(HistogramCrosstalkDistanceMinus1Y,"One Cube Backward","l");
     legend32->AddEntry(HistogramCrosstalkDistanceMiddleY,"15 Cubes Backward","l");
+    legend32->SetTextSize(0.03);
     legend32->Draw();
     
     gPad->Modified();
@@ -1041,48 +1116,68 @@ void PlotMaker()
     CrosstalkEnergyDepositMiddleTwoCubesY->SetLineColorAlpha(kGreen, 1);
     CrosstalkEnergyDepositMiddleTwoCubesY->SetLineWidth(1.5);
         
+    CrosstalkEnergyDepositOneCubeX->GetYaxis()->SetTitleOffset(1.0);
+    CrosstalkEnergyDepositOneCubeX->GetXaxis()->SetTitleSize(0.05);
+    CrosstalkEnergyDepositOneCubeX->GetYaxis()->SetTitleSize(0.05);
+    
     Canvas12->cd(1);
     CrosstalkEnergyDepositOneCubeX->Draw("");
     CrosstalkEnergyDepositMinus1OneCubeX->Draw("SAME");
     CrosstalkEnergyDepositMiddleOneCubeX->Draw("SAME");
     
-    TLegend *legend71 = new TLegend(0.65,0.8,0.9,0.9);
+    TLegend *legend71 = new TLegend(0.48,0.6,0.9,0.9);
     legend71->AddEntry(CrosstalkEnergyDepositOneCubeX,"Stopping Point","l");
     legend71->AddEntry(CrosstalkEnergyDepositMinus1OneCubeX,"One Cube Backward","l");
     legend71->AddEntry(CrosstalkEnergyDepositMiddleOneCubeX,"15 Cubes Backward","l");
+    legend71->SetTextSize(0.05);
     legend71->Draw();
+    
+    CrosstalkEnergyDepositOneCubeY->GetYaxis()->SetTitleOffset(1.0);
+    CrosstalkEnergyDepositOneCubeY->GetXaxis()->SetTitleSize(0.05);
+    CrosstalkEnergyDepositOneCubeY->GetYaxis()->SetTitleSize(0.05);
     
     Canvas12->cd(2);
     CrosstalkEnergyDepositOneCubeY->Draw("");
     CrosstalkEnergyDepositMinus1OneCubeY->Draw("SAME");
     CrosstalkEnergyDepositMiddleOneCubeY->Draw("SAME");
     
-    TLegend *legend72 = new TLegend(0.65,0.8,0.9,0.9);
+    TLegend *legend72 = new TLegend(0.48,0.6,0.9,0.9);
     legend72->AddEntry(CrosstalkEnergyDepositOneCubeY,"Stopping Point","l");
     legend72->AddEntry(CrosstalkEnergyDepositMinus1OneCubeY,"One Cube Backward","l");
     legend72->AddEntry(CrosstalkEnergyDepositMiddleOneCubeY,"15 Cubes Backward","l");
+    legend72->SetTextSize(0.05);
     legend72->Draw();
+    
+    CrosstalkEnergyDepositTwoCubesX->GetYaxis()->SetTitleOffset(1.0);
+    CrosstalkEnergyDepositTwoCubesX->GetXaxis()->SetTitleSize(0.05);
+    CrosstalkEnergyDepositTwoCubesX->GetYaxis()->SetTitleSize(0.05);
     
     Canvas12->cd(3);
     CrosstalkEnergyDepositTwoCubesX->Draw("");
     CrosstalkEnergyDepositMinus1TwoCubesX->Draw("SAME");
     CrosstalkEnergyDepositMiddleTwoCubesX->Draw("SAME");
     
-    TLegend *legend73 = new TLegend(0.65,0.8,0.9,0.9);
+    TLegend *legend73 = new TLegend(0.48,0.6,0.9,0.9);
     legend73->AddEntry(CrosstalkEnergyDepositTwoCubesX,"Stopping Point","l");
     legend73->AddEntry(CrosstalkEnergyDepositMinus1TwoCubesX,"One Cube Backward","l");
     legend73->AddEntry(CrosstalkEnergyDepositMiddleTwoCubesX,"15 Cubes Backward","l");
+    legend73->SetTextSize(0.05);
     legend73->Draw();
+    
+    CrosstalkEnergyDepositTwoCubesY->GetYaxis()->SetTitleOffset(1.0);
+    CrosstalkEnergyDepositTwoCubesY->GetXaxis()->SetTitleSize(0.05);
+    CrosstalkEnergyDepositTwoCubesY->GetYaxis()->SetTitleSize(0.05);
     
     Canvas12->cd(4);
     CrosstalkEnergyDepositTwoCubesY->Draw("");
     CrosstalkEnergyDepositMinus1TwoCubesY->Draw("SAME");
     CrosstalkEnergyDepositMiddleTwoCubesY->Draw("SAME");
     
-    TLegend *legend74 = new TLegend(0.65,0.8,0.9,0.9);
+    TLegend *legend74 = new TLegend(0.48,0.6,0.9,0.9);
     legend74->AddEntry(CrosstalkEnergyDepositTwoCubesY,"Stopping Point","l");
     legend74->AddEntry(CrosstalkEnergyDepositMinus1TwoCubesY,"One Cube Backward","l");
     legend74->AddEntry(CrosstalkEnergyDepositMiddleTwoCubesY,"15 Cubes Backward","l");
+    legend74->SetTextSize(0.05);
     legend74->Draw();
     
     gPad->Modified();
@@ -1122,19 +1217,19 @@ void PlotMaker()
     CrosstalkEnergyDepositPercentageTwoCubesX->SetLineWidth(1.5);
     CrosstalkEnergyDepositPercentageTwoCubesX->GetXaxis()->SetRangeUser(0., 20.);
     
-    CrosstalkEnergyDepositPercentageTwoCubesY->SetLineColorAlpha(kBlue, 1);
+    CrosstalkEnergyDepositPercentageTwoCubesY->SetLineColorAlpha(kRed, 1);
     CrosstalkEnergyDepositPercentageTwoCubesY->SetLineWidth(1.5);
     CrosstalkEnergyDepositPercentageTwoCubesY->GetXaxis()->SetRangeUser(0., 20.);
     
-    CrosstalkEnergyPercentageMinus1TwoCubesX->SetLineColorAlpha(kGreen, 1);
+    CrosstalkEnergyPercentageMinus1TwoCubesX->SetLineColorAlpha(kBlue, 1);
     CrosstalkEnergyPercentageMinus1TwoCubesX->SetLineWidth(1.5);
     CrosstalkEnergyPercentageMinus1TwoCubesX->GetXaxis()->SetRangeUser(0., 20.);
     
-    CrosstalkEnergyPercentageMinus1TwoCubesY->SetLineColorAlpha(kRed, 1);
+    CrosstalkEnergyPercentageMinus1TwoCubesY->SetLineColorAlpha(kBlue, 1);
     CrosstalkEnergyPercentageMinus1TwoCubesY->SetLineWidth(1.5);
     CrosstalkEnergyPercentageMinus1TwoCubesY->GetXaxis()->SetRangeUser(0., 20.);
     
-    CrosstalkEnergyPercentageMiddleTwoCubesX->SetLineColorAlpha(kBlue, 1);
+    CrosstalkEnergyPercentageMiddleTwoCubesX->SetLineColorAlpha(kGreen, 1);
     CrosstalkEnergyPercentageMiddleTwoCubesX->SetLineWidth(1.5);
     CrosstalkEnergyPercentageMiddleTwoCubesX->GetXaxis()->SetRangeUser(0., 20.);
     
@@ -1157,7 +1252,7 @@ void PlotMaker()
         normalizacja2[4]+=CrosstalkEnergyPercentageMinus1OneCubeY->GetBinContent(i);
         normalizacja2[5]+=CrosstalkEnergyPercentageMiddleOneCubeY->GetBinContent(i);
     }
-    int binowanie=CrosstalkEnergyDepositPercentageOneCubeX->GetNbinsX();
+    int binowanie=CrosstalkEnergyDepositPercentageTwoCubesX->GetNbinsX();
     for(int i=1;i<=binowanie;i++)
     {
         normalizacja2[6]+=CrosstalkEnergyDepositPercentageTwoCubesX->GetBinContent(i);
@@ -1183,49 +1278,69 @@ void PlotMaker()
     CrosstalkEnergyPercentageMinus1TwoCubesY->Scale(norma/normalizacja2[10]);
     CrosstalkEnergyPercentageMiddleTwoCubesY->Scale(norma/normalizacja2[11]);
 
+    CrosstalkEnergyPercentageMinus1OneCubeX->GetYaxis()->SetTitleOffset(1.0);
+    CrosstalkEnergyPercentageMinus1OneCubeX->GetXaxis()->SetTitleSize(0.05);
+    CrosstalkEnergyPercentageMinus1OneCubeX->GetYaxis()->SetTitleSize(0.05);
+    
     Canvas13->cd(1);
     CrosstalkEnergyPercentageMinus1OneCubeX->Draw("");
     CrosstalkEnergyDepositPercentageOneCubeX->Draw("SAME");
     CrosstalkEnergyPercentageMiddleOneCubeX->Draw("SAME");
     
-    TLegend *legend81 = new TLegend(0.65,0.8,0.9,0.9);
+    TLegend *legend81 = new TLegend(0.48,0.6,0.9,0.9);
     legend81->AddEntry(CrosstalkEnergyDepositPercentageOneCubeX,"Stopping Point","l");
     legend81->AddEntry(CrosstalkEnergyPercentageMinus1OneCubeX,"One Cube Backward","l");
     legend81->AddEntry(CrosstalkEnergyPercentageMiddleOneCubeX,"15 Cubes Backward","l");
+    legend81->SetTextSize(0.05);
     legend81->Draw();
+    
+    CrosstalkEnergyDepositPercentageOneCubeY->GetYaxis()->SetTitleOffset(1.0);
+    CrosstalkEnergyDepositPercentageOneCubeY->GetXaxis()->SetTitleSize(0.05);
+    CrosstalkEnergyDepositPercentageOneCubeY->GetYaxis()->SetTitleSize(0.05);
     
     Canvas13->cd(2);
     CrosstalkEnergyDepositPercentageOneCubeY->Draw("");
     CrosstalkEnergyPercentageMinus1OneCubeY->Draw("SAME");
     CrosstalkEnergyPercentageMiddleOneCubeY->Draw("SAME");
     
-    TLegend *legend82 = new TLegend(0.65,0.8,0.9,0.9);
+    TLegend *legend82 = new TLegend(0.48,0.6,0.9,0.9);
     legend82->AddEntry(CrosstalkEnergyDepositPercentageOneCubeY,"Stopping Point","l");
     legend82->AddEntry(CrosstalkEnergyPercentageMinus1OneCubeY,"One Cube Backward","l");
     legend82->AddEntry(CrosstalkEnergyPercentageMiddleOneCubeY,"15 Cubes Backward","l");
+    legend82->SetTextSize(0.05);
     legend82->Draw();
+    
+    CrosstalkEnergyDepositPercentageTwoCubesX->GetYaxis()->SetTitleOffset(1.0);
+    CrosstalkEnergyDepositPercentageTwoCubesX->GetXaxis()->SetTitleSize(0.05);
+    CrosstalkEnergyDepositPercentageTwoCubesX->GetYaxis()->SetTitleSize(0.05);
     
     Canvas13->cd(3);
     CrosstalkEnergyDepositPercentageTwoCubesX->Draw("");
     CrosstalkEnergyPercentageMinus1TwoCubesX->Draw("SAME");
     CrosstalkEnergyPercentageMiddleTwoCubesX->Draw("SAME");
     
-    TLegend *legend81 = new TLegend(0.65,0.8,0.9,0.9);
-    legend81->AddEntry(CrosstalkEnergyDepositPercentageTwoCubesX,"Stopping Point","l");
-    legend81->AddEntry(CrosstalkEnergyPercentageMinus1TwoCubesX,"One Cube Backward","l");
-    legend81->AddEntry(CrosstalkEnergyPercentageMiddleTwoCubesX,"15 Cubes Backward","l");
-    legend81->Draw();
+    TLegend *legend83 = new TLegend(0.48,0.6,0.9,0.9);
+    legend83->AddEntry(CrosstalkEnergyDepositPercentageTwoCubesX,"Stopping Point","l");
+    legend83->AddEntry(CrosstalkEnergyPercentageMinus1TwoCubesX,"One Cube Backward","l");
+    legend83->AddEntry(CrosstalkEnergyPercentageMiddleTwoCubesX,"15 Cubes Backward","l");
+    legend83->SetTextSize(0.05);
+    legend83->Draw();
+    
+    CrosstalkEnergyDepositPercentageTwoCubesY->GetYaxis()->SetTitleOffset(1.0);
+    CrosstalkEnergyDepositPercentageTwoCubesY->GetXaxis()->SetTitleSize(0.05);
+    CrosstalkEnergyDepositPercentageTwoCubesY->GetYaxis()->SetTitleSize(0.05);
     
     Canvas13->cd(4);
     CrosstalkEnergyDepositPercentageTwoCubesY->Draw("");
     CrosstalkEnergyPercentageMinus1TwoCubesY->Draw("SAME");
     CrosstalkEnergyPercentageMiddleTwoCubesY->Draw("SAME");
     
-    TLegend *legend82 = new TLegend(0.65,0.8,0.9,0.9);
-    legend82->AddEntry(CrosstalkEnergyDepositPercentageTwoCubesY,"Stopping Point","l");
-    legend82->AddEntry(CrosstalkEnergyPercentageMinus1TwoCubesY,"One Cube Backward","l");
-    legend82->AddEntry(CrosstalkEnergyPercentageMiddleTwoCubesY,"15 Cubes Backward","l");
-    legend82->Draw();
+    TLegend *legend84 = new TLegend(0.48,0.6,0.9,0.9);
+    legend84->AddEntry(CrosstalkEnergyDepositPercentageTwoCubesY,"Stopping Point","l");
+    legend84->AddEntry(CrosstalkEnergyPercentageMinus1TwoCubesY,"One Cube Backward","l");
+    legend84->AddEntry(CrosstalkEnergyPercentageMiddleTwoCubesY,"15 Cubes Backward","l");
+    legend84->SetTextSize(0.05);
+    legend84->Draw();
     
     gPad->Modified();
     Canvas13->Print("/Users/kolos/Desktop/Studia/CIS/Output/CrosstalkPercentageDistance.pdf");  
@@ -1280,7 +1395,7 @@ void PlotMaker()
     
     ///////////////
     TCanvas *Canvas15 = new TCanvas("Canvas15","Canvas15", 1400, 1000);
-    Canvas15->Divide(3,1);
+    Canvas15->Divide(3,2);
     
     CrosstalkEnergyDepositOneCubeX->SetLineColorAlpha(kRed, 1);
     CrosstalkEnergyDepositMinus1OneCubeX->SetLineColorAlpha(kRed, 1);
@@ -1321,31 +1436,49 @@ void PlotMaker()
     CrosstalkEnergyDepositMinus1TwoCubesX->Scale(normalization[1]/normalizacja[4]);
     CrosstalkEnergyDepositMiddleTwoCubesX->Scale(normalization[2]/normalizacja[5]);
     
-    Canvas15->cd(1);
-    CrosstalkEnergyDepositOneCubeX->Draw("");
-    CrosstalkEnergyDepositTwoCubesX->Draw("SAME");
+    CrosstalkEnergyDepositTwoCubesX->GetYaxis()->SetTitleOffset(1.0);
+    CrosstalkEnergyDepositTwoCubesX->GetXaxis()->SetTitleSize(0.05);
+    CrosstalkEnergyDepositTwoCubesX->GetYaxis()->SetTitleSize(0.05);
     
-    TLegend *legend101 = new TLegend(0.65,0.8,0.9,0.9);
+    Canvas15->cd(1);
+    CrosstalkEnergyDepositTwoCubesX->Draw("");
+    CrosstalkEnergyDepositOneCubeX->Draw("SAME");
+    
+    
+    TLegend *legend101 = new TLegend(0.48,0.75,0.9,0.9);
     legend101->AddEntry(CrosstalkEnergyDepositOneCubeX,"First Cube","l");
     legend101->AddEntry(CrosstalkEnergyDepositTwoCubesX,"Second Cube","l");
+    legend101->SetTextSize(0.05);
     legend101->Draw();
     
-    Canvas15->cd(2);
-    CrosstalkEnergyDepositMinus1OneCubeX->Draw("");
-    CrosstalkEnergyDepositMinus1TwoCubesX->Draw("SAME");
+    CrosstalkEnergyDepositMinus1TwoCubesX->GetYaxis()->SetTitleOffset(1.0);
+    CrosstalkEnergyDepositMinus1TwoCubesX->GetXaxis()->SetTitleSize(0.05);
+    CrosstalkEnergyDepositMinus1TwoCubesX->GetYaxis()->SetTitleSize(0.05);
     
-    TLegend *legend102 = new TLegend(0.65,0.8,0.9,0.9);
+    Canvas15->cd(2);
+    CrosstalkEnergyDepositMinus1TwoCubesX->Draw("");
+    CrosstalkEnergyDepositMinus1OneCubeX->Draw("SAME");
+    
+    
+    TLegend *legend102 = new TLegend(0.48,0.75,0.9,0.9);
     legend102->AddEntry(CrosstalkEnergyDepositMinus1OneCubeX,"First Cube","l");
     legend102->AddEntry(CrosstalkEnergyDepositMinus1TwoCubesX,"Second Cube","l");
+    legend102->SetTextSize(0.05);
     legend102->Draw();
     
-    Canvas15->cd(3);
-    CrosstalkEnergyDepositMiddleOneCubeX->Draw("");
-    CrosstalkEnergyDepositMiddleTwoCubesX->Draw("SAME");
+    CrosstalkEnergyDepositMiddleTwoCubesX->GetYaxis()->SetTitleOffset(1.0);
+    CrosstalkEnergyDepositMiddleTwoCubesX->GetXaxis()->SetTitleSize(0.05);
+    CrosstalkEnergyDepositMiddleTwoCubesX->GetYaxis()->SetTitleSize(0.05);
     
-    TLegend *legend103 = new TLegend(0.65,0.8,0.9,0.9);
+    Canvas15->cd(3);
+    CrosstalkEnergyDepositMiddleTwoCubesX->Draw("");
+    CrosstalkEnergyDepositMiddleOneCubeX->Draw("SAME");
+    
+    
+    TLegend *legend103 = new TLegend(0.48,0.75,0.9,0.9);
     legend103->AddEntry(CrosstalkEnergyDepositMiddleOneCubeX,"First Cube","l");
     legend103->AddEntry(CrosstalkEnergyDepositMiddleTwoCubesX,"Second Cube","l");
+    legend103->SetTextSize(0.05);
     legend103->Draw();
     
     gPad->Modified();

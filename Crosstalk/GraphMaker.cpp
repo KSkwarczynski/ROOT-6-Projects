@@ -517,6 +517,7 @@ void GraphMaker()
     
     PercentageTwoGraphX->Fit("pol0");
     PercentageTwoGraphY->Fit("pol0");
+    TF1 *fukcja4 = PercentageTwoGraphX->GetListOfFunctions()->FindObject("pol0");
     TF1 *fukcja2 = PercentageTwoGraphY->GetListOfFunctions()->FindObject("pol0");
     fukcja2->SetLineColor(4);
     
@@ -541,7 +542,16 @@ void GraphMaker()
     delete Canvas7;
     /////////////
     
-    float XYconverter=(MeanCrosstalkOne[1][0]/MeanCrosstalkOne[0][0]+MeanCrosstalkOne[1][1]/MeanCrosstalkOne[0][1]+MeanCrosstalkOne[1][2]/MeanCrosstalkOne[0][2])/3;
+    float XYconverter=(MeanPercentageOne[1][0]/MeanPercentageOne[0][0]+MeanPercentageOne[1][1]/MeanPercentageOne[0][1]+MeanPercentageOne[1][2]/MeanPercentageOne[0][2])/3;
+    
+    float XYconverterErrorSquared=
+     pow(RMSPercentageOne[1][0]/MeanPercentageOne[0][0],2)+pow(MeanPercentageOne[1][0]*RMSPercentageOne[0][0]/pow(MeanPercentageOne[0][0],2), 2)
+    +pow(RMSPercentageOne[1][1]/MeanPercentageOne[0][1],2)+pow(MeanPercentageOne[1][1]*RMSPercentageOne[0][1]/pow(MeanPercentageOne[0][1],2), 2)
+    +pow(RMSPercentageOne[1][2]/MeanPercentageOne[0][2],2)+pow(MeanPercentageOne[1][2]*RMSPercentageOne[0][2]/pow(MeanPercentageOne[0][2],2), 2);
+    float XYconverterError=sqrt(XYconverterErrorSquared)/3;
+    
+    //cout <<"KURWA"<< XYconverter<<" "<<XYconverterError<<endl;
+    
     TH1F* CrosstalkEnergyDepositTwoCubesX = (TH1F*) file->Get("CrosstalkEnergyDepositTwoCubesX");
     CrosstalkEnergyDepositTwoCubesX->GetYaxis()->SetTitleOffset(1.4);
     TH1F* CrosstalkEnergyDepositMinus1TwoCubesX = (TH1F*) file->Get("CrosstalkEnergyDepositMinus1TwoCubesX");
@@ -572,7 +582,7 @@ void GraphMaker()
         CrosstalkEnergyDepositTwoCubesYConverted->SetBinContent(i*XYconverter, CrosstalkEnergyDepositTwoCubesX->GetBinContent(i));
         CrosstalkEnergyDepositMinus1TwoCubesYConverted->SetBinContent(i*XYconverter, CrosstalkEnergyDepositMinus1TwoCubesX->GetBinContent(i));
         CrosstalkEnergyDepositMiddleTwoCubesYConverted->SetBinContent(i*XYconverter, CrosstalkEnergyDepositMiddleTwoCubesX->GetBinContent(i));
-        cout<<i<<" "<<i*XYconverter<<" "<<CrosstalkEnergyDepositTwoCubesX->GetBinContent(i)<<endl;
+        //cout<<i<<" "<<i*XYconverter<<" "<<CrosstalkEnergyDepositTwoCubesX->GetBinContent(i)<<endl;
         
         PomocniczyDepozyt[0]=0;
         PomocniczyDepozyt[1]=0;
@@ -603,4 +613,44 @@ void GraphMaker()
     Canvas8->Print("/Users/kolos/Desktop/Studia/CIS/OutputGraph/TwoCubesYconverted.pdf");
     delete Canvas8;
     
+    ///////
+    double MeanConvrtedPercentageTwoY[3];//[Z=0,Z-1,Z-15]
+    double RMSConvertedPercentageTwoY[3];//[Z=0,Z-1,Z-15]
+    
+    MeanConvrtedPercentageTwoY[0]=MeanPercentageTwo[0][0]*XYconverter;
+    MeanConvrtedPercentageTwoY[1]=MeanPercentageTwo[0][1]*XYconverter;
+    MeanConvrtedPercentageTwoY[2]=MeanPercentageTwo[0][2]*XYconverter;
+    
+    RMSConvertedPercentageTwoY[0]=sqrt( pow(MeanPercentageTwo[0][0]*XYconverterError,2) + pow(RMSPercentageTwo[0][0]*XYconverter,2) );
+    RMSConvertedPercentageTwoY[1]=sqrt( pow(MeanPercentageTwo[0][1]*XYconverterError,2) + pow(RMSPercentageTwo[0][1]*XYconverter,2) );
+    RMSConvertedPercentageTwoY[2]=sqrt( pow(MeanPercentageTwo[0][2]*XYconverterError,2) + pow(RMSPercentageTwo[0][2]*XYconverter,2) );
+    
+    
+    TGraphErrors* PercentageConvertedTwoGraphY = new TGraphErrors(3, Distance, MeanConvrtedPercentageTwoY, 0, RMSConvertedPercentageTwoY);
+    PercentageConvertedTwoGraphY->GetXaxis()->SetRangeUser(-2,24);
+    PercentageConvertedTwoGraphY->SetLineColor(kBlue);
+    PercentageConvertedTwoGraphY->SetLineWidth(2);
+    PercentageConvertedTwoGraphY->SetMarkerStyle(20);
+    PercentageConvertedTwoGraphY->SetMarkerSize(1);
+    PercentageConvertedTwoGraphY->SetMarkerColor(kBlue);
+    
+    PercentageConvertedTwoGraphY->Fit("pol0");
+    TF1 *fukcja3 = PercentageConvertedTwoGraphY->GetListOfFunctions()->FindObject("pol0");
+    fukcja3->SetLineColor(4);
+     
+    TCanvas *Canvas9 = new TCanvas("Canvas9","Canvas9", 1400, 1000);
+    
+    fukcja4->Draw("");
+    fukcja3->Draw("SAME");
+    fukcja4->GetXaxis()->SetTitle("Position from stopping point [cm]");
+    fukcja4->GetYaxis()->SetTitle("Percentage %");
+    fukcja4->GetYaxis()->SetRangeUser(0,4);
+    gPad->Modified();
+
+    auto legend10 = new TLegend(0.65,0.8,0.9,0.9);
+    legend10->AddEntry(fukcja4,"X Axis","l");
+    legend10->AddEntry(fukcja3,"Y Axis","l");
+    legend10->Draw();
+    
+    Canvas9->Print("/Users/kolos/Desktop/Studia/CIS/OutputGraph/PercentageConvertedTwoGraph.pdf");
 }
