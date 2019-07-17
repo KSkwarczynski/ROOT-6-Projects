@@ -37,5 +37,7 @@ if    (ROOT_FOUND)
   ADD_EXECUTABLE(Crosstalk                          CrosstalkStudy.cpp)
   TARGET_LINK_LIBRARIES(Crosstalk                   BabyMINDUnpack ${ROOT_LIBRARIES})
 
+  ADD_EXECUTABLE(MuonCrosstalk                      MuonCrosstalk.cpp)
+  TARGET_LINK_LIBRARIES(MuonCrosstalk               BabyMINDUnpack ${ROOT_LIBRARIES})
   
 endif (ROOT_FOUND)
