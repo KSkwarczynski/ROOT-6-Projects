@@ -15,7 +15,7 @@ void GraphMaker()
     gStyle->SetOptStat(0);
     
     char filename[200];
-    sprintf(filename,"/Users/kolos/Desktop/Studia/CIS/Data/MergedCrosstalk.root");
+    sprintf(filename,"/Users/kolos/Desktop/Studia/CIS/Crosstalk/StoppingProton/Data/MergedCrosstalk.root");
     TFile *file = new TFile(filename,"READ");
     if ( file->IsOpen() )
     {
