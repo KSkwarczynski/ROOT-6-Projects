@@ -69,7 +69,6 @@ int main ()
     string rootFileInput=GetLocation(vFileNames[0].c_str());
     string rootFileOutput=GetLocation (vFileNames[0].c_str());
     rootFileInput+="_all_reconstructed.root";
-    //rootFileInput+="_all.root";
     rootFileOutput+="_MuonCrosstalk.root";
     cout << rootFileInput<<endl;
     
@@ -117,7 +116,6 @@ int main ()
         FEBtree[ih] = (TTree*)FileInput->Get(sFEB.c_str());
         if ((TTree*)FileInput->Get(sFEB.c_str()))
         {
-            //std::cout<<sFEB<<" ";
             FEBtree[ih]->SetBranchAddress((sFEB+"_SN").c_str(),&FEB[ih].FEBSN);
             FEBtree[ih]->SetBranchAddress((sFEB+"_SpillTag").c_str(),&FEB[ih].SpillTag);
             FEBtree[ih]->SetBranchAddress((sFEB+"_GTrigTag").c_str(),&FEB[ih].GTrigTag);
@@ -175,9 +173,13 @@ int main ()
     TH2F *EventsMap_YZ = new TH2F("All_events_map_YZ","All_events_map_YZ",  48,0,48, 8,0,8);
     TH2F *EventsMap_XZ = new TH2F("All_events_map_XZ","All_events_map_XZ",  24,0,24, 48,0,48);
   
-    TH1F *TrackDeposit = new TH1F("TrackDeposit", "Energy deposit by track",500,0,500);
-    TrackDeposit->GetYaxis()->SetTitle("Number of events");
-    TrackDeposit->GetXaxis()->SetTitle("Energy [p.e.]");
+    TH1F *TrackDepositX = new TH1F("TrackDepositX", "Energy deposit by track X axis",500,0,500);
+    TrackDepositX->GetYaxis()->SetTitle("Number of events");
+    TrackDepositX->GetXaxis()->SetTitle("Energy [p.e.]");
+    
+    TH1F *TrackDepositY = new TH1F("TrackDepositY", "Energy deposit by track Y axis",500,0,500);
+    TrackDepositY->GetYaxis()->SetTitle("Number of events");
+    TrackDepositY->GetXaxis()->SetTitle("Energy [p.e.]");
     
     TH1F *CrosstalkEnergyDepositLeftX = new TH1F("CrosstalkEnergyDepositLeftX", "Crosstalk energy left from track deposit, in X plain",200,0,100);
     CrosstalkEnergyDepositLeftX->GetYaxis()->SetTitle("Number of events");
@@ -197,7 +199,8 @@ int main ()
     
     TDirectory *events2D = wfile.mkdir("events2D");
     TDirectory *Type2D = wfile.mkdir("Type2D");
-    int NumberEvDis = 20000;
+    TDirectory *Energy2D = wfile.mkdir("Energy2D");
+    int NumberEvDis = 20000; //10000
   
     ostringstream sEventnum;
     string sEvent;
@@ -272,7 +275,19 @@ int main ()
         energyX_XZ[ih]->GetYaxis()->SetTitle("Energy deposit [p.e.]");
         energyX_XZ[ih]->GetXaxis()->SetTitle("X axis [cm]");
     }
+    TH1F *energyY_YZ[NumberEvDis];
+    for (Int_t ih=0; ih < NumberEvDis;ih++)
+    {
+        sEventnum.str("");
+        sEventnum << ih;
+        sEvent = "energyY_YZ"+sEventnum.str();
+        energyY_YZ[ih] = new TH1F(sEvent.c_str(),sEvent.c_str(),8,0,8);
+        energyY_YZ[ih]->GetYaxis()->SetTitle("Energy deposit [p.e.]");
+        energyY_YZ[ih]->GetXaxis()->SetTitle("Y axis [cm]");
+    }
     double energyDepZ[48];
+    double energyDepX_XZ[24];
+    double energyDepY_YZ[8];
     
     double energy_XZ[24][48];
     double energy_YZ[48][8];
@@ -293,6 +308,7 @@ int main ()
 
     TCanvas *DisplayCanvas = new TCanvas("DisplayCanvas","DisplayCanvas", 1400, 1000);
     TCanvas *TypeCanvas = new TCanvas("TypeCanvas","TypeCanvas", 1400, 1000);
+    TCanvas *CrossEnergyCanvas = new TCanvas("CrossEnergyCanvas","CrossEnergyCanvas", 1400, 1000);
     bool SpillMised = false;
     for (Int_t subSpill = 0; subSpill<minEn; subSpill++)
     {
@@ -334,11 +350,19 @@ int main ()
                     {
                         energy_XZ[hk][ik]=0;
                         EventType_XZ[hk][ik]=0;
+                        if(ik==0)
+                        {
+                            energyDepX_XZ[ik]=0;
+                        }
                     }
                     for(int hk = 0; hk<8; hk++)
                     {
                        energy_YZ[ik][hk]=0;
                        EventType_YZ[ik][hk]=0;
+                       if(ik==0)
+                        {
+                            energyDepY_YZ=0;
+                        }
                     }
                 }    
                 LargehitTimeDif=0;
@@ -358,7 +382,6 @@ int main ()
                         {
                             LargehitTimeDif = 1; // Mozliwe ze trzeba zmieniec
                         }
-                            
                         if ( FEBs[i] == 0 || FEBs[i] == 16) //Plaszczyzna XY
                         {
                             DepozytPomocniczy=FEB[FEBs[i]].hitCharge_pe->at(check);
@@ -372,8 +395,9 @@ int main ()
                             EventsMap_YZ->Fill(MapCon[FEBs[i]][0][(int)FEB[FEBs[i]].hitsChannel->at(check)],MapCon[FEBs[i]][1][(int)FEB[FEBs[i]].hitsChannel->at(check)], 1);
                             if (DepozytPomocniczy>0 && DepozytPomocniczy<10000 && MapCon[FEBs[i]][0][(int)FEB[FEBs[i]].hitsChannel->at(check)]<48 && MapCon[FEBs[i]][0][(int)FEB[FEBs[i]].hitsChannel->at(check)]>=0 && MapCon[FEBs[i]][1][(int)FEB[FEBs[i]].hitsChannel->at(check)]<8 && MapCon[FEBs[i]][1][(int)FEB[FEBs[i]].hitsChannel->at(check)]>=0)
                             {
-                                energyDepZ[MapCon[FEBs[i]][0][(int)FEB[FEBs[i]].hitsChannel->at(check)]] += DepozytPomocniczy;
+                                energyDepZ[MapCon[FEBs[i]][0][(int)FEB[FEBs[i]].hitsChannel->at(check)]]+=DepozytPomocniczy;
                                 energy_YZ[MapCon[FEBs[i]][0][(int)FEB[FEBs[i]].hitsChannel->at(check)]][MapCon[FEBs[i]][1][(int)FEB[FEBs[i]].hitsChannel->at(check)]]+=DepozytPomocniczy;
+                                energyDepY_YZ[MapCon[FEBs[i]][1][(int)FEB[FEBs[i]].hitsChannel->at(check)]]+=DepozytPomocniczy;
                             }
                         }
                         else //Plaszczyzna XZ
@@ -383,35 +407,31 @@ int main ()
                             EventsMap_XZ->Fill(MapCon[FEBs[i]][0][(int)FEB[FEBs[i]].hitsChannel->at(check)],MapCon[FEBs[i]][1][(int)FEB[FEBs[i]].hitsChannel->at(check)], 1);
                             if (DepozytPomocniczy>0 && DepozytPomocniczy<10000 && MapCon[FEBs[i]][0][(int)FEB[FEBs[i]].hitsChannel->at(check)]<24 && MapCon[FEBs[i]][0][(int)FEB[FEBs[i]].hitsChannel->at(check)]>=0 && MapCon[FEBs[i]][1][(int)FEB[FEBs[i]].hitsChannel->at(check)]<48 && MapCon[FEBs[i]][1][(int)FEB[FEBs[i]].hitsChannel->at(check)]>=0)
                             {
-                                energyDepZ[MapCon[FEBs[i]][1][(int)FEB[FEBs[i]].hitsChannel->at(check)]] += DepozytPomocniczy;
-                                energy_XZ[ MapCon[FEBs[i]][0][(int)FEB[FEBs[i]].hitsChannel->at(check)] ][ MapCon[FEBs[i]][1][(int)FEB[FEBs[i]].hitsChannel->at(check)] ]+=DepozytPomocniczy;
+                                energyDepZ[MapCon[FEBs[i]][1][(int)FEB[FEBs[i]].hitsChannel->at(check)]]+=DepozytPomocniczy;
+                                energy_XZ[MapCon[FEBs[i]][0][(int)FEB[FEBs[i]].hitsChannel->at(check)]][MapCon[FEBs[i]][1][(int)FEB[FEBs[i]].hitsChannel->at(check)]]+=DepozytPomocniczy;
+                                energyDepX_XZ[MapCon[FEBs[i]][0][(int)FEB[FEBs[i]].hitsChannel->at(check)]]+=DepozytPomocniczy;
                             }
                         }
                     }
                 }
             }
         }
-            double MainDepositThreshold=30;     //!!! wartosc testowa pewnie trzeba bedzie zwiekszyc
-            double CrosstalkDepositThreshold=60; //!!! wartosc testowa pewnie trzeba bedzie zwiekszyc
+            double MainDepositThreshold=20; //!!! wartosc testowa pewnie trzeba bedzie zwiekszyc
             int MainDepositCounter=0;
-            int TrackDistance=0; // distance between  main track deposits
-            bool DistanceIsOk=1; //1 means ok, 0 means not ok
+            
+            double Crosstalk[2][2]; //[X or Y][ain value and sigma]
+            Crosstalk[0][0]=2.38; //values insererted from preiuous study on stopping proton
+            Crosstalk[0][1]=0.02;
+            Crosstalk[1][0]=1.42;
+            Crosstalk[1][1]=0.02;
+            int SigmaNumber=40;
             for(int ik = 0; ik < 48; ik++) //searching for muon deposits
             {
                 energy_Z[eventNum]->Fill(ik, energyDepZ[ik]);
-                //TrackDistance=0;
-                //DistanceIsOk=1;
+
                 for(int hk=0; hk<24; hk++)
                 {
-                    /*if(ik>0)
-                    {
-                        TrackDistance=hk-HighestDepositPositionX[ik-1];
-                        if(TrackDistance<-3 || TrackDistance>3)
-                        {
-                           DistanceIsOk=0; 
-                        }
-                    }*/
-                    if(energy_XZ[hk][ik]>HighestDepositEnergyX[ik] /*&& DistanceIsOk==1*/)
+                    if(energy_XZ[hk][ik]>HighestDepositEnergyX[ik])
                     {
                         HighestDepositEnergyX[ik]=energy_XZ[hk][ik];
                         HighestDepositPositionX[ik]=hk;
@@ -422,19 +442,9 @@ int main ()
                     EventType_XZ[HighestDepositPositionX[ik]][ik]=1; //1 means muon deposit
                     MainDepositCounter+=1;
                 }
-                //TrackDistance=0;
-                //DistanceIsOk=1;
                 for(int hk=0; hk<8;hk++)
                 {
-                    /*if(ik>0)
-                    {
-                        TrackDistance=hk-HighestDepositPositionY[ik-1];
-                        if(TrackDistance<-3 || TrackDistance>3)
-                        {
-                           DistanceIsOk=0; 
-                        }
-                    }*/
-                    if(energy_YZ[ik][hk]>HighestDepositEnergyY[ik] /*&& DistanceIsOk==1*/)
+                    if(energy_YZ[ik][hk]>HighestDepositEnergyY[ik])
                     {
                         HighestDepositEnergyY[ik]=energy_YZ[ik][hk];
                         HighestDepositPositionY[ik]=hk;
@@ -446,9 +456,9 @@ int main ()
                     MainDepositCounter+=1;
                 }
             }
-\\\\\\\\\\\\\\\\\\\\\\\\\\Selection_Declaration\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+//////////////////////Selection_Declaration/////////////////
             bool TrackBeginningCut=0; //ciecie usuwajace czastki bez depozytu na poczatku detektora
-            if(energyDepZ[0]>0 || energyDepZ[1]>0 || energyDepZ[2]>0)
+            if(energyDepZ[0]>1 || energyDepZ[1]>1 || energyDepZ[2]>1)
             {
                 TrackBeginningCut=1;
             }
@@ -457,42 +467,51 @@ int main ()
             {
                 energyX_XZ[eventNum]->Fill(ik,energyDepX_XZ[ik]);
             }
+            for(int ik = 0; ik < 8; ik++ )
+            {
+                energyY_YZ[eventNum]->Fill(ik,energyDepY_YZ[ik]);
+            }
             double sigma=0;
             bool sigmaCut=0;
             TF1 *EnergyFitX = new TF1("EnergyFitX", "gaus");
-            energyX_XZ[eventNum]-> Fit(EnergyFitX,"q","",1 , 24);
-            sigma = EnergyFitX->GetParameter(2); // We chosei sigma to get rid of garbage
+            energyX_XZ[eventNum]-> Fit(EnergyFitX,"q","",1 , 23);
+            sigma = EnergyFitX->GetParameter(2); // We chose sigma to get rid of garbage
 
             delete EnergyFitX;
-            if(sigma < 1.0) ///setting value for sigma cut
+            if(sigma < 4) ///setting value for sigma cut, still experimental!!!!
             {
                 sigmaCut=1;
             }
         if(LargehitTimeDif == 0 && MainDepositCounter>40 && TrackBeginningCut==1 && sigmaCut==1)
         {
             int PozycjaPomocnicza=0;
+            double CrosstalkPomocniczy[2]={}; //0 is for + and 1 is for -
             for(int ik = 0; ik < 48; ik++) //assigning events as crosstalk
             {
-                if(HighestDepositEnergyX[ik]>MainDepositThreshold)
+                if(HighestDepositEnergyX[ik]>MainDepositThreshold) //////Checking X axis
                 {
                     PozycjaPomocnicza=HighestDepositPositionX[ik];
-                    if(energy_XZ[PozycjaPomocnicza-1][ik]<CrosstalkDepositThreshold && energy_XZ[PozycjaPomocnicza-1][ik]>1 && PozycjaPomocnicza>0)
+                    CrosstalkPomocniczy[0]=Crosstalk[0][0]+Crosstalk[0][1]*SigmaNumber;
+                    CrosstalkPomocniczy[1]=Crosstalk[0][0]-Crosstalk[0][1]*SigmaNumber;
+                    if(energy_XZ[PozycjaPomocnicza-1][ik]<energy_XZ[PozycjaPomocnicza][ik]*CrosstalkPomocniczy[0]/100 && energy_XZ[PozycjaPomocnicza-1][ik]>energy_XZ[PozycjaPomocnicza][ik]*CrosstalkPomocniczy[1]/100 && PozycjaPomocnicza>0 && energy_XZ[PozycjaPomocnicza-1][ik]>1)
                     {
                         EventType_XZ[PozycjaPomocnicza-1][ik]=-2; //-2 means crosstalk on the left
                     }
-                    if(energy_XZ[PozycjaPomocnicza+1][ik]<CrosstalkDepositThreshold && energy_XZ[PozycjaPomocnicza+1][ik]>1 && PozycjaPomocnicza<23)
+                    if(energy_XZ[PozycjaPomocnicza+1][ik]<energy_XZ[PozycjaPomocnicza][ik]*CrosstalkPomocniczy[0]/100 && energy_XZ[PozycjaPomocnicza+1][ik]>energy_XZ[PozycjaPomocnicza][ik]*CrosstalkPomocniczy[1]/100 && PozycjaPomocnicza<23 && energy_XZ[PozycjaPomocnicza+1][ik]>1)
                     {
                         EventType_XZ[PozycjaPomocnicza+1][ik]=2; //2 means crosstalk on the right
                     }
                 }
-                if(HighestDepositEnergyY[ik]>MainDepositThreshold)
+                if(HighestDepositEnergyY[ik]>MainDepositThreshold) //////Checking Y axis
                 {          
                     PozycjaPomocnicza=HighestDepositPositionY[ik];
-                    if(energy_YZ[ik][PozycjaPomocnicza-1]<CrosstalkDepositThreshold && energy_YZ[ik][PozycjaPomocnicza-1]>1 && PozycjaPomocnicza>0)
+                    CrosstalkPomocniczy[0]=Crosstalk[1][0]+Crosstalk[1][1]*SigmaNumber;
+                    CrosstalkPomocniczy[1]=Crosstalk[1][0]-Crosstalk[1][1]*SigmaNumber;
+                    if(energy_YZ[ik][PozycjaPomocnicza-1]<energy_YZ[ik][PozycjaPomocnicza]*CrosstalkPomocniczy[0]/100 && energy_YZ[ik][PozycjaPomocnicza-1]>energy_YZ[ik][PozycjaPomocnicza]*CrosstalkPomocniczy[1]/100 && PozycjaPomocnicza>0 && energy_YZ[ik][PozycjaPomocnicza-1]>1)
                     {
                         EventType_YZ[ik][PozycjaPomocnicza-1]=-2; //-2 means crosstalk on the left
                     }
-                    if(energy_YZ[ik][PozycjaPomocnicza+1]<CrosstalkDepositThreshold && energy_YZ[ik][PozycjaPomocnicza+1]>1 && PozycjaPomocnicza<7)
+                    if(energy_YZ[ik][PozycjaPomocnicza+1]<energy_YZ[ik][PozycjaPomocnicza]*CrosstalkPomocniczy[0]/100 && energy_YZ[ik][PozycjaPomocnicza+1]>energy_YZ[ik][PozycjaPomocnicza]*CrosstalkPomocniczy[1]/100 && PozycjaPomocnicza<7 && energy_YZ[ik][PozycjaPomocnicza+1]>1)
                     {
                         EventType_YZ[ik][PozycjaPomocnicza+1]=2; //2 means crosstalk on the right
                     }
@@ -505,7 +524,7 @@ int main ()
                     event_type_XZ[eventNum]->Fill(hk, ik, EventType_XZ[hk][ik]);
                     if(EventType_XZ[hk][ik]==1)
                     {
-                        TrackDeposit->Fill(energy_XZ[hk][ik]);
+                        TrackDepositX->Fill(energy_XZ[hk][ik]);
                     }
                     if(EventType_XZ[hk][ik]==-2)
                     {
@@ -521,7 +540,7 @@ int main ()
                     event_type_YZ[eventNum]->Fill(ik, hk, EventType_YZ[ik][hk]);
                     if(EventType_YZ[ik][hk]==1)
                     {
-                        TrackDeposit->Fill(energy_YZ[ik][hk]);
+                        TrackDepositY->Fill(energy_YZ[ik][hk]);
                     }
                     if(EventType_YZ[ik][hk]==-2)
                     {
@@ -535,6 +554,7 @@ int main ()
             }
             DisplayCanvas->Clear();
             TypeCanvas->Clear();
+            CrossEnergyCanvas->Clear();
             
             DisplayCanvas->Divide(2,2);
             DisplayCanvas -> cd(1);
@@ -570,6 +590,17 @@ int main ()
             Type2D -> cd();
             TypeCanvas->Write();
             
+            CrossEnergyCanvas->Divide(2,2);
+            CrossEnergyCanvas -> cd(1);
+            event_XZ[eventNum]-> Draw("colorz");
+        
+            CrossEnergyCanvas -> cd(2);
+            event_YZ[eventNum]-> Draw("colorz");
+           
+            CrossEnergyCanvas->Update();
+            Energy2D -> cd();
+            CrossEnergyCanvas->Write();
+            
             EventCounter++;
             cout<<"Event Counter "<<EventCounter<<" sigma " << sigma <<endl;
         }
@@ -580,6 +611,7 @@ int main ()
         delete event_type_XZ[eventNum];
         delete event_type_YZ[eventNum];
         delete energyX_XZ[eventNum];
+        delete energyY_YZ[eventNum];
         eventNum++;
     }
 }
@@ -611,7 +643,8 @@ int main ()
     EventsMap_YZ->Write();
     EventsMap_XZ->Write();
     
-    TrackDeposit->Write();
+    TrackDepositX->Write();
+    TrackDepositY->Write();
     CrosstalkEnergyDepositLeftX->Write();
     CrosstalkEnergyDepositRightX->Write();
     CrosstalkEnergyDepositLeftY->Write();
