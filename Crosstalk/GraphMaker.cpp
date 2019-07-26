@@ -98,7 +98,7 @@ void GraphMaker()
     legend1->AddEntry(CrosstalkGraphY,"Y Axis","pe");
     legend1->Draw();
     
-    Canvas1->Print("/Users/kolos/Desktop/Studia/CIS/OutputGraph/CrosstalkGraph.pdf");
+    Canvas1->Print("/Users/kolos/Desktop/Studia/CIS/Crosstalk/StoppingProton/OutputGraph/CrosstalkGraph.pdf");
     delete Canvas1;
     //////////////
     
@@ -137,7 +137,7 @@ void GraphMaker()
     gPad->Modified();
     
     
-    Canvas2->Print("/Users/kolos/Desktop/Studia/CIS/OutputGraph/DepositGraph.pdf");
+    Canvas2->Print("/Users/kolos/Desktop/Studia/CIS/Crosstalk/StoppingProton/OutputGraph/DepositGraph.pdf");
     delete Canvas2;
     ////////
     const double SecondRange = 8;
@@ -222,7 +222,7 @@ void GraphMaker()
     legend3->AddEntry(PercentageGraphY,"Y Axis","pe");
     legend3->Draw();
     
-    Canvas3->Print("/Users/kolos/Desktop/Studia/CIS/OutputGraph/PercentageGraph.pdf");
+    Canvas3->Print("/Users/kolos/Desktop/Studia/CIS/Crosstalk/StoppingProton/OutputGraph/PercentageGraph.pdf");
     delete Canvas3;
     //////////
     TH1F* CrosstalkEnergyDepositOneCubeX = (TH1F*) file->Get("CrosstalkEnergyDepositOneCubeX");
@@ -297,7 +297,7 @@ void GraphMaker()
     legend4->AddEntry(CrosstalkOneGraphY,"Y Axis","pe");
     legend4->Draw();
     
-    Canvas4->Print("/Users/kolos/Desktop/Studia/CIS/OutputGraph/CrosstalkOneGraph.pdf");
+    Canvas4->Print("/Users/kolos/Desktop/Studia/CIS/Crosstalk/StoppingProton/OutputGraph/CrosstalkOneGraph.pdf");
     delete Canvas4;
     /////////
     TH1F* CrosstalkEnergyDepositTwoCubesX = (TH1F*) file->Get("CrosstalkEnergyDepositTwoCubesX");
@@ -372,7 +372,7 @@ void GraphMaker()
     legend5->AddEntry(CrosstalkTwoGraphY,"Y Axis","pe");
     legend5->Draw();
     
-    Canvas5->Print("/Users/kolos/Desktop/Studia/CIS/OutputGraph/CrosstalkTwoGraph.pdf");
+    Canvas5->Print("/Users/kolos/Desktop/Studia/CIS/Crosstalk/StoppingProton/OutputGraph/CrosstalkTwoGraph.pdf");
     delete Canvas5;
     delete CrosstalkEnergyDepositTwoCubesX;
     delete CrosstalkEnergyDepositTwoCubesY;
@@ -456,7 +456,7 @@ void GraphMaker()
     legend6->AddEntry(PercentageOneGraphY,"Y Axis","pe");
     legend6->Draw();
     
-    Canvas6->Print("/Users/kolos/Desktop/Studia/CIS/OutputGraph/PercentageOneGraph.pdf");
+    Canvas6->Print("/Users/kolos/Desktop/Studia/CIS/Crosstalk/StoppingProton/OutputGraph/PercentageOneGraph.pdf");
     delete Canvas6;
     ///////
     TH1F* CrosstalkEnergyDepositPercentageTwoCubesX = (TH1F*) file->Get("CrosstalkEnergyDepositPercentageTwoCubesX");
@@ -538,7 +538,7 @@ void GraphMaker()
     legend7->AddEntry(PercentageTwoGraphY,"Y Axis","pe");
     legend7->Draw();
     
-    Canvas7->Print("/Users/kolos/Desktop/Studia/CIS/OutputGraph/PercentageTwoGraph.pdf");
+    Canvas7->Print("/Users/kolos/Desktop/Studia/CIS/Crosstalk/StoppingProton/OutputGraph/PercentageTwoGraph.pdf");
     delete Canvas7;
     /////////////
     
@@ -610,7 +610,7 @@ void GraphMaker()
     legend9->AddEntry(CrosstalkEnergyDepositMiddleTwoCubesYConverted,"15 Cubes Backward","l");
     legend9->Draw();
     
-    Canvas8->Print("/Users/kolos/Desktop/Studia/CIS/OutputGraph/TwoCubesYconverted.pdf");
+    Canvas8->Print("/Users/kolos/Desktop/Studia/CIS/Crosstalk/StoppingProton/OutputGraph/TwoCubesYconverted.pdf");
     delete Canvas8;
     
     ///////
@@ -652,5 +652,5 @@ void GraphMaker()
     legend10->AddEntry(fukcja3,"Y Axis","l");
     legend10->Draw();
     
-    Canvas9->Print("/Users/kolos/Desktop/Studia/CIS/OutputGraph/PercentageConvertedTwoGraph.pdf");
+    Canvas9->Print("/Users/kolos/Desktop/Studia/CIS/Crosstalk/StoppingProton/OutputGraph/PercentageConvertedTwoGraph.pdf");
 }

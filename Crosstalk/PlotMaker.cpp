@@ -292,7 +292,7 @@ void PlotMaker()
     EnergyTrigTimeSignalY->Draw("COLZ");
     
     gPad->Modified();
-    Canvas->Print("/Users/kolos/Desktop/Studia/CIS/Output/TimeTriggerEnergy.pdf");
+    Canvas->Print("/Users/kolos/Desktop/Studia/CIS/Crosstalk/StoppingProton/Output/TimeTriggerEnergy.pdf");
     delete Canvas;
 ////////////////////////////////
     TCanvas *Canvas2 = new TCanvas("Canvas2","Canvas2", 1400, 1000);
@@ -312,7 +312,7 @@ void PlotMaker()
     EnergyTrigTimeTestUpgradeY->Draw("COLZ");
     
     gPad->Modified();
-    Canvas2->Print("/Users/kolos/Desktop/Studia/CIS/Output/WierdPlot.pdf");    
+    Canvas2->Print("/Users/kolos/Desktop/Studia/CIS/Crosstalk/StoppingProton/Output/WierdPlot.pdf");    
     delete Canvas2;
 ////////////////////////////////
     TCanvas *Canvas3 = new TCanvas("Canvas3","Canvas3", 1400, 1000);
@@ -406,7 +406,7 @@ void PlotMaker()
     legend3->Draw();
     
     gPad->Modified();
-    Canvas3->Print("/Users/kolos/Desktop/Studia/CIS/Output/CrosstalkComparison.pdf");
+    Canvas3->Print("/Users/kolos/Desktop/Studia/CIS/Crosstalk/StoppingProton/Output/CrosstalkComparison.pdf");
     delete Canvas3;
     ////////////////////////////////
     TCanvas *Canvas4 = new TCanvas("Canvas4","Canvas4", 1400, 1000);
@@ -535,7 +535,7 @@ void PlotMaker()
     legend14->Draw();
     
     gPad->Modified();
-    Canvas4->Print("/Users/kolos/Desktop/Studia/CIS/Output/CrosstalkPercentageComparison.pdf");
+    Canvas4->Print("/Users/kolos/Desktop/Studia/CIS/Crosstalk/StoppingProton/Output/CrosstalkPercentageComparison.pdf");
     delete Canvas4;
     delete legend11; 
     delete legend12; 
@@ -555,7 +555,7 @@ void PlotMaker()
     CrosstalkEnergyDepositCUTGY->Draw("HIST");
     
     gPad->Modified();
-    Canvas5->Print("/Users/kolos/Desktop/Studia/CIS/Output/PlotsAfterCUTG.pdf");
+    Canvas5->Print("/Users/kolos/Desktop/Studia/CIS/Crosstalk/StoppingProton/Output/PlotsAfterCUTG.pdf");
     delete Canvas5;
 ////////////////////////////////    
     TCanvas *Canvas6 = new TCanvas("Canvas6","Canvas6", 1400, 1000);
@@ -616,7 +616,7 @@ void PlotMaker()
     legend21->Draw();
     
     gPad->Modified();
-    Canvas6->Print("/Users/kolos/Desktop/Studia/CIS/Output/CrosstalkComparisonAfterCUTG.pdf");
+    Canvas6->Print("/Users/kolos/Desktop/Studia/CIS/Crosstalk/StoppingProton/CrosstalkComparisonAfterCUTG.pdf");
 
     delete Canvas6;
     
@@ -694,7 +694,7 @@ void PlotMaker()
     legend32->Draw();
     
     gPad->Modified();
-    Canvas7->Print("/Users/kolos/Desktop/Studia/CIS/Output/CrosstalkDistanceComparison.pdf");
+    Canvas7->Print("/Users/kolos/Desktop/Studia/CIS/Crosstalk/StoppingProton/CrosstalkDistanceComparison.pdf");
     delete Canvas7;
     
     ///////
@@ -716,7 +716,7 @@ void PlotMaker()
     EnergyTrigTimeMiddleY->Draw("COLZ");
     
     gPad->Modified();
-    Canvas8->Print("/Users/kolos/Desktop/Studia/CIS/Output/EnergyTrigTimeAllComparison.pdf");
+    Canvas8->Print("/Users/kolos/Desktop/Studia/CIS/Crosstalk/StoppingProton/Output/EnergyTrigTimeAllComparison.pdf");
     delete Canvas8;
     
     /*
@@ -786,7 +786,7 @@ void PlotMaker()
     legend42->Draw();
     
     gPad->Modified();
-    Canvas9->Print("/Users/kolos/Desktop/Studia/CIS/Output/CrosstalkTypeComparison.pdf");
+    Canvas9->Print("/Users/kolos/Desktop/Studia/CIS/Crosstalk/StoppingProton/Output/CrosstalkTypeComparison.pdf");
     delete Canvas9;
     ////////////////////
     
@@ -975,7 +975,7 @@ void PlotMaker()
     legend56->Draw();
     
     gPad->Modified();
-    Canvas10->Print("/Users/kolos/Desktop/Studia/CIS/Output/FullCrosstalkAfterCUTGComparison.pdf");
+    Canvas10->Print("/Users/kolos/Desktop/Studia/CIS/Crosstalk/StoppingProton/Output/FullCrosstalkAfterCUTGComparison.pdf");
     delete Canvas10;
 ////////////
     
@@ -1071,7 +1071,7 @@ void PlotMaker()
     legend64->Draw();
     
     gPad->Modified();
-    Canvas11->Print("/Users/kolos/Desktop/Studia/CIS/Output/CrosstalkCubeDistanceAfterCUTG.pdf");  
+    Canvas11->Print("/Users/kolos/Desktop/Studia/CIS/Crosstalk/StoppingProton/Output/CrosstalkCubeDistanceAfterCUTG.pdf");  
     delete Canvas11;
 ////////////////////
     
@@ -1181,7 +1181,7 @@ void PlotMaker()
     legend74->Draw();
     
     gPad->Modified();
-    Canvas12->Print("/Users/kolos/Desktop/Studia/CIS/Output/CrosstalkCubeDistance.pdf");  
+    Canvas12->Print("/Users/kolos/Desktop/Studia/CIS/Crosstalk/StoppingProton/Output/CrosstalkCubeDistance.pdf");  
     delete Canvas12;
 /////////////
     TCanvas *Canvas13 = new TCanvas("Canvas13","Canvas13", 1400, 1000);
@@ -1343,7 +1343,7 @@ void PlotMaker()
     legend84->Draw();
     
     gPad->Modified();
-    Canvas13->Print("/Users/kolos/Desktop/Studia/CIS/Output/CrosstalkPercentageDistance.pdf");  
+    Canvas13->Print("/Users/kolos/Desktop/Studia/CIS/Crosstalk/StoppingProton/Output/CrosstalkPercentageDistance.pdf");  
     delete Canvas13;
     
     /////////////////
@@ -1390,7 +1390,7 @@ void PlotMaker()
     legend91->Draw();
     
     gPad->Modified();
-    Canvas14->Print("/Users/kolos/Desktop/Studia/CIS/Output/CrosstalkPercentageSecondCubeNew.pdf");  
+    Canvas14->Print("/Users/kolos/Desktop/Studia/CIS/Crosstalk/StoppingProton/Output/CrosstalkPercentageSecondCubeNew.pdf");  
     delete Canvas14;
     
     ///////////////
@@ -1482,7 +1482,7 @@ void PlotMaker()
     legend103->Draw();
     
     gPad->Modified();
-    Canvas15->Print("/Users/kolos/Desktop/Studia/CIS/Output/CrosstalkDepositFirstAndSecondCube.pdf");  
+    Canvas15->Print("/Users/kolos/Desktop/Studia/CIS/Crosstalk/StoppingProton/Output/CrosstalkDepositFirstAndSecondCube.pdf");  
     delete Canvas15;
 
 }
