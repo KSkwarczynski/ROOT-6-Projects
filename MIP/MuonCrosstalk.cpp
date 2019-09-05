@@ -19,6 +19,7 @@
 #include <algorithm>
 #include "TImage.h"
 #include "TStyle.h"
+#include <math.h> 
 
 using namespace std;
 
@@ -181,19 +182,19 @@ int main ()
     TrackDepositY->GetYaxis()->SetTitle("Number of events");
     TrackDepositY->GetXaxis()->SetTitle("Energy [p.e.]");
     
-    TH1F *CrosstalkEnergyDepositLeftX = new TH1F("CrosstalkEnergyDepositLeftX", "Crosstalk energy left from track deposit, in X plain",200,0,100);
+    TH1F *CrosstalkEnergyDepositLeftX = new TH1F("CrosstalkEnergyDepositLeftX", "Crosstalk energy left from track deposit, in X plain",200,0,50);
     CrosstalkEnergyDepositLeftX->GetYaxis()->SetTitle("Number of events");
     CrosstalkEnergyDepositLeftX->GetXaxis()->SetTitle("Energy [p.e.]");
     
-    TH1F *CrosstalkEnergyDepositRightX = new TH1F("CrosstalkEnergyDepositRightX", "Crosstalk energy right from track deposit in X plain",200,0,100);
+    TH1F *CrosstalkEnergyDepositRightX = new TH1F("CrosstalkEnergyDepositRightX", "Crosstalk energy right from track deposit in X plain",200,0,50);
     CrosstalkEnergyDepositRightX->GetYaxis()->SetTitle("Number of events");
     CrosstalkEnergyDepositRightX->GetXaxis()->SetTitle("Energy [p.e.]");
     
-    TH1F *CrosstalkEnergyDepositLeftY = new TH1F("CrosstalkEnergyDepositLeftY", "Crosstalk energy left from track deposit, in Y plain",200,0,100);
+    TH1F *CrosstalkEnergyDepositLeftY = new TH1F("CrosstalkEnergyDepositLeftY", "Crosstalk energy left from track deposit, in Y plain",200,0,50);
     CrosstalkEnergyDepositLeftY->GetYaxis()->SetTitle("Number of events");
     CrosstalkEnergyDepositLeftY->GetXaxis()->SetTitle("Energy [p.e.]");
     
-    TH1F *CrosstalkEnergyDepositRightY = new TH1F("CrosstalkEnergyDepositRightY", "Crosstalk energy right from track deposit in Y plain",200,0,100);
+    TH1F *CrosstalkEnergyDepositRightY = new TH1F("CrosstalkEnergyDepositRightY", "Crosstalk energy right from track deposit in Y plain",200,0,50);
     CrosstalkEnergyDepositRightY->GetYaxis()->SetTitle("Number of events");
     CrosstalkEnergyDepositRightY->GetXaxis()->SetTitle("Energy [p.e.]");
     
@@ -304,6 +305,7 @@ int main ()
     bool LargehitTimeDif = 0;
     double DepozytPomocniczy=0;
     
+    double Pid=0;
     int EventCounter=0;
 
     TCanvas *DisplayCanvas = new TCanvas("DisplayCanvas","DisplayCanvas", 1400, 1000);
@@ -352,7 +354,7 @@ int main ()
                         EventType_XZ[hk][ik]=0;
                         if(ik==0)
                         {
-                            energyDepX_XZ[ik]=0;
+                            energyDepX_XZ[hk]=0;
                         }
                     }
                     for(int hk = 0; hk<8; hk++)
@@ -361,7 +363,7 @@ int main ()
                        EventType_YZ[ik][hk]=0;
                        if(ik==0)
                         {
-                            energyDepY_YZ=0;
+                            energyDepY_YZ[hk]=0;
                         }
                     }
                 }    
@@ -382,6 +384,9 @@ int main ()
                         {
                             LargehitTimeDif = 1; // Mozliwe ze trzeba zmieniec
                         }
+                        
+                        Pid = FEB[12].hitsChannel->at(TOFtrigger);
+                        
                         if ( FEBs[i] == 0 || FEBs[i] == 16) //Plaszczyzna XY
                         {
                             DepozytPomocniczy=FEB[FEBs[i]].hitCharge_pe->at(check);
@@ -416,15 +421,20 @@ int main ()
                 }
             }
         }
-            double MainDepositThreshold=20; //!!! wartosc testowa pewnie trzeba bedzie zwiekszyc
+            double MainDepositThreshold=15; //!!! wartosc testowa pewnie trzeba bedzie zwiekszyc
             int MainDepositCounter=0;
+            
+            double MeanPosition[2]={};          //0-X, 1-Y
+            double MeanPositionReal[2]={};      //0-X, 1-Y
+            double MeanPostionCounter[2]={};    //0-X, 1-Y
+            int DistanceThreshold[2]={4,4};     //0-X, 1-Y
             
             double Crosstalk[2][2]; //[X or Y][ain value and sigma]
             Crosstalk[0][0]=2.38; //values insererted from preiuous study on stopping proton
             Crosstalk[0][1]=0.02;
             Crosstalk[1][0]=1.42;
             Crosstalk[1][1]=0.02;
-            int SigmaNumber=40;
+            int SigmaNumber=50;
             for(int ik = 0; ik < 48; ik++) //searching for muon deposits
             {
                 energy_Z[eventNum]->Fill(ik, energyDepZ[ik]);
@@ -441,6 +451,10 @@ int main ()
                 {
                     EventType_XZ[HighestDepositPositionX[ik]][ik]=1; //1 means muon deposit
                     MainDepositCounter+=1;
+                    
+                    MeanPosition[0]+=HighestDepositPositionX[ik];
+                    MeanPostionCounter[0]+=1;
+                    
                 }
                 for(int hk=0; hk<8;hk++)
                 {
@@ -454,6 +468,9 @@ int main ()
                 {
                     EventType_YZ[ik][HighestDepositPositionY[ik]]=1; //1 means muon deposit
                     MainDepositCounter+=1;
+                    
+                    MeanPosition[1]+=HighestDepositPositionY[ik];
+                    MeanPostionCounter[1]+=1;
                 }
             }
 //////////////////////Selection_Declaration/////////////////
@@ -472,18 +489,74 @@ int main ()
                 energyY_YZ[eventNum]->Fill(ik,energyDepY_YZ[ik]);
             }
             double sigma=0;
+            double sigmaThreshold=2; //setting value for sigma cut, still experimental!!!!
             bool sigmaCut=0;
             TF1 *EnergyFitX = new TF1("EnergyFitX", "gaus");
             energyX_XZ[eventNum]-> Fit(EnergyFitX,"q","",1 , 23);
             sigma = EnergyFitX->GetParameter(2); // We chose sigma to get rid of garbage
 
             delete EnergyFitX;
-            if(sigma < 4) ///setting value for sigma cut, still experimental!!!!
+            if(sigma < sigmaThreshold) 
             {
                 sigmaCut=1;
             }
-        if(LargehitTimeDif == 0 && MainDepositCounter>40 && TrackBeginningCut==1 && sigmaCut==1)
+            bool MuonTrigger=0;
+            if(Pid==2) //0-all particles 1-Electrons 2-Muons/Pions 3-Protons newer version Channel 0 -Electron 1-Muons/Pions Channel 3-all particles
+            {
+                MuonTrigger=1;
+            }
+            
+        if(LargehitTimeDif == 0 && MainDepositCounter>40 && TrackBeginningCut==1 && sigmaCut==1 && MuonTrigger==1)
         {
+            //////////Fixing Track////////
+            double Distance=0;
+            MeanPositionReal[0]=MeanPosition[0]/MeanPostionCounter[0];
+            MeanPositionReal[1]=MeanPosition[1]/MeanPostionCounter[1];
+            
+            for(int ik = 0; ik < 48; ik++) //searching for muon deposits
+            {
+                for(int hk=0; hk<24; hk++)
+                {
+                    Distance=fabs(hk-MeanPositionReal[0]);
+                    if(EventType_XZ[hk][ik]==1 && Distance>DistanceThreshold[0])
+                    {
+                        EventType_XZ[hk][ik]=0;
+                        for(int gk=0; gk<24; gk++)
+                        {
+                            Distance=fabs(gk-MeanPositionReal[0]);
+                            if(energy_XZ[gk][ik]>MainDepositThreshold && Distance<DistanceThreshold[0])
+                            {
+                                EventType_XZ[gk][ik]=1;
+                                if(energy_XZ[gk][ik]>energy_XZ[gk-1][ik] && gk>0)
+                                {
+                                    EventType_XZ[gk-1][ik]=0;
+                                }
+                            }
+                        }
+                    }
+                }
+                for(int hk=0; hk<8;hk++)
+                {
+                    Distance=fabs(hk-MeanPositionReal[1]);
+                    if(EventType_YZ[ik][hk]==1 && Distance>DistanceThreshold[1])
+                    {
+                        EventType_YZ[ik][hk]=0;
+                        for(int gk=0; gk<8; gk++)
+                        {
+                            Distance=fabs(gk-MeanPositionReal[1]);
+                            if(energy_YZ[ik][gk]>MainDepositThreshold && Distance<DistanceThreshold[1])
+                            {
+                                EventType_YZ[ik][gk]=1;
+                            }
+                            if(energy_YZ[ik][gk]>energy_YZ[ik][gk-1] && gk>0)
+                            {
+                                energy_YZ[ik][gk-1]=0;
+                            }
+                        }
+                    }
+                }
+            }
+            //////////////
             int PozycjaPomocnicza=0;
             double CrosstalkPomocniczy[2]={}; //0 is for + and 1 is for -
             for(int ik = 0; ik < 48; ik++) //assigning events as crosstalk
@@ -592,17 +665,23 @@ int main ()
             
             CrossEnergyCanvas->Divide(2,2);
             CrossEnergyCanvas -> cd(1);
-            event_XZ[eventNum]-> Draw("colorz");
+            event_XZ[eventNum]->Draw("colorz");
         
             CrossEnergyCanvas -> cd(2);
-            event_YZ[eventNum]-> Draw("colorz");
+            event_YZ[eventNum]->Draw("colorz");
+            
+            CrossEnergyCanvas->cd(3);
+            energyX_XZ[eventNum]->Draw("HIST");
+        
+            CrossEnergyCanvas->cd(4);
+            energyY_YZ[eventNum]->Draw("HIST");
            
             CrossEnergyCanvas->Update();
             Energy2D -> cd();
             CrossEnergyCanvas->Write();
             
             EventCounter++;
-            cout<<"Event Counter "<<EventCounter<<" sigma " << sigma <<endl;
+            cout<<"Event Counter "<<EventCounter<<" sigma " << sigma <<" PID "<< Pid <<endl;
         }
         delete event_XY[eventNum];
         delete event_YZ[eventNum];
