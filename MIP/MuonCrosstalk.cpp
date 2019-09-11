@@ -170,9 +170,9 @@ int main ()
        }
   }
 
-    TH2F *EventsMap_XY = new TH2F("All_events_map_XY","All_events_map_XY",  24,0,24, 8,0,8);
-    TH2F *EventsMap_YZ = new TH2F("All_events_map_YZ","All_events_map_YZ",  48,0,48, 8,0,8);
-    TH2F *EventsMap_XZ = new TH2F("All_events_map_XZ","All_events_map_XZ",  24,0,24, 48,0,48);
+    TH2F *EventsMap_XY = new TH2F("EventsMap_XY","All_events_map_XY",  24,0,24, 8,0,8);
+    TH2F *EventsMap_YZ = new TH2F("EventsMap_YZ","All_events_map_YZ",  48,0,48, 8,0,8);
+    TH2F *EventsMap_XZ = new TH2F("EventsMap_XZ","All_events_map_XZ",  24,0,24, 48,0,48);
   
     TH1F *TrackDepositX = new TH1F("TrackDepositX", "Energy deposit by track X axis",500,0,500);
     TrackDepositX->GetYaxis()->SetTitle("Number of events");
@@ -501,7 +501,7 @@ int main ()
                 sigmaCut=1;
             }
             bool MuonTrigger=0;
-            if(Pid==2) //0-all particles 1-Electrons 2-Muons/Pions 3-Protons newer version Channel 0 -Electron 1-Muons/Pions Channel 3-all particles
+            if(Pid==2) //0-all particles 1-Electrons 2-Muons/Pions 3-Protons || newer version Channel 0 -Electron 1-Muons/Pions Channel 3-all particles
             {
                 MuonTrigger=1;
             }
