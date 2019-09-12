@@ -12,10 +12,14 @@ void DataMerger()
     gStyle->SetPadColor(0);
     gStyle->SetCanvasColor(0);
     
-    const int NumberOfFiles=2;
+    const int NumberOfFiles=6;
     char filename[NumberOfFiles][200];
     sprintf(filename[0],"/Users/kolos/Desktop/Studia/CIS/Crosstalk/StoppingProton/Assymetry/Data/27August_1_MCR0_hadrons_0pt8Gev_0pt0T_Beam___CrosstalkAsymmetry.root");
-    sprintf(filename[1],"/Users/kolos/Desktop/Studia/CIS/Crosstalk/StoppingProton/Assymetry/Data/26August_26_MCR0_hadrons_0pt8Gev_0pt0T_Beam___CrosstalkAsymmetry.root"); 
+    sprintf(filename[1],"/Users/kolos/Desktop/Studia/CIS/Crosstalk/StoppingProton/Assymetry/Data/27August_2_MCR0_hadrons_0pt8Gev_0pt0T_Beam___CrosstalkAsymmetry.root"); 
+    sprintf(filename[2],"/Users/kolos/Desktop/Studia/CIS/Crosstalk/StoppingProton/Assymetry/Data/26August_26_MCR0_hadrons_0pt8Gev_0pt0T_Beam___CrosstalkAsymmetry.root"); 
+    sprintf(filename[3],"/Users/kolos/Desktop/Studia/CIS/Crosstalk/StoppingProton/Assymetry/Data/26August_14_MCR0_hadrons_0pt8Gev_0pt0T_Beam___CrosstalkAsymmetry.root"); 
+    sprintf(filename[4],"/Users/kolos/Desktop/Studia/CIS/Crosstalk/StoppingProton/Assymetry/Data/26August_13_MCR0_hadrons_0pt8Gev_0pt0T_Beam___CrosstalkAsymmetry.root");
+    sprintf(filename[5],"/Users/kolos/Desktop/Studia/CIS/Crosstalk/StoppingProton/Assymetry/Data/26August_12_MCR0_hadrons_0pt8Gev_0pt0T_Beam___CrosstalkAsymmetry.root");
     
     TH2F *NewEventsMap_XY = new TH2F("NewEventsMap_XY","NewEventsMap_XY",  24,0,24, 8,0,8);
     TH2F *NewEventsMap_YZ = new TH2F("NewEventsMap_YZ","NewEventsMap_YZ",  48,0,48, 8,0,8);
