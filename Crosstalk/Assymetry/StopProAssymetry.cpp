@@ -175,6 +175,14 @@ int main ()
     EnergyTrigTimeAll->GetYaxis()->SetTitle("Energy [p.e.]");
     EnergyTrigTimeAll->GetXaxis()->SetTitle("Time from Trigger [2.5 ns]");
     
+    TH2F *EnergyTrigTimeX = new TH2F("EnergyTrigTimeX","Energy and Time of Trigger X axis stopping point + Crosstalk", 100,-100,100,500,0,1500);
+    EnergyTrigTimeX->GetYaxis()->SetTitle("Energy [p.e.]");
+    EnergyTrigTimeX->GetXaxis()->SetTitle("Time from Trigger [2.5 ns]");
+    
+    TH2F *EnergyTrigTimeY = new TH2F("EnergyTrigTimeY","Energy and Time of Trigger Y axis stopping point + Crosstalk", 100,-100,100,500,0,1500);
+    EnergyTrigTimeY->GetYaxis()->SetTitle("Energy [p.e.]");
+    EnergyTrigTimeY->GetXaxis()->SetTitle("Time from Trigger [2.5 ns]");
+    
     TH1F *HistogramHighestEnergyDeposit = new TH1F("HistogramHighestEnergyDeposit", "Histogram of highest value deposit",100,0,2500);
     HistogramHighestEnergyDeposit->GetYaxis()->SetTitle("Number of events");
     HistogramHighestEnergyDeposit->GetXaxis()->SetTitle("Energy [p.e.]");
@@ -206,7 +214,7 @@ int main ()
     TDirectory *events2D = wfile.mkdir("events2D");
     TDirectory *CrossEnergy = wfile.mkdir("CrossEnergy");
     TDirectory *CrossEnergyPlain = wfile.mkdir("CrossEnergyPlain");
-    int NumberEvDis = 20000; // zmiana 10000
+    int NumberEvDis = 14000; // zmiana 10000
 
     ostringstream sEventnum;
     string sEvent;
@@ -458,16 +466,22 @@ int main ()
             int PomocniczyNumerKostki=0;
             double PomicniczyTriggerTime=0;
             
-            int EnergeticEventsX=0;
-            int EnergeticEventsY=0;
+            int EnergeticEventsX[2]={};
+            int EnergeticEventsY[2]={};
             
+            
+            double ProtonThreshold=-80; //Value to seperate protons from other hadrons (pions most likely)
             double TriggerTimeValue=0; 
             int TriggerTimerCounter=0;
             
             double CrosstalkDepositRightX=0;
             double CrosstalkDepositLeftX=0;
             
+            double CrosstalkDepositRightY=0;
+            double CrosstalkDepositLeftY=0;
+            
             double CrosstalkSubtractedX=0;
+            double CrosstalkSubtractedY=0;
             ///////////Ciecia
             int StoppingParticle = 0; //ciecie usuwajace czastki które sie nie zatrzymaly
             if(energyDepZ[47]==0)
@@ -621,9 +635,13 @@ int main ()
                             RealPeakEnergyX[hk]=energyDepX_XZ_Plain[hk][ik];
                             RealPeakNumberX[hk]=ik;
                         }
-                        if(hk==0 && energyDepX_XZ_Plain[0][ik]>100)
+                        if(hk==0 && energyDepX_XZ_Plain[0][ik]>60)
                         {
-                            EnergeticEventsX+=1;
+                            EnergeticEventsX[0]+=1;
+                        }
+                        if(hk==1 && energyDepX_XZ_Plain[1][ik]>60)
+                        {
+                            EnergeticEventsX[1]+=1;
                         }
                     }
                     for(int ik = 0; ik < 8; ik++ )
@@ -637,11 +655,27 @@ int main ()
                             RealPeakEnergyY[hk]=energyDepY_YZ_Plain[hk][ik];
                             RealPeakNumberY[hk]=ik;
                         }
-                        if(hk==0 && energyDepY_YZ_Plain[0][ik]>100)
+                        if(hk==0 && energyDepY_YZ_Plain[0][ik]>60)
                         {
-                            EnergeticEventsY+=1;
+                            EnergeticEventsY[0]+=1;
+                        }
+                        if(hk==1 && energyDepY_YZ_Plain[1][ik]>60)
+                        {
+                            EnergeticEventsY[1]+=1;
                         }
                     }
+                }
+            }
+            for(int ip=0; ip<3; ip++)
+            {
+                RealPeakEnergyResult[ip]=(RealPeakEnergyX[ip]+RealPeakEnergyY[ip])/2;
+                if(0.2*RealPeakEnergyX[ip]>RealPeakEnergyY[ip])
+                {
+                    RealPeakEnergyResult[ip]=RealPeakEnergyX[ip];
+                }
+                if(0.2*RealPeakEnergyY[ip]>RealPeakEnergyX[ip])
+                {
+                    RealPeakEnergyResult[ip]=RealPeakEnergyY[ip];
                 }
             }
             bool BorderCutY=0; // ciecie usuwajace eventy ktore sie slizgaja po krawedzi Y
@@ -654,22 +688,32 @@ int main ()
             {
                 BorderCutX=1;
             }
-            bool ProtonFlag=0;
+            /*bool ProtonFlag=0;
             if(Pid==3) //0-all particles 1-Electrons 2-Muons/Pions 3-Protons || newer version Channel 0 -Electron 1-Muons/Pions Channel 3-all particles
             {
                 ProtonFlag=1;
+            }*/
+            bool ProtonFlag=0;
+            if( (TriggerTimeValue/TriggerTimerCounter) > ProtonThreshold)
+            {
+                ProtonFlag=1;
             }
-            bool TwoSidedCrosstalk=0;
+            bool TwoSidedCrosstalkX=0;
             if(energyDepX_XZ_Plain[0][RealPeakNumberX[0]-1]>1 && energyDepX_XZ_Plain[0][RealPeakNumberX[0]+1]>1)
             {
-                TwoSidedCrosstalk=1;
+                TwoSidedCrosstalkX=1;
+            }
+            bool TwoSidedCrosstalkY=0;
+            if(energyDepY_YZ_Plain[0][RealPeakNumberY[0]-1]>1 && energyDepY_YZ_Plain[0][RealPeakNumberY[0]+1]>1)
+            {
+                TwoSidedCrosstalkY=1;
             }
             bool StraightStoppingPoint=0; //PROTON is in the same position in Stopping Point and SP-1
             if(RealPeakNumberX[0]==RealPeakNumberX[1])
             {
                 StraightStoppingPoint=1;
             }
-            if(LargehitTimeDif == 0 && StoppingParticle==1 && PeakEnergy>250 && DiscontinuityCut==1 && TrackBeginningCut==1 && BorderCutY==1 && BorderCutX && sigmaCut==1 && EventNumberCut==1 && EnergeticEventsX==1 && EnergeticEventsY==1 && ProtonFlag==1 && TwoSidedCrosstalk==1 && StraightStoppingPoint==1)
+            if(LargehitTimeDif == 0 && StoppingParticle==1 && PeakEnergy>250 && DiscontinuityCut==1 && TrackBeginningCut==1 && BorderCutY==1 && BorderCutX && sigmaCut==1 && EventNumberCut==1 && EnergeticEventsX[0]==1 && EnergeticEventsX[1]==1 && EnergeticEventsY[0]==1 && EnergeticEventsY[1]==1 && ProtonFlag==1 && StraightStoppingPoint==1)
             {   
                 Int_t GTindex[2] = {0,0};
                 for (int i = 0; i < 19; i++) //loop over FEB
@@ -696,9 +740,18 @@ int main ()
                                     if ( PomocniczyNumerKostki == RealPeakNumber && RealPeakEnergyY[0]>40 && DepozytPomocniczy > 0 && DepozytPomocniczy < 10000)// zmiana 0 and 10000
                                     {
                                         CrosstalkDistance = MapCon[FEBs[i]][1][(int)FEB[FEBs[i]].hitsChannel->at(check)] - RealPeakNumberY[0];
+                                        EnergyTrigTimeY->Fill(PomicniczyTriggerTime, DepozytPomocniczy);
                                         if(MapCon[FEBs[i]][1][(int)FEB[FEBs[i]].hitsChannel->at(check)] != RealPeakNumberY[0])
                                         {
                                             CrosstalkEnergyDepositY->Fill( DepozytPomocniczy );
+                                        }
+                                        if(CrosstalkDistance==1)
+                                        {
+                                            CrosstalkDepositRightY=DepozytPomocniczy;
+                                        }
+                                        if(CrosstalkDistance==-1)
+                                        {
+                                            CrosstalkDepositLeftY=DepozytPomocniczy;
                                         }
                                     }
                                 }
@@ -707,9 +760,10 @@ int main ()
                                     PomocniczyNumerKostki = MapCon[FEBs[i]][1][(int)FEB[FEBs[i]].hitsChannel->at(check)];
                                     PomicniczyTriggerTime=FEB[FEBs[i]].hitLeadTime->at(check)-TriggerTime;
                                     DepozytPomocniczy=FEB[FEBs[i]].hitCharge_pe->at(check);
-                                    if( PomocniczyNumerKostki == RealPeakNumber && RealPeakEnergyX[0]>40 && DepozytPomocniczy > 0 && DepozytPomocniczy < 10000) //zmiana 0 and 10000
+                                    if( PomocniczyNumerKostki == RealPeakNumber && RealPeakEnergyX[0]>40 && DepozytPomocniczy > 0 && DepozytPomocniczy < 10000 && TwoSidedCrosstalkX==1) //zmiana 0 and 10000
                                     {
                                         CrosstalkDistance = MapCon[FEBs[i]][0][(int)FEB[FEBs[i]].hitsChannel->at(check)] - RealPeakNumberX[0];
+                                        EnergyTrigTimeX->Fill(PomicniczyTriggerTime, DepozytPomocniczy);
                                         if(MapCon[FEBs[i]][0][(int)FEB[FEBs[i]].hitsChannel->at(check)] != RealPeakNumberX[0])
                                         {
                                             CrosstalkEnergyDepositX->Fill( DepozytPomocniczy );
@@ -730,13 +784,20 @@ int main ()
                 } 
                 //////
                 CrosstalkSubtractedX=CrosstalkDepositRightX-CrosstalkDepositLeftX;
+                CrosstalkSubtractedY=CrosstalkDepositRightY-CrosstalkDepositLeftY;
                 
                 StoppingPointLocation->Fill(RealPeakNumber);
                 HistogramHighestEnergyDeposit->Fill(PeakEnergy);
                 HistogramRealPeakEnergyDeposit->Fill(RealPeakEnergyResult[0]);
-                CrosstalkHistogramDifferenceX->Fill(CrosstalkSubtractedX);
-                    
-                cout <<"licznik "<<licznik<<" sigma " << sigma <<" RealPeakNumber "<<RealPeakNumber<<"PID"<<Pid<<endl;
+                if(TwoSidedCrosstalkX==1)
+                {
+                    CrosstalkHistogramDifferenceX->Fill(CrosstalkSubtractedX);
+                }
+                if(TwoSidedCrosstalkY==1)
+                {
+                    CrosstalkHistogramDifferenceY->Fill(CrosstalkSubtractedY);
+                }
+                cout <<"licznik "<<licznik<<" sigma " << sigma <<" RealPeakNumber "<<RealPeakNumber<<" PID "<<Pid<<endl;
                 cout <<"licznik "<<licznik<<" RealPeakEnergyX "<< RealPeakEnergyX[0]<<" RealPeakEnergyY "<<RealPeakEnergyY[0]<<endl;
                 licznik++;
                 DisplayCanvas->Clear();    
@@ -809,7 +870,6 @@ int main ()
         eventNum++;
     }
 }
- 
     for (Int_t i=0;i<NumberOfEB;i++)
     {
         FEB[i].FEBSN=0;
@@ -839,6 +899,9 @@ int main ()
     EventsMap_XZ->Write();
     EnergyTrigTimeAll->Write();
     
+    EnergyTrigTimeX->Write();
+    EnergyTrigTimeY->Write();
+    
     HistogramHighestEnergyDeposit->Write();
     HistogramRealPeakEnergyDeposit->Write();
     
@@ -848,7 +911,7 @@ int main ()
     CrosstalkEnergyDepositY->Write();
    
     CrosstalkHistogramDifferenceX->Write();
-    
+    CrosstalkHistogramDifferenceY->Write();
     wfile.Close();
     FileInput->Close();
     return 0;

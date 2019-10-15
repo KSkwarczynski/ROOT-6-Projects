@@ -12,7 +12,7 @@ void DataMerger()
     gStyle->SetPadColor(0);
     gStyle->SetCanvasColor(0);
     
-    const int NumberOfFiles=6;
+    const int NumberOfFiles=8;
     char filename[NumberOfFiles][200];
     sprintf(filename[0],"/Users/kolos/Desktop/Studia/CIS/Crosstalk/StoppingProton/Assymetry/Data/27August_1_MCR0_hadrons_0pt8Gev_0pt0T_Beam___CrosstalkAsymmetry.root");
     sprintf(filename[1],"/Users/kolos/Desktop/Studia/CIS/Crosstalk/StoppingProton/Assymetry/Data/27August_2_MCR0_hadrons_0pt8Gev_0pt0T_Beam___CrosstalkAsymmetry.root"); 
@@ -20,12 +20,17 @@ void DataMerger()
     sprintf(filename[3],"/Users/kolos/Desktop/Studia/CIS/Crosstalk/StoppingProton/Assymetry/Data/26August_14_MCR0_hadrons_0pt8Gev_0pt0T_Beam___CrosstalkAsymmetry.root"); 
     sprintf(filename[4],"/Users/kolos/Desktop/Studia/CIS/Crosstalk/StoppingProton/Assymetry/Data/26August_13_MCR0_hadrons_0pt8Gev_0pt0T_Beam___CrosstalkAsymmetry.root");
     sprintf(filename[5],"/Users/kolos/Desktop/Studia/CIS/Crosstalk/StoppingProton/Assymetry/Data/26August_12_MCR0_hadrons_0pt8Gev_0pt0T_Beam___CrosstalkAsymmetry.root");
+    sprintf(filename[6],"/Users/kolos/Desktop/Studia/CIS/Crosstalk/StoppingProton/Assymetry/Data/26August_11_MCR0_hadrons_0pt8Gev_0pt0T_Beam___CrosstalkAsymmetry.root");
+    sprintf(filename[7],"/Users/kolos/Desktop/Studia/CIS/Crosstalk/StoppingProton/Assymetry/Data/26August_9_MCR0_hadrons_0pt8Gev_0pt0T_Beam___CrosstalkAsymmetry.root");
     
     TH2F *NewEventsMap_XY = new TH2F("NewEventsMap_XY","NewEventsMap_XY",  24,0,24, 8,0,8);
     TH2F *NewEventsMap_YZ = new TH2F("NewEventsMap_YZ","NewEventsMap_YZ",  48,0,48, 8,0,8);
     TH2F *NewEventsMap_XZ = new TH2F("NewEventsMap_XZ","NewEventsMap_XZ",  24,0,24, 48,0,48);
     
     TH2F *NewEnergyTrigTimeAll = new TH2F("NewEnergyTrigTimeAll","Energy and Time of Trigger whole run", 100,-100,100,500,0,1500);
+    
+    TH2F *NewEnergyTrigTimeX = new TH2F("NewEnergyTrigTimeX","Energy and Time of Trigger X axis stopping point + Crosstalk", 100,-100,100,500,0,1500);
+    TH2F *NewEnergyTrigTimeY = new TH2F("NewEnergyTrigTimeY","Energy and Time of Trigger Y axis stopping point + Crosstalk", 100,-100,100,500,0,1500);
     
     TH1F *NewHistogramHighestEnergyDeposit = new TH1F("NewHistogramHighestEnergyDeposit", "Histogram of highest value deposit",100,0,2500);
     TH1F *NewHistogramRealPeakEnergyDeposit = new TH1F("NewHistogramRealPeakEnergyDeposit", "Histogram of found stopping proton deposit",100,0,2500);
@@ -35,6 +40,7 @@ void DataMerger()
     TH1F *NewCrosstalkEnergyDepositY = new TH1F("NewCrosstalkEnergyDepositY", "Crosstalk energy in Y plain",500,0,500);
     
     TH1F *NewCrosstalkHistogramDifferenceX = new TH1F("NewCrosstalkHistogramDifferenceX", "Crosstalk right subtracted by crosstalk on the left in X plain",100.0,-50.0,50.0);
+    TH1F *NewCrosstalkHistogramDifferenceY = new TH1F("NewCrosstalkHistogramDifferenceY", "Crosstalk right subtracted by crosstalk on the left in Y plain",100.0,-50.0,50.0);
 
     for(int i=0; i<NumberOfFiles; i++)
     {
@@ -55,6 +61,11 @@ void DataMerger()
         TH2F* EnergyTrigTimeAllClone = (TH2F*) file->Get("EnergyTrigTimeAll");
         NewEnergyTrigTimeAll->Add(EnergyTrigTimeAllClone);
 
+        TH2F* EnergyTrigTimeXClone = (TH2F*) file->Get("EnergyTrigTimeX");
+        NewEnergyTrigTimeX->Add(EnergyTrigTimeXClone);
+        TH2F* EnergyTrigTimeYClone = (TH2F*) file->Get("EnergyTrigTimeY");
+        NewEnergyTrigTimeY->Add(EnergyTrigTimeYClone);
+        
         TH1F* HistogramHighestEnergyDepositClone = (TH1F*) file->Get("HistogramHighestEnergyDeposit");
         NewHistogramHighestEnergyDeposit->Add(HistogramHighestEnergyDepositClone);
         
@@ -71,17 +82,23 @@ void DataMerger()
         
         TH1F* CrosstalkHistogramDifferenceXClone = (TH1F*) file->Get("CrosstalkHistogramDifferenceX");
         NewCrosstalkHistogramDifferenceX->Add(CrosstalkHistogramDifferenceXClone);
+        TH1F* CrosstalkHistogramDifferenceYClone = (TH1F*) file->Get("CrosstalkHistogramDifferenceY");
+        NewCrosstalkHistogramDifferenceY->Add(CrosstalkHistogramDifferenceYClone);
+        
         
         delete EventsMap_XYClone;
         delete EventsMap_YZClone;
         delete EventsMap_XZClone;
         delete EnergyTrigTimeAllClone;
+        delete EnergyTrigTimeXClone;
+        delete EnergyTrigTimeYClone;
         delete HistogramHighestEnergyDepositClone;
         delete HistogramRealPeakEnergyDepositClone;
         delete StoppingPointLocationClone;
         delete CrosstalkEnergyDepositXClone;
         delete CrosstalkEnergyDepositYClone;
         delete CrosstalkHistogramDifferenceXClone;
+        delete CrosstalkHistogramDifferenceYClone;
         
         file->Close();
         delete file;
@@ -95,6 +112,13 @@ void DataMerger()
     EnergyTrigTimeAll->GetYaxis()->SetTitle("Energy [p.e.]");
     EnergyTrigTimeAll->GetXaxis()->SetTitle("Time from Trigger [2.5 ns]");
 
+    TH2F *EnergyTrigTimeX = (TH2F*)(NewEnergyTrigTimeX->Clone("EnergyTrigTimeX"));
+    EnergyTrigTimeX->GetYaxis()->SetTitle("Energy [p.e.]");
+    EnergyTrigTimeX->GetXaxis()->SetTitle("Time from Trigger [2.5 ns]");
+    TH2F *EnergyTrigTimeY = (TH2F*)(NewEnergyTrigTimeY->Clone("EnergyTrigTimeY"));
+    EnergyTrigTimeY->GetYaxis()->SetTitle("Energy [p.e.]");
+    EnergyTrigTimeY->GetXaxis()->SetTitle("Time from Trigger [2.5 ns]");
+    
     TH1F *HistogramHighestEnergyDeposit = (TH1F*)(NewHistogramHighestEnergyDeposit->Clone("HistogramHighestEnergyDeposit"));
     HistogramHighestEnergyDeposit->GetYaxis()->SetTitle("Number of events");
     HistogramHighestEnergyDeposit->GetXaxis()->SetTitle("Energy [p.e.]");
@@ -117,6 +141,10 @@ void DataMerger()
     TH1F *CrosstalkHistogramDifferenceX = (TH1F*)(NewCrosstalkHistogramDifferenceX->Clone("CrosstalkHistogramDifferenceX"));
     CrosstalkHistogramDifferenceX->GetYaxis()->SetTitle("Number of events");
     CrosstalkHistogramDifferenceX->GetXaxis()->SetTitle("Energy [p.e.]");
+    TH1F *CrosstalkHistogramDifferenceY = (TH1F*)(NewCrosstalkHistogramDifferenceY->Clone("CrosstalkHistogramDifferenceY"));
+    CrosstalkHistogramDifferenceY->GetYaxis()->SetTitle("Number of events");
+    CrosstalkHistogramDifferenceY->GetXaxis()->SetTitle("Energy [p.e.]");
+    
     
     TFile *fileout = new TFile("/Users/kolos/Desktop/Studia/CIS/Crosstalk/StoppingProton/Assymetry/Data/MergedCrosstalk.root","RECREATE");
     if ( fileout->IsOpen() )
@@ -132,6 +160,9 @@ void DataMerger()
     
     EnergyTrigTimeAll->Write();
     
+    EnergyTrigTimeX->Write();
+    EnergyTrigTimeY->Write();
+    
     HistogramHighestEnergyDeposit->Write();
     HistogramRealPeakEnergyDeposit->Write();
     
@@ -141,6 +172,8 @@ void DataMerger()
     CrosstalkEnergyDepositY->Write();
     
     CrosstalkHistogramDifferenceX->Write();
+    CrosstalkHistogramDifferenceY->Write();
+    
     cout<<"udalo sie"<<endl;
     
     fileout->Close();
