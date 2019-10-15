@@ -537,7 +537,7 @@ void GraphMaker()
     PercentageTwoGraphY->Fit("pol0");
     TF1 *funkcja4 = PercentageTwoGraphX->GetListOfFunctions()->FindObject("pol0");
     TF1 *funkcja5 = PercentageTwoGraphY->GetListOfFunctions()->FindObject("pol0");
-    funkcja2->SetLineColor(4);
+    funkcja5->SetLineColor(4);
     
     TCanvas *Canvas7 = new TCanvas("Canvas7","Canvas7", 1400, 1000);
     
@@ -669,4 +669,86 @@ void GraphMaker()
     legend10->Draw();
     
     Canvas9->Print("/Users/kolos/Desktop/Studia/CIS/Crosstalk/StoppingProton/OutputGraph/PercentageConvertedTwoGraph.pdf");
+    ////////
+    
+    TH1F* CrosstalkEnergyDepositPercentageOneCubeImprovedX = (TH1F*) file->Get("CrosstalkEnergyDepositPercentageOneCubeImprovedX");
+    CrosstalkEnergyDepositPercentageOneCubeImprovedX->GetYaxis()->SetTitleOffset(1.4);
+    CrosstalkEnergyDepositPercentageOneCubeImprovedX->GetXaxis()->SetRangeUser(0., Range);
+    TH1F* CrosstalkEnergyDepositPercentageOneCubeImprovedY = (TH1F*) file->Get("CrosstalkEnergyDepositPercentageOneCubeImprovedY");
+    CrosstalkEnergyDepositPercentageOneCubeImprovedY->GetYaxis()->SetTitleOffset(1.4);
+    CrosstalkEnergyDepositPercentageOneCubeImprovedY->GetXaxis()->SetRangeUser(0., Range);
+    TH1F* CrosstalkEnergyDepositPercentageMinus1OneCubeImprovedX = (TH1F*) file->Get("CrosstalkEnergyDepositPercentageMinus1OneCubeImprovedX");
+    CrosstalkEnergyDepositPercentageMinus1OneCubeImprovedX->GetYaxis()->SetTitleOffset(1.4);
+    CrosstalkEnergyDepositPercentageMinus1OneCubeImprovedX->GetXaxis()->SetRangeUser(0., Range);
+    TH1F* CrosstalkEnergyDepositPercentageMinus1OneCubeImprovedY = (TH1F*) file->Get("CrosstalkEnergyDepositPercentageMinus1OneCubeImprovedY");
+    CrosstalkEnergyDepositPercentageMinus1OneCubeImprovedY->GetYaxis()->SetTitleOffset(1.4);
+    CrosstalkEnergyDepositPercentageMinus1OneCubeImprovedY->GetXaxis()->SetRangeUser(0., Range);
+    TH1F* CrosstalkEnergyDepositPercentageMiddleOneCubeImprovedX = (TH1F*) file->Get("CrosstalkEnergyDepositPercentageMiddleOneCubeImprovedX");
+    CrosstalkEnergyDepositPercentageMiddleOneCubeImprovedX->GetYaxis()->SetTitleOffset(1.4);
+    CrosstalkEnergyDepositPercentageMiddleOneCubeImprovedX->GetXaxis()->SetRangeUser(0., Range);
+    TH1F* CrosstalkEnergyDepositPercentageMiddleOneCubeImprovedY = (TH1F*) file->Get("CrosstalkEnergyDepositPercentageMiddleOneCubeImprovedY");
+    CrosstalkEnergyDepositPercentageMiddleOneCubeImprovedY->GetYaxis()->SetTitleOffset(1.4);
+    CrosstalkEnergyDepositPercentageMiddleOneCubeImprovedY->GetXaxis()->SetRangeUser(0., Range);
+    
+    double MeanCrosstalkOneImproved[2][3];//[X AND Y][Z=0,Z-1,Z-15]
+    double RMScrosstalkOneImproved[2][3];//[X AND Y][Z=0,Z-1,Z-15]
+    
+    MeanCrosstalkOneImproved[0][0]=CrosstalkEnergyDepositPercentageOneCubeImprovedX->GetMean(1);
+    RMScrosstalkOneImproved[0][0]=CrosstalkEnergyDepositPercentageOneCubeImprovedX->GetMean(11);
+    
+    MeanCrosstalkOneImproved[0][1]=CrosstalkEnergyDepositPercentageMinus1OneCubeImprovedX->GetMean(1);
+    RMScrosstalkOneImproved[0][1]=CrosstalkEnergyDepositPercentageMinus1OneCubeImprovedX->GetMean(11);
+    
+    MeanCrosstalkOneImproved[0][2]=CrosstalkEnergyDepositPercentageMiddleOneCubeImprovedX->GetMean(1);
+    RMScrosstalkOneImproved[0][2]=CrosstalkEnergyDepositPercentageMiddleOneCubeImprovedX->GetMean(11);
+    
+    MeanCrosstalkOneImproved[1][0]=CrosstalkEnergyDepositPercentageOneCubeImprovedY->GetMean(1);
+    RMScrosstalkOneImproved[1][0]=CrosstalkEnergyDepositPercentageOneCubeImprovedY->GetMean(11);
+    
+    MeanCrosstalkOneImproved[1][1]=CrosstalkEnergyDepositPercentageMinus1OneCubeImprovedY->GetMean(1);
+    RMScrosstalkOneImproved[1][1]=CrosstalkEnergyDepositPercentageMinus1OneCubeImprovedY->GetMean(11);
+    
+    MeanCrosstalkOneImproved[1][2]=CrosstalkEnergyDepositPercentageMiddleOneCubeImprovedY->GetMean(1);
+    RMScrosstalkOneImproved[1][2]=CrosstalkEnergyDepositPercentageMiddleOneCubeImprovedY->GetMean(11);
+    
+    TGraphErrors* CrosstalkOneGraphImprovedX = new TGraphErrors(3, Distance, MeanCrosstalkOneImproved[0], 0, RMScrosstalkOneImproved[0]);
+    CrosstalkOneGraphImprovedX->GetXaxis()->SetRangeUser(-2,20);
+    CrosstalkOneGraphImprovedX->SetLineColor(kRed);
+    CrosstalkOneGraphImprovedX->SetLineWidth(2);
+    CrosstalkOneGraphImprovedX->SetMarkerStyle(20);
+    CrosstalkOneGraphImprovedX->SetMarkerSize(1);
+    CrosstalkOneGraphImprovedX->SetMarkerColor(kRed);
+
+    TGraphErrors* CrosstalkOneGraphImprovedY = new TGraphErrors(3, Distance, MeanCrosstalkOneImproved[1], 0, RMScrosstalkOneImproved[1]);
+    CrosstalkOneGraphImprovedY->GetXaxis()->SetRangeUser(-2,20);
+    CrosstalkOneGraphImprovedY->SetLineColor(kBlue);
+    CrosstalkOneGraphImprovedY->SetLineWidth(2);
+    CrosstalkOneGraphImprovedY->SetMarkerStyle(20);
+    CrosstalkOneGraphImprovedY->SetMarkerSize(1);
+    CrosstalkOneGraphImprovedY->SetMarkerColor(kBlue);
+    
+    CrosstalkOneGraphImprovedX->Fit("pol0");
+    CrosstalkOneGraphImprovedY->Fit("pol0");
+    TF1 *funkcja7 = CrosstalkOneGraphImprovedX->GetListOfFunctions()->FindObject("pol0");
+    TF1 *funkcja8 = CrosstalkOneGraphImprovedY->GetListOfFunctions()->FindObject("pol0");
+    funkcja8->SetLineColor(4);
+    
+    TCanvas *Canvas10 = new TCanvas("Canvas10","Canvas10", 1400, 1000);
+    
+    TMultiGraph *mg7=new TMultiGraph();
+    mg7->Add(CrosstalkOneGraphImprovedX);
+    mg7->Add(CrosstalkOneGraphImprovedY);
+
+    mg7->Draw("AP");
+    mg7->GetXaxis()->SetTitle("Position from stopping point [cm]");
+    mg7->GetYaxis()->SetTitle("Deposit [p.e.]");
+    gPad->Modified();
+
+    auto legend11 = new TLegend(0.65,0.8,0.9,0.9);
+    legend11->AddEntry(CrosstalkOneGraphImprovedX,"X Axis","pe");
+    legend11->AddEntry(CrosstalkOneGraphImprovedY,"Y Axis","pe");
+    legend11->Draw();
+    
+    Canvas10->Print("/Users/kolos/Desktop/Studia/CIS/Crosstalk/StoppingProton/OutputGraph/CrosstalkOneGraphImproved.pdf");
+    delete Canvas10;
 }

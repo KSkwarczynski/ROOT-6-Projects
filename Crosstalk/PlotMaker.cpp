@@ -85,7 +85,6 @@ void PlotMaker()
     HistogramCrosstalkDistanceX->GetYaxis()->SetTitleOffset(1.4);
     TH1F* HistogramCrosstalkDistanceY = (TH1F*) file->Get("HistogramCrosstalkDistanceY");
     HistogramCrosstalkDistanceY->GetYaxis()->SetTitleOffset(1.4);
-    
     TH1F* HistogramCrosstalkDistanceMinus1X = (TH1F*) file->Get("HistogramCrosstalkDistanceMinus1X");
     HistogramCrosstalkDistanceMinus1X->GetYaxis()->SetTitleOffset(1.4);
     TH1F* HistogramCrosstalkDistanceMinus1Y = (TH1F*) file->Get("HistogramCrosstalkDistanceMinus1Y");
@@ -169,14 +168,81 @@ void PlotMaker()
     TH1F* CrosstalkEnergyPercentageMiddleTwoCubesY = (TH1F*) file->Get("CrosstalkEnergyPercentageMiddleTwoCubesY");
     CrosstalkEnergyPercentageMiddleTwoCubesY->GetYaxis()->SetTitleOffset(1.4);
     
-    TH1F* CrosstalkEnergyDepositPercentageSecondCubeNewX = (TH1F*) file->Get("CrosstalkEnergyDepositPercentageSecondCubeNewX");
-    CrosstalkEnergyDepositPercentageSecondCubeNewX->GetYaxis()->SetTitleOffset(1.4);
-    TH1F* CrosstalkEnergyDepositPercentageMinus1SecondCubeNewX = (TH1F*) file->Get("CrosstalkEnergyDepositPercentageMinus1SecondCubeNewX");
-    CrosstalkEnergyDepositPercentageMinus1SecondCubeNewX->GetYaxis()->SetTitleOffset(1.4);
-    TH1F* CrosstalkEnergyDepositPercentageMiddleSecondCubeNewX = (TH1F*) file->Get("CrosstalkEnergyDepositPercentageMiddleSecondCubeNewX");
-    CrosstalkEnergyDepositPercentageMiddleSecondCubeNewX->GetYaxis()->SetTitleOffset(1.4);
-
 ////////////////////////////////
+    fstream plik;
+    plik.open("/Users/kolos/Desktop/Studia/CIS/Crosstalk/StoppingProton/Output/Probability.txt", ios::out);
+    double main[3]={};
+    double EventMapX[2][2][3]={}; //[1 away, 2 away][left,righ],[Z,Z-1,Z-15]
+    double EventMapY[2][2][3]={}; //[1 away, 2 away][left,righ],[Z,Z-1,Z-15]
+    
+    main[0]=HistogramRealPeakEnergyDeposit->GetEntries();
+    main[1]=HistogramRealPeakEnergyDepositMinus1->GetEntries();
+    main[2]=HistogramRealPeakEnergyDepositMiddle->GetEntries();
+    
+    int BinTest = HistogramCrosstalkDistanceX->FindBin(-2);
+    EventMapX[1][0][0]=HistogramCrosstalkDistanceX->GetBinContent(BinTest)/main[0]*100;
+    int BinTest = HistogramCrosstalkDistanceX->FindBin(-1);
+    EventMapX[0][0][0]=HistogramCrosstalkDistanceX->GetBinContent(BinTest)/main[0]*100;
+    int BinTest = HistogramCrosstalkDistanceX->FindBin(1);
+    EventMapX[0][1][0]=HistogramCrosstalkDistanceX->GetBinContent(BinTest)/main[0]*100;
+    int BinTest = HistogramCrosstalkDistanceX->FindBin(2);
+    EventMapX[1][1][0]=HistogramCrosstalkDistanceX->GetBinContent(BinTest)/main[0]*100;
+    
+    int BinTest = HistogramCrosstalkDistanceY->FindBin(-2);
+    EventMapY[1][0][0]=HistogramCrosstalkDistanceY->GetBinContent(BinTest)/main[0]*100;
+    int BinTest = HistogramCrosstalkDistanceY->FindBin(-1);
+    EventMapY[0][0][0]=HistogramCrosstalkDistanceY->GetBinContent(BinTest)/main[0]*100;
+    int BinTest = HistogramCrosstalkDistanceY->FindBin(1);
+    EventMapY[0][1][0]=HistogramCrosstalkDistanceY->GetBinContent(BinTest)/main[0]*100;
+    int BinTest = HistogramCrosstalkDistanceY->FindBin(2);
+    EventMapY[1][1][0]=HistogramCrosstalkDistanceY->GetBinContent(BinTest)/main[0]*100;
+    
+    int BinTest = HistogramCrosstalkDistanceMinus1X->FindBin(-2);
+    EventMapX[1][0][1]=HistogramCrosstalkDistanceMinus1X->GetBinContent(BinTest)/main[1]*100;
+    int BinTest = HistogramCrosstalkDistanceMinus1X->FindBin(-1);
+    EventMapX[0][0][1]=HistogramCrosstalkDistanceMinus1X->GetBinContent(BinTest)/main[1]*100;
+    int BinTest = HistogramCrosstalkDistanceMinus1X->FindBin(1);
+    EventMapX[0][1][1]=HistogramCrosstalkDistanceMinus1X->GetBinContent(BinTest)/main[1]*100;
+    int BinTest = HistogramCrosstalkDistanceMinus1X->FindBin(2);
+    EventMapX[1][1][1]=HistogramCrosstalkDistanceMinus1X->GetBinContent(BinTest)/main[1]*100;
+    
+    int BinTest = HistogramCrosstalkDistanceMinus1Y->FindBin(-2);
+    EventMapY[1][0][1]=HistogramCrosstalkDistanceMinus1Y->GetBinContent(BinTest)/main[1]*100;
+    int BinTest = HistogramCrosstalkDistanceMinus1Y->FindBin(-1);
+    EventMapY[0][0][1]=HistogramCrosstalkDistanceMinus1Y->GetBinContent(BinTest)/main[1]*100;
+    int BinTest = HistogramCrosstalkDistanceMinus1Y->FindBin(1);
+    EventMapY[0][1][1]=HistogramCrosstalkDistanceMinus1Y->GetBinContent(BinTest)/main[1]*100;
+    int BinTest = HistogramCrosstalkDistanceMinus1Y->FindBin(2);
+    EventMapY[1][1][1]=HistogramCrosstalkDistanceMinus1Y->GetBinContent(BinTest)/main[1]*100;
+    
+    int BinTest = HistogramCrosstalkDistanceMiddleX->FindBin(-2);
+    EventMapX[1][0][2]=HistogramCrosstalkDistanceMiddleX->GetBinContent(BinTest)/main[2]*100;
+    int BinTest = HistogramCrosstalkDistanceMiddleX->FindBin(-1);
+    EventMapX[0][0][2]=HistogramCrosstalkDistanceMiddleX->GetBinContent(BinTest)/main[2]*100;
+    int BinTest = HistogramCrosstalkDistanceMiddleX->FindBin(1);
+    EventMapX[0][1][2]=HistogramCrosstalkDistanceMiddleX->GetBinContent(BinTest)/main[2]*100;
+    int BinTest = HistogramCrosstalkDistanceMiddleX->FindBin(2);
+    EventMapX[1][1][2]=HistogramCrosstalkDistanceMiddleX->GetBinContent(BinTest)/main[2]*100;
+    
+    int BinTest = HistogramCrosstalkDistanceMiddleY->FindBin(-2);
+    EventMapY[1][0][2]=HistogramCrosstalkDistanceMiddleY->GetBinContent(BinTest)/main[2]*100;
+    int BinTest = HistogramCrosstalkDistanceMiddleY->FindBin(-1);
+    EventMapY[0][0][2]=HistogramCrosstalkDistanceMiddleY->GetBinContent(BinTest)/main[2]*100;
+    int BinTest = HistogramCrosstalkDistanceMiddleY->FindBin(1);
+    EventMapY[0][1][2]=HistogramCrosstalkDistanceMiddleY->GetBinContent(BinTest)/main[2]*100;
+    int BinTest = HistogramCrosstalkDistanceMiddleY->FindBin(2);
+    EventMapY[1][1][2]=HistogramCrosstalkDistanceMiddleY->GetBinContent(BinTest)/main[2]*100;
+    
+    plik<<"X percetage stoppig point     : "<<EventMapX[1][0][0]<<" "<<EventMapX[0][0][0]<<" "<<EventMapX[0][1][0]<<" "<<EventMapX[1][1][0]<<endl;
+    plik<<"Y percetage stoppig point     : "<<EventMapY[1][0][0]<<" "<<EventMapY[0][0][0]<<" "<<EventMapY[0][1][0]<<" "<<EventMapY[1][1][0]<<endl;
+    plik<<"X percetage stoppig point-1   : "<<EventMapX[1][0][1]<<" "<<EventMapX[0][0][1]<<" "<<EventMapX[0][1][1]<<" "<<EventMapX[1][1][1]<<endl;
+    plik<<"Y percetage stoppig point-1   : "<<EventMapY[1][0][1]<<" "<<EventMapY[0][0][1]<<" "<<EventMapY[0][1][1]<<" "<<EventMapY[1][1][1]<<endl;
+    plik<<"X percetage stoppig point-15  : "<<EventMapX[1][0][2]<<" "<<EventMapX[0][0][2]<<" "<<EventMapX[0][1][2]<<" "<<EventMapX[1][1][2]<<endl;
+    plik<<"Y percetage stoppig point-15  : "<<EventMapY[1][0][2]<<" "<<EventMapY[0][0][2]<<" "<<EventMapY[0][1][2]<<" "<<EventMapY[1][1][2]<<endl;
+    
+////////////////////////////////   
+    
+    
     EnergyTrigTimeX->GetYaxis()->SetTitleOffset(1.4);
     EnergyTrigTimeX->GetXaxis()->SetTitleSize(0.04);
     EnergyTrigTimeX->GetYaxis()->SetTitleSize(0.04);
@@ -322,10 +388,10 @@ void PlotMaker()
     HistogramRealPeakEnergyDepositMiddle->GetYaxis()->SetTitleSize(0.05);
     
     Canvas3->cd(3);
-    HistogramRealPeakEnergyDepositMiddle->Draw("");
-    HistogramRealPeakEnergyDeposit->Draw("SAME");
+    HistogramRealPeakEnergyDeposit->Draw("");
     HistogramRealPeakEnergyDepositMinus1->Draw("SAME");
-
+    HistogramRealPeakEnergyDepositMiddle->Draw("SAME");
+    
     
     TLegend *legend3 = new TLegend(0.65,0.6,1.0,0.9);
     legend3->AddEntry(HistogramRealPeakEnergyDeposit,"Stopping Point","l");
@@ -403,9 +469,9 @@ void PlotMaker()
     CrosstalkEnergyDepositPercentageX->GetYaxis()->SetTitleSize(0.05);
     
     Canvas4->cd(1);
-    CrosstalkEnergyDepositPercentageX->Draw("");
+    CrosstalkEnergyPercentageMinus1X->Draw("");
+    CrosstalkEnergyDepositPercentageX->Draw("SAME");
     CrosstalkEnergyPercentageMiddleX->Draw("SAME");
-    CrosstalkEnergyPercentageMinus1X->Draw("SAME");
 
     TLegend *legend11 = new TLegend(0.48,0.6,0.9,0.9);
     legend11->AddEntry(CrosstalkEnergyDepositPercentageX,"Stopping Point","l");
@@ -435,10 +501,9 @@ void PlotMaker()
     CloneMiddlercentageX->GetYaxis()->SetTitleSize(0.05);
     
     Canvas4->cd(3);
-    CloneMiddlercentageX->Draw("");
+    CloneMinus1ercentageX->Draw("");
+    CloneMiddlercentageX->Draw("SAME");
     CloneStoppingPercentageX->Draw("SAME");
-    CloneMinus1ercentageX->Draw("SAME");
-    
     
     TLegend *legend13 = new TLegend(0.48,0.6,0.9,0.9);
     legend13->AddEntry(CloneStoppingPercentageX,"Stopping Point","l");
@@ -658,13 +723,13 @@ void PlotMaker()
     CrosstalkEnergyDepositMiddleTwoCubesY->SetLineColorAlpha(kGreen, 1);
     CrosstalkEnergyDepositMiddleTwoCubesY->SetLineWidth(1.5);
         
-    CrosstalkEnergyDepositOneCubeX->GetYaxis()->SetTitleOffset(1.0);
-    CrosstalkEnergyDepositOneCubeX->GetXaxis()->SetTitleSize(0.05);
-    CrosstalkEnergyDepositOneCubeX->GetYaxis()->SetTitleSize(0.05);
+    CrosstalkEnergyDepositMinus1OneCubeX->GetYaxis()->SetTitleOffset(1.0);
+    CrosstalkEnergyDepositMinus1OneCubeX->GetXaxis()->SetTitleSize(0.05);
+    CrosstalkEnergyDepositMinus1OneCubeX->GetYaxis()->SetTitleSize(0.05);
     
     Canvas12->cd(1);
-    CrosstalkEnergyDepositOneCubeX->Draw("");
-    CrosstalkEnergyDepositMinus1OneCubeX->Draw("SAME");
+    CrosstalkEnergyDepositMinus1OneCubeX->Draw("");
+    CrosstalkEnergyDepositOneCubeX->Draw("SAME");
     CrosstalkEnergyDepositMiddleOneCubeX->Draw("SAME");
     
     TLegend *legend71 = new TLegend(0.48,0.6,0.9,0.9);
@@ -887,54 +952,6 @@ void PlotMaker()
     gPad->Modified();
     Canvas13->Print("/Users/kolos/Desktop/Studia/CIS/Crosstalk/StoppingProton/Output/CrosstalkPercentageDistance.pdf");  
     delete Canvas13;
-    
-    /////////////////
-    TCanvas *Canvas14 = new TCanvas("Canvas14","Canvas14", 1400, 1000);
-    Canvas14->Divide(1,1);
-    
-    CrosstalkEnergyDepositPercentageSecondCubeNewX->SetLineColorAlpha(kRed, 1);
-    CrosstalkEnergyDepositPercentageSecondCubeNewX->SetLineWidth(1.5);
-    
-    CrosstalkEnergyDepositPercentageMinus1SecondCubeNewX->SetLineColorAlpha(kBlue, 1);
-    CrosstalkEnergyDepositPercentageMinus1SecondCubeNewX->SetLineWidth(1.5);
-    
-    CrosstalkEnergyDepositPercentageMiddleSecondCubeNewX->SetLineColorAlpha(kGreen, 1);
-    CrosstalkEnergyDepositPercentageMiddleSecondCubeNewX->SetLineWidth(1.5);
-    
-    long double normalizacja[6];
-    for(int i=0;i<=2;i++)
-    {
-       normalizacja[i]=0;
-    }
-    int binowanie=CrosstalkEnergyDepositPercentageSecondCubeNewX->GetNbinsX();
-
-    for(int i=1;i<=binowanie;i++)
-    {
-        normalizacja[0]+=CrosstalkEnergyDepositPercentageSecondCubeNewX->GetBinContent(i);
-        normalizacja[1]+=CrosstalkEnergyDepositPercentageMinus1SecondCubeNewX->GetBinContent(i);
-        normalizacja[2]+=CrosstalkEnergyDepositPercentageMiddleSecondCubeNewX->GetBinContent(i);
-    }
-   
-    int norma=1000;
-    CrosstalkEnergyDepositPercentageSecondCubeNewX->Scale(norma/normalizacja[0]);
-    CrosstalkEnergyDepositPercentageMinus1SecondCubeNewX->Scale(norma/normalizacja[1]);
-    CrosstalkEnergyDepositPercentageMiddleSecondCubeNewX->Scale(norma/normalizacja[2]);
-
-    Canvas14->cd(1);
-    CrosstalkEnergyDepositPercentageSecondCubeNewX->Draw("");
-    CrosstalkEnergyDepositPercentageMinus1SecondCubeNewX->Draw("SAME");
-    CrosstalkEnergyDepositPercentageMiddleSecondCubeNewX->Draw("SAME");
-    
-    TLegend *legend91 = new TLegend(0.65,0.8,0.9,0.9);
-    legend91->AddEntry(CrosstalkEnergyDepositPercentageSecondCubeNewX,"Stopping Point","l");
-    legend91->AddEntry(CrosstalkEnergyDepositPercentageMinus1SecondCubeNewX,"One Cube Backward","l");
-    legend91->AddEntry(CrosstalkEnergyDepositPercentageMiddleSecondCubeNewX,"15 Cubes Backward","l");
-    legend91->Draw();
-    
-    gPad->Modified();
-    Canvas14->Print("/Users/kolos/Desktop/Studia/CIS/Crosstalk/StoppingProton/Output/CrosstalkPercentageSecondCubeNew.pdf");  
-    delete Canvas14;
-    
     ///////////////
     TCanvas *Canvas15 = new TCanvas("Canvas15","Canvas15", 1400, 1000);
     Canvas15->Divide(3,2);
@@ -1026,5 +1043,4 @@ void PlotMaker()
     gPad->Modified();
     Canvas15->Print("/Users/kolos/Desktop/Studia/CIS/Crosstalk/StoppingProton/Output/CrosstalkDepositFirstAndSecondCube.pdf");  
     delete Canvas15;
-
 }

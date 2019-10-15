@@ -45,18 +45,16 @@ void DataMerger()
     TH1F *NewCrosstalkEnergyDepositPercentageOneCubeX = new TH1F("NewCrosstalkEnergyDepositPercentageOneCubeX", "Crosstalk energy divided by main deposit in X plain,  one cube",200,0,100);
     TH1F *NewCrosstalkEnergyDepositPercentageOneCubeY = new TH1F("NewCrosstalkEnergyDepositPercentageOneCubeY", "Crosstalk energy divided by main deposit in Y plain,  one cube",200,0,100);
     
+    TH1F *NewCrosstalkEnergyDepositPercentageOneCubeImprovedX = new TH1F("NewCrosstalkEnergyDepositPercentageOneCubeImprovedX", "Crosstalk energy divided by main deposit in X plain, one cube,after correction",200,0,100);
+    TH1F *NewCrosstalkEnergyDepositPercentageOneCubeImprovedY = new TH1F("NewCrosstalkEnergyDepositPercentageOneCubeImprovedY", "Crosstalk energy divided by main deposit in Y plain, one cube, after correction",200,0,100);
+     
     TH1F *NewCrosstalkEnergyDepositPercentageTwoCubesX = new TH1F("NewCrosstalkEnergyDepositPercentageTwoCubesX", "Crosstalk energy divided by main deposit in X plain,  two cubes",100,0,100);
     TH1F *NewCrosstalkEnergyDepositPercentageTwoCubesY = new TH1F("NewCrosstalkEnergyDepositPercentageTwoCubesY", "Crosstalk energy divided by main deposit in Y plain,  one cube",100,0,100);
-    
-    TH1F *NewCrosstalkEnergyDepositPercentageSecondCubeNewX = new TH1F("NewCrosstalkEnergyDepositPercentageSecondCubeNewX", "Crosstalk in second cube divided by crosstalk in first cube, in X plain, one cube backward",100,0,100);
     
     TH1F *NewStoppingPointLocation = new TH1F("NewStoppingPointLocation", "Location of stopping point",48,0,48);
     
     TH1F *NewHistogramCrosstalkDistanceX= new TH1F("NewHistogramCrosstalkDistanceX", "Cube distance of energy deposit from peak X axis",10,-5,5);
     TH1F *NewHistogramCrosstalkDistanceY = new TH1F("NewHistogramCrosstalkDistanceY", "Cube distance of energy deposit from peak Y axis",10,-5,5);
-    
-    TH1F *NewCrosstalkEnergyDepositRestrictedX= new TH1F("NewCrosstalkEnergyDepositRestrictedX", "Crosstalk energy in X plain maximaly 2 cubes from deposit",500,0,500);
-    TH1F *NewCrosstalkEnergyDepositRestrictedY= new TH1F("NewCrosstalkEnergyDepositRestrictedY", "Crosstalk energy in Y plain maximaly 2 cubes from deposit",500,0,500);
     
     TH1F *NewHistogramCrosstalkDistanceEnergyHigherThanX= new TH1F("NewHistogramCrosstalkDistanceEnergyHigherThanX", "Cube distance of energy deposit from peak X axis if energy higher than 50",10,-5,5);
     TH1F *NewHistogramCrosstalkDistanceEnergyHigherThanY= new TH1F("NewHistogramCrosstalkDistanceEnergyHigherThanY", "Cube distance of energy deposit from peak Y axis if energy higher than 50",10,-5,5);
@@ -91,10 +89,11 @@ void DataMerger()
     TH1F *NewCrosstalkEnergyPercentageMinus1OneCubeX = new TH1F("NewCrosstalkEnergyPercentageMinus1OneCubeX", "Crosstalk divided by main deposit in X plain, one cube backward, one cube.",200,0,100);
     TH1F *NewCrosstalkEnergyPercentageMinus1OneCubeY = new TH1F("NewCrosstalkEnergyPercentageMinus1OneCubeY", "Crosstalk divided by main deposit in Y plain, one cube backward, one cube.",200,0,100);
 
+    TH1F *NewCrosstalkEnergyDepositPercentageMinus1OneCubeImprovedX = new TH1F("NewCrosstalkEnergyDepositPercentageMinus1OneCubeImprovedX", "Crosstalk energy divided by main deposit in X plain, 15 cubes backward, one cube,after correction",200,0,100);
+    TH1F *NewCrosstalkEnergyDepositPercentageMinus1OneCubeImprovedY = new TH1F("NewCrosstalkEnergyDepositPercentageMinus1OneCubeImprovedY", "Crosstalk energy divided by main deposit in Y plain, 15 cubes backward, one cube, after correction",200,0,100);
+    
     TH1F *NewCrosstalkEnergyPercentageMinus1TwoCubesX = new TH1F("NewCrosstalkEnergyPercentageMinus1TwoCubesX", "Crosstalk divided by main deposit in X plain, one cube backward, two cubes.",100,0,100);
     TH1F *NewCrosstalkEnergyPercentageMinus1TwoCubesY = new TH1F("NewCrosstalkEnergyPercentageMinus1TwoCubesY", "Crosstalk divided by main deposit in Y plain, one cube backward, two cubes.",100,0,100);
-    
-    TH1F *NewCrosstalkEnergyDepositPercentageMinus1SecondCubeNewX = new TH1F("NewCrosstalkEnergyDepositPercentageMinus1SecondCubeNewX", "Crosstalk in second cube divided by crosstalk in first cube, in X plain, one cube backward.",100,0,100);
     
     TH1F *NewHistogramCrosstalkDistanceMinus1X= new TH1F("NewHistogramCrosstalkDistanceMinus1X", "Cube distance of energy deposit from peak X axis, one cube backward",10,-5,5); 
     TH1F *NewHistogramCrosstalkDistanceMinus1Y = new TH1F("NewHistogramCrosstalkDistanceMinus1Y", "Cube distance of energy deposit from peak Y axis, one cube backward",10,-5,5);
@@ -122,10 +121,11 @@ void DataMerger()
     TH1F *NewCrosstalkEnergyPercentageMiddleOneCubeX = new TH1F("NewCrosstalkEnergyPercentageMiddleOneCubeX", "Crosstalk energy divided by main deposit in X plain, 15 cubes away from stopping poin, one cube.",200,0,100);
     TH1F *NewCrosstalkEnergyPercentageMiddleOneCubeY = new TH1F("NewCrosstalkEnergyPercentageMiddleOneCubeY", "Crosstalk energy divided by main deposit in Y plain, 15 cubes away from stopping poin, one cube.",200,0,100);
 
+    TH1F *NewCrosstalkEnergyDepositPercentageMiddleOneCubeImprovedX = new TH1F("NewCrosstalkEnergyDepositPercentageMiddleOneCubeImprovedX", "Crosstalk energy divided by main deposit in X plain, 15 cubes backward, one cube,after correction",200,0,100);
+    TH1F *NewCrosstalkEnergyDepositPercentageMiddleOneCubeImprovedY = new TH1F("NewCrosstalkEnergyDepositPercentageMiddleOneCubeImprovedY", "Crosstalk energy divided by main deposit in Y plain, 15 cubes backward, one cube, after correction",200,0,100);
+    
     TH1F *NewCrosstalkEnergyPercentageMiddleTwoCubesX = new TH1F("NewCrosstalkEnergyPercentageMiddleTwoCubesX", "Crosstalk energy divided by main deposit in X plain, 15 cubes away from stopping poin, two cubes.",100,0,100);
     TH1F *NewCrosstalkEnergyPercentageMiddleTwoCubesY = new TH1F("NewCrosstalkEnergyPercentageMiddleTwoCubesY", "Crosstalk energy divided by main deposit in Y plain, 15 cubes away from stopping poin, two cubes.",100,0,100);
-    
-    TH1F *NewCrosstalkEnergyDepositPercentageMiddleSecondCubeNewX = new TH1F("NewCrosstalkEnergyDepositPercentageMiddleSecondCubeNewX", "Crosstalk in second cube divided by crosstalk in first cube, in X plain, 15 cubes backward.",100,0,100);
     
     TH1F *NewHistogramCrosstalkDistanceMiddleX= new TH1F("NewHistogramCrosstalkDistanceMiddleX", "Cube distance of energy deposit from peak X axis, 15 cubes away from stopping poin.",10,-5,5);
     TH1F *NewHistogramCrosstalkDistanceMiddleY = new TH1F("NewHistogramCrosstalkDistanceMiddleY", "Cube distance of energy deposit from peak Y axis, 15 cubes away from stopping poin.",10,-5,5);
@@ -196,13 +196,15 @@ void DataMerger()
         TH1F* CrosstalkEnergyDepositPercentageOneCubeYClone = (TH1F*) file->Get("CrosstalkEnergyDepositPercentageOneCubeY");
         NewCrosstalkEnergyDepositPercentageOneCubeY->Add(CrosstalkEnergyDepositPercentageOneCubeYClone);
         
+        TH1F* CrosstalkEnergyDepositPercentageOneCubeImprovedXClone = (TH1F*) file->Get("CrosstalkEnergyDepositPercentageOneCubeImprovedX");
+        NewCrosstalkEnergyDepositPercentageOneCubeImprovedX->Add(CrosstalkEnergyDepositPercentageOneCubeImprovedXClone);
+        TH1F* CrosstalkEnergyDepositPercentageOneCubeImprovedYClone = (TH1F*) file->Get("CrosstalkEnergyDepositPercentageOneCubeImprovedY");
+        NewCrosstalkEnergyDepositPercentageOneCubeImprovedY->Add(CrosstalkEnergyDepositPercentageOneCubeImprovedYClone);
+        
         TH1F* CrosstalkEnergyDepositPercentageTwoCubesXClone = (TH1F*) file->Get("CrosstalkEnergyDepositPercentageTwoCubesX");
         NewCrosstalkEnergyDepositPercentageTwoCubesX->Add(CrosstalkEnergyDepositPercentageTwoCubesXClone);
         TH1F* CrosstalkEnergyDepositPercentageTwoCubesYClone = (TH1F*) file->Get("CrosstalkEnergyDepositPercentageTwoCubesY");
         NewCrosstalkEnergyDepositPercentageTwoCubesY->Add(CrosstalkEnergyDepositPercentageTwoCubesY);
-        
-        TH1F* CrosstalkEnergyDepositPercentageSecondCubeNewXClone = (TH1F*) file->Get("CrosstalkEnergyDepositPercentageSecondCubeNewX");
-        NewCrosstalkEnergyDepositPercentageSecondCubeNewX->Add(CrosstalkEnergyDepositPercentageSecondCubeNewXClone);
         
         TH1F* StoppingPointLocationClone = (TH1F*) file->Get("StoppingPointLocation");
         NewStoppingPointLocation->Add(StoppingPointLocationClone);
@@ -267,13 +269,15 @@ void DataMerger()
         TH1F* CrosstalkEnergyPercentageMinus1OneCubeYClone = (TH1F*) file->Get("CrosstalkEnergyPercentageMinus1OneCubeY");
         NewCrosstalkEnergyPercentageMinus1OneCubeY->Add(CrosstalkEnergyPercentageMinus1OneCubeYClone);
         
+        TH1F* CrosstalkEnergyDepositPercentageMinus1OneCubeImprovedXClone = (TH1F*) file->Get("CrosstalkEnergyDepositPercentageMinus1OneCubeImprovedX");
+        NewCrosstalkEnergyDepositPercentageMinus1OneCubeImprovedX->Add(CrosstalkEnergyDepositPercentageMinus1OneCubeImprovedXClone);
+        TH1F* CrosstalkEnergyDepositPercentageMinus1OneCubeImprovedYClone = (TH1F*) file->Get("CrosstalkEnergyDepositPercentageMinus1OneCubeImprovedY");
+        NewCrosstalkEnergyDepositPercentageMinus1OneCubeImprovedY->Add(CrosstalkEnergyDepositPercentageMinus1OneCubeImprovedYClone);
+        
         TH1F* CrosstalkEnergyPercentageMinus1TwoCubesXClone = (TH1F*) file->Get("CrosstalkEnergyPercentageMinus1TwoCubesX");
         NewCrosstalkEnergyPercentageMinus1TwoCubesX->Add(CrosstalkEnergyPercentageMinus1TwoCubesXClone);
         TH1F* CrosstalkEnergyPercentageMinus1TwoCubesYClone = (TH1F*) file->Get("CrosstalkEnergyPercentageMinus1TwoCubesY");
         NewCrosstalkEnergyPercentageMinus1TwoCubesY->Add(CrosstalkEnergyPercentageMinus1TwoCubesYClone);
-        
-        TH1F* CrosstalkEnergyDepositPercentageMinus1SecondCubeNewXClone = (TH1F*) file->Get("CrosstalkEnergyDepositPercentageMinus1SecondCubeNewX");
-        NewCrosstalkEnergyDepositPercentageMinus1SecondCubeNewX->Add(CrosstalkEnergyDepositPercentageMinus1SecondCubeNewXClone);
         
         TH1F* HistogramCrosstalkDistanceMinus1XClone = (TH1F*) file->Get("HistogramCrosstalkDistanceMinus1X");
         NewHistogramCrosstalkDistanceMinus1X->Add(HistogramCrosstalkDistanceMinus1XClone);
@@ -318,13 +322,15 @@ void DataMerger()
         TH1F* CrosstalkEnergyPercentageMiddleOneCubeYClone = (TH1F*) file->Get("CrosstalkEnergyPercentageMiddleOneCubeY");
         NewCrosstalkEnergyPercentageMiddleOneCubeY->Add(CrosstalkEnergyPercentageMiddleOneCubeYClone);
         
+        TH1F* CrosstalkEnergyDepositPercentageMiddleOneCubeImprovedXClone = (TH1F*) file->Get("CrosstalkEnergyDepositPercentageMiddleOneCubeImprovedX");
+        NewCrosstalkEnergyDepositPercentageMiddleOneCubeImprovedX->Add(CrosstalkEnergyDepositPercentageMiddleOneCubeImprovedXClone);
+        TH1F* CrosstalkEnergyDepositPercentageMiddleOneCubeImprovedYClone = (TH1F*) file->Get("CrosstalkEnergyDepositPercentageMiddleOneCubeImprovedY");
+        NewCrosstalkEnergyDepositPercentageMiddleOneCubeImprovedY->Add(CrosstalkEnergyDepositPercentageMiddleOneCubeImprovedYClone);
+        
         TH1F* CrosstalkEnergyPercentageMiddleTwoCubesXClone = (TH1F*) file->Get("CrosstalkEnergyPercentageMiddleTwoCubesX");
         NewCrosstalkEnergyPercentageMiddleTwoCubesX->Add(CrosstalkEnergyPercentageMiddleTwoCubesXClone);
         TH1F* CrosstalkEnergyPercentageMiddleTwoCubesYClone = (TH1F*) file->Get("CrosstalkEnergyPercentageMiddleTwoCubesY");
         NewCrosstalkEnergyPercentageMiddleTwoCubesY->Add(CrosstalkEnergyPercentageMiddleTwoCubesYClone);
-        
-        TH1F* CrosstalkEnergyDepositPercentageMiddleSecondCubeNewXClone = (TH1F*) file->Get("CrosstalkEnergyDepositPercentageMiddleSecondCubeNewX");
-        NewCrosstalkEnergyDepositPercentageMiddleSecondCubeNewX->Add(CrosstalkEnergyDepositPercentageMiddleSecondCubeNewXClone);
         
         TH1F* HistogramCrosstalkDistanceMiddleXClone = (TH1F*) file->Get("HistogramCrosstalkDistanceMiddleX");
         NewHistogramCrosstalkDistanceMiddleX->Add(HistogramCrosstalkDistanceMiddleXClone);
@@ -375,14 +381,13 @@ void DataMerger()
         delete CrosstalkEnergyDepositPercentageYClone;
         delete CrosstalkEnergyDepositPercentageOneCubeXClone;
         delete CrosstalkEnergyDepositPercentageOneCubeYClone;
+        delete CrosstalkEnergyDepositPercentageOneCubeImprovedXClone;
+        delete CrosstalkEnergyDepositPercentageOneCubeImprovedYClone;
         delete CrosstalkEnergyDepositPercentageTwoCubesXClone;
         delete CrosstalkEnergyDepositPercentageTwoCubesYClone;
-        delete CrosstalkEnergyDepositPercentageSecondCubeNewXClone;
         delete StoppingPointLocationClone;
         delete HistogramCrosstalkDistanceXClone;
         delete HistogramCrosstalkDistanceYClone;
-        delete CrosstalkEnergyDepositRestrictedXClone;
-        delete CrosstalkEnergyDepositRestrictedYClone;
         delete HistogramCrosstalkDistanceEnergyHigherThanXClone;
         delete HistogramCrosstalkDistanceEnergyHigherThanYClone;
         delete HistogramCrosstalkDistanceCutXClone;
@@ -405,9 +410,10 @@ void DataMerger()
         delete CrosstalkEnergyPercentageMinus1YClone;
         delete CrosstalkEnergyPercentageMinus1OneCubeXClone;
         delete CrosstalkEnergyPercentageMinus1OneCubeYClone;
+        delete CrosstalkEnergyDepositPercentageMinus1OneCubeImprovedXClone;
+        delete CrosstalkEnergyDepositPercentageMinus1OneCubeImprovedYClone;
         delete CrosstalkEnergyPercentageMinus1TwoCubesXClone;
         delete CrosstalkEnergyPercentageMinus1TwoCubesYClone;
-        delete CrosstalkEnergyDepositPercentageMinus1SecondCubeNewXClone;
         delete HistogramCrosstalkDistanceMinus1XClone;
         delete HistogramCrosstalkDistanceMinus1YClone;
         delete HistogramRealPeakEnergyDepositMinus1Clone;
@@ -425,9 +431,10 @@ void DataMerger()
         delete CrosstalkEnergyPercentageMiddleYClone;
         delete CrosstalkEnergyPercentageMiddleOneCubeXClone;
         delete CrosstalkEnergyPercentageMiddleOneCubeYClone;
+        delete CrosstalkEnergyDepositPercentageMiddleOneCubeImprovedXClone;
+        delete CrosstalkEnergyDepositPercentageMiddleOneCubeImprovedYClone;
         delete CrosstalkEnergyPercentageMiddleTwoCubesXClone;
         delete CrosstalkEnergyPercentageMiddleTwoCubesYClone;
-        delete CrosstalkEnergyDepositPercentageMiddleSecondCubeNewXClone;
         delete HistogramCrosstalkDistanceMiddleXClone;
         delete HistogramCrosstalkDistanceMiddleYClone;
         delete NewHistogramRealPeakEnergyDepositMiddleClone;
@@ -496,16 +503,19 @@ void DataMerger()
     CrosstalkEnergyDepositPercentageOneCubeY->GetYaxis()->SetTitle("Number of events");
     CrosstalkEnergyDepositPercentageOneCubeY->GetXaxis()->SetTitle("Percentage %");
     
+    TH1F *CrosstalkEnergyDepositPercentageOneCubeImprovedX = (TH1F*)(NewCrosstalkEnergyDepositPercentageOneCubeImprovedX->Clone("CrosstalkEnergyDepositPercentageOneCubeImprovedX"));
+    CrosstalkEnergyDepositPercentageOneCubeImprovedX->GetYaxis()->SetTitle("Number of events");
+    CrosstalkEnergyDepositPercentageOneCubeImprovedX->GetXaxis()->SetTitle("Percentage %");
+    TH1F *CrosstalkEnergyDepositPercentageOneCubeImprovedY=(TH1F*)(NewCrosstalkEnergyDepositPercentageOneCubeImprovedY->Clone("CrosstalkEnergyDepositPercentageOneCubeImprovedY"));
+    CrosstalkEnergyDepositPercentageOneCubeImprovedY->GetYaxis()->SetTitle("Number of events");
+    CrosstalkEnergyDepositPercentageOneCubeImprovedY->GetXaxis()->SetTitle("Percentage %");
+
     TH1F *CrosstalkEnergyDepositPercentageTwoCubesX = (TH1F*)(NewCrosstalkEnergyDepositPercentageTwoCubesX->Clone("CrosstalkEnergyDepositPercentageTwoCubesX"));
     CrosstalkEnergyDepositPercentageTwoCubesX->GetYaxis()->SetTitle("Number of events");
     CrosstalkEnergyDepositPercentageTwoCubesX->GetXaxis()->SetTitle("Percentage %");
     TH1F *CrosstalkEnergyDepositPercentageTwoCubesY = (TH1F*)(NewCrosstalkEnergyDepositPercentageTwoCubesY->Clone("CrosstalkEnergyDepositPercentageTwoCubesY"));
     CrosstalkEnergyDepositPercentageTwoCubesY->GetYaxis()->SetTitle("Number of events");
     CrosstalkEnergyDepositPercentageTwoCubesY->GetXaxis()->SetTitle("Percentage %");
-    
-    TH1F *CrosstalkEnergyDepositPercentageSecondCubeNewX = (TH1F*)(NewCrosstalkEnergyDepositPercentageSecondCubeNewX->Clone("CrosstalkEnergyDepositPercentageSecondCubeNewX"));
-    CrosstalkEnergyDepositPercentageSecondCubeNewX->GetYaxis()->SetTitle("Number of events");
-    CrosstalkEnergyDepositPercentageSecondCubeNewX->GetXaxis()->SetTitle("Percentage %");
     
     TH1F *StoppingPointLocation = (TH1F*)(NewStoppingPointLocation->Clone("StoppingPointLocation"));
     StoppingPointLocation->GetYaxis()->SetTitle("Number of events");
@@ -517,13 +527,6 @@ void DataMerger()
     TH1F *HistogramCrosstalkDistanceY = (TH1F*)(NewHistogramCrosstalkDistanceY->Clone("HistogramCrosstalkDistanceY"));
     HistogramCrosstalkDistanceY->GetYaxis()->SetTitle("Number of events");
     HistogramCrosstalkDistanceY->GetXaxis()->SetTitle("Y detector axis [cm]");
-    
-    TH1F *CrosstalkEnergyDepositRestrictedX = (TH1F*)(NewCrosstalkEnergyDepositRestrictedX->Clone("CrosstalkEnergyDepositRestrictedX"));
-    CrosstalkEnergyDepositRestrictedX->GetYaxis()->SetTitle("Number of events");
-    CrosstalkEnergyDepositRestrictedX->GetXaxis()->SetTitle("Energy [p.e.]");
-    TH1F *CrosstalkEnergyDepositRestrictedY = (TH1F*)(NewCrosstalkEnergyDepositRestrictedY->Clone("CrosstalkEnergyDepositRestrictedY"));
-    CrosstalkEnergyDepositRestrictedY->GetYaxis()->SetTitle("Number of events");
-    CrosstalkEnergyDepositRestrictedY->GetXaxis()->SetTitle("Energy [p.e.]");
     
     TH1F *HistogramCrosstalkDistanceEnergyHigherThanX = (TH1F*)(NewHistogramCrosstalkDistanceEnergyHigherThanX->Clone("HistogramCrosstalkDistanceEnergyHigherThanX"));
     HistogramCrosstalkDistanceEnergyHigherThanX->GetYaxis()->SetTitle("Number of events");
@@ -602,16 +605,19 @@ void DataMerger()
     CrosstalkEnergyPercentageMinus1OneCubeY->GetYaxis()->SetTitle("Number of events");
     CrosstalkEnergyPercentageMinus1OneCubeY->GetXaxis()->SetTitle("Percentage %");
     
+    TH1F *CrosstalkEnergyDepositPercentageMinus1OneCubeImprovedX = (TH1F*)(NewCrosstalkEnergyDepositPercentageMinus1OneCubeImprovedX->Clone("CrosstalkEnergyDepositPercentageMinus1OneCubeImprovedX"));
+    CrosstalkEnergyDepositPercentageMinus1OneCubeImprovedX->GetYaxis()->SetTitle("Number of events");
+    CrosstalkEnergyDepositPercentageMinus1OneCubeImprovedX->GetXaxis()->SetTitle("Percentage %");
+    TH1F *CrosstalkEnergyDepositPercentageMinus1OneCubeImprovedY = (TH1F*)(NewCrosstalkEnergyDepositPercentageMinus1OneCubeImprovedY->Clone("CrosstalkEnergyDepositPercentageMinus1OneCubeImprovedY"));
+    CrosstalkEnergyDepositPercentageMinus1OneCubeImprovedY->GetYaxis()->SetTitle("Number of events");
+    CrosstalkEnergyDepositPercentageMinus1OneCubeImprovedY->GetXaxis()->SetTitle("Percentage %");
+    
     TH1F *CrosstalkEnergyPercentageMinus1TwoCubesX = (TH1F*)(NewCrosstalkEnergyPercentageMinus1TwoCubesX->Clone("CrosstalkEnergyPercentageMinus1TwoCubesX"));
     CrosstalkEnergyPercentageMinus1TwoCubesX->GetYaxis()->SetTitle("Number of events");
     CrosstalkEnergyPercentageMinus1TwoCubesX->GetXaxis()->SetTitle("Percentage %");
     TH1F *CrosstalkEnergyPercentageMinus1TwoCubesY = (TH1F*)(NewCrosstalkEnergyPercentageMinus1TwoCubesY->Clone("CrosstalkEnergyPercentageMinus1TwoCubesY"));
     CrosstalkEnergyPercentageMinus1TwoCubesY->GetYaxis()->SetTitle("Number of events");
     CrosstalkEnergyPercentageMinus1TwoCubesY->GetXaxis()->SetTitle("Percentage %");
-    
-    TH1F *CrosstalkEnergyDepositPercentageMinus1SecondCubeNewX = (TH1F*)(NewCrosstalkEnergyDepositPercentageMinus1SecondCubeNewX->Clone("CrosstalkEnergyDepositPercentageMinus1SecondCubeNewX"));
-    CrosstalkEnergyDepositPercentageMinus1SecondCubeNewX->GetYaxis()->SetTitle("Number of events");
-    CrosstalkEnergyDepositPercentageMinus1SecondCubeNewX->GetXaxis()->SetTitle("Percentage %");
     
     TH1F *HistogramCrosstalkDistanceMinus1X = (TH1F*)(NewHistogramCrosstalkDistanceMinus1X->Clone("HistogramCrosstalkDistanceMinus1X"));
     HistogramCrosstalkDistanceMinus1X->GetYaxis()->SetTitle("Number of events");
@@ -673,16 +679,19 @@ void DataMerger()
     CrosstalkEnergyPercentageMiddleOneCubeY->GetYaxis()->SetTitle("Number of events");
     CrosstalkEnergyPercentageMiddleOneCubeY->GetXaxis()->SetTitle("Percentage %");
     
+    TH1F *CrosstalkEnergyDepositPercentageMiddleOneCubeImprovedX = (TH1F*)(NewCrosstalkEnergyDepositPercentageMiddleOneCubeImprovedX->Clone("CrosstalkEnergyDepositPercentageMiddleOneCubeImprovedX"));
+    CrosstalkEnergyDepositPercentageMiddleOneCubeImprovedX->GetYaxis()->SetTitle("Number of events");
+    CrosstalkEnergyDepositPercentageMiddleOneCubeImprovedX->GetXaxis()->SetTitle("Percentage %");
+    TH1F *CrosstalkEnergyDepositPercentageMiddleOneCubeImprovedY = (TH1F*)(NewCrosstalkEnergyDepositPercentageMiddleOneCubeImprovedY->Clone("CrosstalkEnergyDepositPercentageMiddleOneCubeImprovedY"));
+    CrosstalkEnergyDepositPercentageMiddleOneCubeImprovedY->GetYaxis()->SetTitle("Number of events");
+    CrosstalkEnergyDepositPercentageMiddleOneCubeImprovedY->GetXaxis()->SetTitle("Percentage %");
+    
     TH1F *CrosstalkEnergyPercentageMiddleTwoCubesX = (TH1F*)(NewCrosstalkEnergyPercentageMiddleTwoCubesX->Clone("CrosstalkEnergyPercentageMiddleTwoCubesX"));
     CrosstalkEnergyPercentageMiddleTwoCubesX->GetYaxis()->SetTitle("Number of events");
     CrosstalkEnergyPercentageMiddleTwoCubesX->GetXaxis()->SetTitle("Percentage %");
     TH1F *CrosstalkEnergyPercentageMiddleTwoCubesY = (TH1F*)(NewCrosstalkEnergyPercentageMiddleTwoCubesY->Clone("CrosstalkEnergyPercentageMiddleTwoCubesY"));
     CrosstalkEnergyPercentageMiddleTwoCubesY->GetYaxis()->SetTitle("Number of events");
     CrosstalkEnergyPercentageMiddleTwoCubesY->GetXaxis()->SetTitle("Percentage %");
-    
-    TH1F *CrosstalkEnergyDepositPercentageMiddleSecondCubeNewX = (TH1F*)(NewCrosstalkEnergyDepositPercentageMiddleSecondCubeNewX->Clone("CrosstalkEnergyDepositPercentageMiddleSecondCubeNewX"));
-    CrosstalkEnergyDepositPercentageMiddleSecondCubeNewX->GetYaxis()->SetTitle("Number of events");
-    CrosstalkEnergyDepositPercentageMiddleSecondCubeNewX->GetXaxis()->SetTitle("Percentage %");
     
     TH1F *HistogramCrosstalkDistanceMiddleX = (TH1F*)(NewHistogramCrosstalkDistanceMiddleX->Clone("HistogramCrosstalkDistanceMiddleX"));
     HistogramCrosstalkDistanceMiddleX->GetYaxis()->SetTitle("Number of events");
@@ -762,10 +771,11 @@ void DataMerger()
     CrosstalkEnergyDepositPercentageOneCubeX->Write();
     CrosstalkEnergyDepositPercentageOneCubeY->Write();
     
+    CrosstalkEnergyDepositPercentageOneCubeImprovedX->Write();
+    CrosstalkEnergyDepositPercentageOneCubeImprovedY->Write();
+    
     CrosstalkEnergyDepositPercentageTwoCubesX->Write();
     CrosstalkEnergyDepositPercentageTwoCubesY->Write();
-    
-    CrosstalkEnergyDepositPercentageSecondCubeNewX->Write();
     
     StoppingPointLocation->Write();
 
@@ -805,10 +815,11 @@ void DataMerger()
     CrosstalkEnergyPercentageMinus1OneCubeX->Write();
     CrosstalkEnergyPercentageMinus1OneCubeY->Write();
     
+    CrosstalkEnergyDepositPercentageMinus1OneCubeImprovedX->Write();
+    CrosstalkEnergyDepositPercentageMinus1OneCubeImprovedY->Write();
+    
     CrosstalkEnergyPercentageMinus1TwoCubesX->Write();
     CrosstalkEnergyPercentageMinus1TwoCubesY->Write();
-    
-    CrosstalkEnergyDepositPercentageMinus1SecondCubeNewX->Write();
     
     HistogramCrosstalkDistanceMinus1X->Write();
     HistogramCrosstalkDistanceMinus1Y->Write();
@@ -836,10 +847,11 @@ void DataMerger()
     CrosstalkEnergyPercentageMiddleOneCubeX->Write();
     CrosstalkEnergyPercentageMiddleOneCubeY->Write();
     
+    CrosstalkEnergyDepositPercentageMiddleOneCubeImprovedX->Write();
+    CrosstalkEnergyDepositPercentageMiddleOneCubeImprovedY->Write();
+    
     CrosstalkEnergyPercentageMiddleTwoCubesX->Write();
     CrosstalkEnergyPercentageMiddleTwoCubesY->Write();
-    
-    CrosstalkEnergyDepositPercentageMiddleSecondCubeNewX->Write();
     
     HistogramCrosstalkDistanceMiddleX->Write();
     HistogramCrosstalkDistanceMiddleY->Write();
