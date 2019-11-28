@@ -9,6 +9,6 @@ cmake ../ <br/>
 make <br/>
 
 
-PlotMaker.cpp makes nice histograms from created ROOT files.
+PlotMaker.cpp makes nice histograms from created ROOT files. <br/>
 DataMerger.cpp combine a few data sets into one to increase statistic. <br/>
 GraphMaker.cpp creates graphs.
