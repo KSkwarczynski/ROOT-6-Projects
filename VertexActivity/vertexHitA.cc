@@ -146,8 +146,21 @@ void vertexHitA()
             VetrexInDetector=false;
             cout<<"\033[1;31mOut of detector\033[0m"<<endl;
         }
-        
         if(!VetrexInDetector) continue;
+        
+        double VertexDepositCheck=0;
+        for(auto voxel:inputEvent->GetVoxels())
+        { 
+            if(abs(VertexPosition[0]-voxel->GetX() ) <= 0 && abs(VertexPosition[1]-voxel->GetY() ) <= 0 && abs(VertexPosition[2]-voxel->GetZ() ) <= 0)
+            {
+                VertexDepositCheck+=voxel->GetTruePE();
+            }
+        }
+        if(VertexDepositCheck==0)
+        {
+            cout<<"\033[1;31mNo deposit in vertex\033[0m"<<endl;
+            continue;
+        }
         
         double VertexDepositXY[5]={};
         double VertexDepositXZ[5]={};

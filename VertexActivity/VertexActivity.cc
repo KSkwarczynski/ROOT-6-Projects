@@ -88,7 +88,7 @@ void VertexActivity()
             
         for(int ig=0; ig<3; ig++)
         {
-            hVertexActivityDynamicCategory[ig][ik] = new TH1F( Form("Step%fDynamic_Cat%s", ik ,VetrexStringCategories[ig])) , Form("Step%fDynamic_Cat%s", ik ,VetrexStringCategories[ig])), 50, 0, 2500+ik*2500);  
+            hVertexActivityDynamicCategory[ig][ik] = new TH1F( Form("Step%iDynamic_Cat%s", ik ,VetrexStringCategories[ig].Data()) , Form("Step%iDynamic_Cat%s", ik ,VetrexStringCategories[ig].Data()), 50, 0, 2500+ik*2500);  
             hVertexActivityDynamicCategory[ig][ik]->GetXaxis()->SetTitle( Form("Energy deposit in Dynamicbox %s [p.e.]",VetrexString[ik].Data() ) );
             for(int ih=0; ih<SizeOfShiftVector; ih++)
             {
@@ -121,7 +121,7 @@ void VertexActivity()
         VertexPosition[0] = trueVertex->GetX();
         VertexPosition[1] = trueVertex->GetY();
         VertexPosition[2] = trueVertex->GetZ();
-        cout<<selEvents<<" Vertex position  X "<<VertexPosition[0]<<" Y "<< VertexPosition[1] <<" Z "<< VertexPosition[2]<<endl;
+        cout<<selEvents+1<<" Vertex position  X "<<VertexPosition[0]<<" Y "<< VertexPosition[1] <<" Z "<< VertexPosition[2]<<endl;
         
         double VertexDeposit[5]={}; //[VertexBox]
         double VertexDepositDynamic[5]={}; //[VertexBox]
@@ -137,6 +137,19 @@ void VertexActivity()
         }
         if(!VetrexInDetector) continue;
         
+        double VertexDepositCheck=0;
+        for(auto AB:inputEvent->GetVoxels())
+        { 
+            if( abs(VertexPosition[0]-AB->GetX() )<=0 && abs(VertexPosition[1]-AB->GetY() )<=0 && abs(VertexPosition[2]-AB->GetZ() )<=0)
+            {
+                VertexDepositCheck+=AB->GetTruePE();
+            }
+        }
+        if(VertexDepositCheck==0)
+        {
+            cout<<"\033[1;31mNo deposit in vertex\033[0m"<<endl;
+            continue;
+        }
         double TrackParameters[4]={};
         int MuonCounter=0;
         for(auto t:inputEvent->GetTrueTracks()) 
