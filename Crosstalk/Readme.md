@@ -1,7 +1,7 @@
 Program to study crosstalk in Super FGD prototype.
 
 ## How to run
-download repository from https://github.com/MrMefodij/SFGD_Unpack_august
+download repository from https://github.com/MrMefodij/SFGD_Unpack_august <br/>
 next add CrosstalkStudy.cpp to **examples** <br/>
 replace **CMakeLists.txt** in examples with one in this repository. <br/>
 
