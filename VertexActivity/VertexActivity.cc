@@ -20,8 +20,8 @@ float   start_time     = clock();
 bool    RM_CROSSTALK   = false;
 bool    SHOW_TRUE      = true;
 bool    SHOW_RECO      = true;
-TString fileOut        = "/mnt/home/kskwarczynski/t2k-nd280-upgrade/Output/VertexAcivity_Output.root";
-TString fileIn         = "/mnt/home/kskwarczynski/t2k-nd280-upgrade/Output/VertexActInput.root";
+TString fileOut        = "/mnt/home/kskwarczynski/t2k-nd280-upgrade/sfgd_framework/analysis/Output/VertexAcivity_Output.root";
+TString fileIn         = "/mnt/home/kskwarczynski/t2k-nd280-upgrade/Output/Reconstructed_SFGD_MC_0.root"; //VertexActInput SubstractedReco_SFGD_MC_0
 int IsPrototype        = false;
 int SFGD_X             = 204;
 int SFGD_Y             = 56;
@@ -49,61 +49,81 @@ Event*          unpackEvent;
 
 void VertexActivity() 
 {
-
     parseArguments();
     linkFilesToTTrees();
 
     std::vector<ND280SFGDHit*> mppc_hits;
-    
-    //TH3F *VoxelTruePE= new TH3F("VoxelTruePE","VoxelTruePE",SFGD_X, 0.5, SFGD_X+0.5, SFGD_Y, 0.5, SFGD_Y+0.5, SFGD_Z, 0.5, SFGD_Z+0.5);
-    
+        
     TString VertexName[5]={"VertexActivity1x1x1", "VertexActivity3x3x3", "VertexActivity5x5x5", "VertexActivity7x7x7", "VertexActivity9x9x9"};
     TString VertexNameShifted[3]={"X", "Y", "Z"};
     TString VetrexString[5]={"1x1x1" , "3x3x3" , "5x5x5", "7x7x7", "9x9x9"};
-    TString VetrexStringCategories[3]={"Front", "Transverse", "Back"};
     
     double VertexBox[5]={0., 1., 2., 3., 4.}; // 1x1x1, 3x3x3, 5x5x5 and so on...
-    double VertexBoxNew[5]={0.5, 1.5, 2.5, 3.5, 4.5}; // used in Dynamic boxes
     int VAshiftVector[2]={1, -1}; //Adjust position of vertex
     const int SizeOfShiftVector= (sizeof(VAshiftVector)/sizeof(*VAshiftVector));
     
+    TH1*  h_nuMom = new TH1F("h_nuMom", "h_nuMom", 50,0,6000);
+    
     TH1F *hVertexActivity[5];
     TH1F *hVertexActivityShell[4];
-    TH1F *hVertexActivityDynamic[5];
-    TH1F *hVertexActivityDynamicCategory[3][5];
     TH1F *hVertexActivityShifted[SizeOfShiftVector][3][5]; // Which array represent what [VAshiftVector][X,Y,Z][VetrexString]
     
     for(int ik=0; ik<5; ik++)
     {
-        hVertexActivity[ik] = new TH1F(VertexName[ik], VertexName[ik], 50, 0, 2500+ik*2500);  
+        hVertexActivity[ik] = new TH1F(VertexName[ik], VertexName[ik], 50, 0, 4000+ik*2500);  
         hVertexActivity[ik]->GetXaxis()->SetTitle( Form("Energy deposit in box %s [p.e.]",VetrexString[ik].Data() ) );
         
         if(ik>0)
         {
-            hVertexActivityShell[ik-1] = new TH1F( Form("%sShell",VertexName[ik].Data()) , Form("%sShell",VertexName[ik].Data()), 50, 0, 2500+ik*2500);  
+            hVertexActivityShell[ik-1] = new TH1F( Form("%sShell",VertexName[ik].Data()) , Form("%sShell",VertexName[ik].Data()), 50, 0, 4000+ik*2500);  
             hVertexActivityShell[ik-1]->GetXaxis()->SetTitle( Form("Energy deposit in box %s [p.e.]",VetrexString[ik].Data() ) );
         }
-        hVertexActivityDynamic[ik] = new TH1F( Form("%sDynamic",VertexName[ik].Data()) , Form("%sDynamic",VertexName[ik].Data()), 50, 0, 2500+ik*2500);  
-        hVertexActivityDynamic[ik]->GetXaxis()->SetTitle( Form("Energy deposit in Dynamicbox %s [p.e.]",VetrexString[ik].Data() ) );
-            
         for(int ig=0; ig<3; ig++)
         {
-            hVertexActivityDynamicCategory[ig][ik] = new TH1F( Form("Step%iDynamic_Cat%s", ik ,VetrexStringCategories[ig].Data()) , Form("Step%iDynamic_Cat%s", ik ,VetrexStringCategories[ig].Data()), 50, 0, 2500+ik*2500);  
-            hVertexActivityDynamicCategory[ig][ik]->GetXaxis()->SetTitle( Form("Energy deposit in Dynamicbox %s [p.e.]",VetrexString[ik].Data() ) );
             for(int ih=0; ih<SizeOfShiftVector; ih++)
             {
-                hVertexActivityShifted[ih][ig][ik] = new TH1F( Form("%sShifted_%d_%s",VertexName[ik].Data(), VAshiftVector[ih], VertexNameShifted[ig].Data()) ,Form("%sShifted_%d_%s",VertexName[ik].Data(), VAshiftVector[ih] ,VertexNameShifted[ig].Data()), 50, 0, 2500+ik*2500);  
+                hVertexActivityShifted[ih][ig][ik] = new TH1F( Form("%sShifted_%d_%s",VertexName[ik].Data(), VAshiftVector[ih], VertexNameShifted[ig].Data()) ,Form("%sShifted_%d_%s",VertexName[ik].Data(), VAshiftVector[ih] ,VertexNameShifted[ig].Data()), 50, 0, 4000+ik*2500);  
                 hVertexActivityShifted[ih][ig][ik]->GetXaxis()->SetTitle( Form("Energy deposit in box %s [p.e.]",VetrexString[ik].Data() ) );
             }
         }
     }
     
-    int DirtyTrick[5]={};
-    DirtyTrick[0]=1;
+    TH2F *hMomentumVsRange[3];
+    TH2F *hEenrgyVsRange[3];
+    TH2F *hEenrgyVsRangeRestricted[3];
+    TH2F *hEenrgyPeVsRange[3];
+    TString ParticleName[3]={"Muon", "Proton", "Pion"};
+    for(int ik=0; ik<3; ik++)
+    {
+        hMomentumVsRange[ik] = new TH2F( Form("MomentumVsRange_%s", ParticleName[ik].Data()), Form("MomentumVsRange_%s", ParticleName[ik].Data()),50., 0., 5000., 50., 0., 300.);  
+        hMomentumVsRange[ik]->GetXaxis()->SetTitle("True Momentum [MeV/c]");
+        hMomentumVsRange[ik]->GetYaxis()->SetTitle("Range [cm]");
+        
+        hEenrgyVsRange[ik] = new TH2F( Form("EnergyVsRange_%s", ParticleName[ik].Data()), Form("EnergyVsRange_%s", ParticleName[ik].Data()),50., 0., 1000., 50., 0., 300.);  
+        hEenrgyVsRange[ik]->GetXaxis()->SetTitle("Energy [MeV???]");
+        hEenrgyVsRange[ik]->GetYaxis()->SetTitle("Range [cm]");
+        
+        hEenrgyVsRangeRestricted[ik] = new TH2F( Form("EnergyVsRange_Restricted_%s", ParticleName[ik].Data()), Form("EnergyVsRange_Restricted_%s", ParticleName[ik].Data()),50., 0., 1000., 50., 0., 300.);  
+        hEenrgyVsRangeRestricted[ik]->GetXaxis()->SetTitle("Energy [MeV???]");
+        hEenrgyVsRangeRestricted[ik]->GetYaxis()->SetTitle("Range [cm]");
+        
+        hEenrgyPeVsRange[ik] = new TH2F( Form("EnergyPeVsRange_%s", ParticleName[ik].Data()), Form("EnergyPeVsRange_%s", ParticleName[ik].Data()),50., 0., 1000., 50., 0., 300.);  
+        hEenrgyPeVsRange[ik]->GetXaxis()->SetTitle("Energy [p.e./100]");
+        hEenrgyPeVsRange[ik]->GetYaxis()->SetTitle("Range [cm]");
+    }
+    
+    cout<< "\033[1;34mNumber of all events\033[0m"<<evtFin<<endl;
+
+    TTree t1("t1","Tree");    
+    Float_t VertexBranch[2];
+    t1.Branch("VertexBranch1x1x1", &VertexBranch[0], "VertexBranch1x1x1/F");
+    t1.Branch("VertexBranch3x3x3", &VertexBranch[1], "VertexBranch3x3x3/F");
+    
+    t1.SetDirectory(FileOutput);
     for (int iev=evtIni; iev<evtFin; iev++)
     {
         if(iev == maxEvents-1 or selEvents >= maxSelEvents) 
-        //if(iev == maxEvents-1 or selEvents >= 10) //DEBUG MODE
+        //if(iev == maxEvents-1 or selEvents >= 3) //DEBUG MODE
         {   
             break;
         }
@@ -114,6 +134,10 @@ void VertexActivity()
         convertVtxCoordiantes(inputEvent->GetTrueVertex());
         convertCoordinates(inputEvent->GetVoxels());
 
+        recoEvent->SetHits(MergeHits(mppc_hits,0,true));
+        recoEvent->SetVoxels(HitsToVoxels(recoEvent->GetHits(),0));
+        FillTrueInformationInRecoEvent(inputEvent,recoEvent,0);
+        
         ND280SFGDVoxel* trueVertex;
         trueVertex = inputEvent->GetTrueVertex();
         
@@ -124,8 +148,6 @@ void VertexActivity()
         cout<<selEvents+1<<" Vertex position  X "<<VertexPosition[0]<<" Y "<< VertexPosition[1] <<" Z "<< VertexPosition[2]<<endl;
         
         double VertexDeposit[5]={}; //[VertexBox]
-        double VertexDepositDynamic[5]={}; //[VertexBox]
-        double VertexDepositDynamicCategory[3][5]={}; //[VertexBox]
         double VertexDepositShifted[SizeOfShiftVector][3][5]={}; //[VAshiftVector][X,Y,Z][VertexBox]
         
         bool VetrexInDetector=true; //sometimes vertex is outside  detector boundries
@@ -133,42 +155,75 @@ void VertexActivity()
         if( VertexPosition[0]<FiducialVolume ||  VertexPosition[1]<FiducialVolume || VertexPosition[2]<FiducialVolume || VertexPosition[0]>SFGD_X-FiducialVolume ||  VertexPosition[1]>SFGD_Y-FiducialVolume || VertexPosition[2]>SFGD_Z-FiducialVolume)
         {
             VetrexInDetector=false;
-            cout<<"\033[1;31mOut of detector\033[0m"<<endl;
+            cout<<"\033[1;31mOut of detector FV\033[0m"<<endl;
         }
         if(!VetrexInDetector) continue;
         
         double VertexDepositCheck=0;
         for(auto AB:inputEvent->GetVoxels())
         { 
-            if( abs(VertexPosition[0]-AB->GetX() )<=0 && abs(VertexPosition[1]-AB->GetY() )<=0 && abs(VertexPosition[2]-AB->GetZ() )<=0)
+            if( abs(VertexPosition[0]-AB->GetX() )<= 0 && abs(VertexPosition[1]-AB->GetY())<= 0 && abs(VertexPosition[2]-AB->GetZ() )<= 0)
             {
                 VertexDepositCheck+=AB->GetTruePE();
             }
         }
-        if(VertexDepositCheck==0)
+        /*
+        if(VertexDepositCheck<1.)
         {
             cout<<"\033[1;31mNo deposit in vertex\033[0m"<<endl;
             continue;
-        }
+        }  
+        */
         double TrackParameters[4]={};
         int MuonCounter=0;
         for(auto t:inputEvent->GetTrueTracks()) 
         {
-            if( t->GetPDG() == 13)
+            if( t->GetPDG() == 13 && t->GetParentID()==0)
             {
-                cout<<"True track PDG= "<<t->GetPDG()<<" range "<<t->GetRange()<<" mom "<<t->GetMomentum()<<" cosTheta "<<t->GetCosTheta()<<endl;
+                cout<<"True track PDG= "<<t->GetPDG()<<" range "<<t->GetMaxEuclDist()<<" mom "<<t->GetMomentum()<<" cosTheta "<<t->GetCosTheta()<<endl;
                 if(MuonCounter==0 || t->GetMomentum()>TrackParameters[1]) //in case there are two muons we want with higher momentum
                 {
-                    TrackParameters[0]=t->GetRange();
+                    TrackParameters[0]=t->GetMaxEuclDist();
                     TrackParameters[1]=t->GetMomentum();
                     TrackParameters[2]=t->GetCosTheta();
                 }
                 MuonCounter++;
             }
         }
+        if(MuonCounter==0)
+        {
+            cout<<"\033[1;31mNo muon from vertex\033[0m"<<endl;
+            continue;
+        } 
+        //std::vector<double> TrackRange;
+        //std::vector<int> TrackID;
+        double Edep=0;
+        double EdepPE=0;
+        int ParticlePDG[3]={13, 211, 2212};
+        for(auto t:inputEvent->GetTrueTracks())
+        {
+            for(int ik=0; ik<3; ik++)
+            {
+                if(abs(t->GetPDG()) == ParticlePDG[ik] && t->GetParentID()==0) //muon
+                {
+                    hMomentumVsRange[ik]->Fill(t->GetMomentum(), t->GetMaxEuclDist() );
+                    for(auto voxel:inputEvent->GetVoxels())
+                    { 
+                        //cout<<"track id "<<t->GetTrackID()<<" voxelid "<< voxel->GetTrueTrackIDs()[0]<<"  PDG "<<voxel->GetTruePDGs()[0]<<endl;
+                        if(voxel->GetTrueTrackIDs()[0] == t->GetTrackID()) {Edep+=voxel->GetTrueEdep(); EdepPE+=voxel->GetTruePE();}
+                    }
+                    hEenrgyVsRange[ik]->Fill(Edep, t->GetMaxEuclDist() );
+                    hEenrgyPeVsRange[ik]->Fill(EdepPE/100, t->GetMaxEuclDist() );
+                    
+                    if(t->GetCosTheta()>0.7 || t->GetCosTheta()<-0.7) hEenrgyVsRangeRestricted[ik]->Fill(Edep, t->GetMaxEuclDist() );
+                    Edep=0;
+                    EdepPE=0;
+                }
+            }
+        }
+        
         for(auto voxel:inputEvent->GetVoxels())
         {   
-            //VoxelTruePE->Fill(voxel->GetX(), voxel->GetY(), voxel->GetZ(), voxel->GetTruePE());
             for(int ik=0; ik<5; ik++)
             {
                 //A->DistToVoxel(B);
@@ -176,48 +231,10 @@ void VertexActivity()
                 if( abs(VertexPosition[0]-voxel->GetX() ) <= VertexBox[ik]) StudiedShape[0]=true;
                 if( abs(VertexPosition[1]-voxel->GetY() ) <= VertexBox[ik]) StudiedShape[1]=true;
                 if( abs(VertexPosition[2]-voxel->GetZ() ) <= VertexBox[ik]) StudiedShape[2]=true;                
-                //if(ik==0) cout<<"Voxel  X  "<<voxel->GetX()<< "  Y " <<voxel->GetY() <<"  Z  "<< voxel->GetZ()<<endl;
-                //if(ik==0) cout<<"  X+1/2  "<<VertexPosition[0]+VertexBox[ik]<< "  X-1/2 " <<VertexPosition[0]-VertexBox[ik]<<endl;
                 if(StudiedShape[0] && StudiedShape[1]&& StudiedShape[2])
                 {
                     VertexDeposit[ik]+=voxel->GetTruePE();
                 }
-                bool StudiedShapeDynamic[3]={}; //[X, Y, Z]
-                if(TrackParameters[2]>=0.5)
-                {
-                    if(voxel->GetX()<VertexPosition[0]+VertexBoxNew[ik]-1+DirtyTrick[ik] && voxel->GetX()>VertexPosition[0]-VertexBoxNew[ik]+1-DirtyTrick[ik]) StudiedShapeDynamic[0]=true;
-                    if(voxel->GetY()<VertexPosition[1]+VertexBoxNew[ik]-1+DirtyTrick[ik] && voxel->GetY()>VertexPosition[1]-VertexBoxNew[ik]+1-DirtyTrick[ik]) StudiedShapeDynamic[1]=true;
-                    if(voxel->GetZ()<VertexPosition[2]+VertexBoxNew[ik]+2 && voxel->GetZ()>VertexPosition[2]-VertexBoxNew[ik]) StudiedShapeDynamic[2]=true;
-                    if(StudiedShapeDynamic[0] && StudiedShapeDynamic[1] && StudiedShapeDynamic[2])
-                    {
-                        VertexDepositDynamicCategory[0][ik]+=voxel->GetTruePE();
-                    }
-                }
-                if(TrackParameters[2]<0.5 && TrackParameters[2]>=-0.5)
-                {
-                    if(voxel->GetX()<VertexPosition[0]+VertexBoxNew[ik]+1 && voxel->GetX()>VertexPosition[0]-VertexBoxNew[ik]-1) StudiedShapeDynamic[0]=true;
-                    if(voxel->GetY()<VertexPosition[1]+VertexBoxNew[ik]+1 && voxel->GetY()>VertexPosition[1]-VertexBoxNew[ik]-1) StudiedShapeDynamic[1]=true;
-                    if(voxel->GetZ()<VertexPosition[2]+VertexBoxNew[ik]-1+DirtyTrick[ik] && voxel->GetZ()>VertexPosition[2]-VertexBoxNew[ik]+1-DirtyTrick[ik]) StudiedShapeDynamic[2]=true; 
-                    if(StudiedShapeDynamic[0] && StudiedShapeDynamic[1] && StudiedShapeDynamic[2])
-                    {
-                        VertexDepositDynamicCategory[1][ik]+=voxel->GetTruePE();
-                    }
-                }
-                if(TrackParameters[2]<-0.5)
-                {
-                    if(voxel->GetX()<VertexPosition[0]+VertexBoxNew[ik]-1+DirtyTrick[ik] && voxel->GetX()>VertexPosition[0]-VertexBoxNew[ik]+1-DirtyTrick[ik]) StudiedShapeDynamic[0]=true;
-                    if(voxel->GetY()<VertexPosition[1]+VertexBoxNew[ik]-1+DirtyTrick[ik]&& voxel->GetY()>VertexPosition[1]-VertexBoxNew[ik]+1-DirtyTrick[ik]) StudiedShapeDynamic[1]=true;
-                    if(voxel->GetZ()<VertexPosition[2]+VertexBoxNew[ik] && voxel->GetZ()>VertexPosition[2]-VertexBoxNew[ik]-2) StudiedShapeDynamic[2]=true; 
-                    if(StudiedShapeDynamic[0] && StudiedShapeDynamic[1] && StudiedShapeDynamic[2])
-                    {
-                        VertexDepositDynamicCategory[2][ik]+=voxel->GetTruePE();
-                    }
-                } 
-                if(StudiedShapeDynamic[0] && StudiedShapeDynamic[1] && StudiedShapeDynamic[2])
-                {
-                    VertexDepositDynamic[ik]+=voxel->GetTruePE();
-                }
-                    
                 bool StudiedShapeShifted[SizeOfShiftVector][3]={}; //[VAshiftVector][X, Y, Z]
                 for(int ih=0; ih<SizeOfShiftVector; ih++)
                 {
@@ -240,15 +257,13 @@ void VertexActivity()
                 }
             }
         }
+        double nuMom = inputEvent->GetNuMom();
+        h_nuMom->Fill(nuMom);
         for(int ik=0; ik<5; ik++)
         {
             hVertexActivity[ik]->Fill(VertexDeposit[ik]); 
+            if(ik<2) VertexBranch[ik]=VertexDeposit[ik];
             if(ik>0) hVertexActivityShell[ik-1]->Fill(VertexDeposit[ik]-VertexDeposit[ik-1]);
-            hVertexActivityDynamic[ik]->Fill(VertexDepositDynamic[ik]); 
-            for(int ig=0; ig<3; ig++)
-            {
-                if(VertexDepositDynamicCategory[ig][ik]>0) hVertexActivityDynamicCategory[ig][ik]->Fill(VertexDepositDynamicCategory[ig][ik]);
-            }
             for(int ih=0; ih<SizeOfShiftVector; ih++)
             {
                 for(int ig=0; ig<3; ig++)
@@ -257,16 +272,17 @@ void VertexActivity()
                 }
             }
         }
-        //inputEvent->DrawHitsAndVoxels(true,"event");
-        //inputEvent->DrawVoxelsTruePE(true,"truePE");
+        
+        cout<<"  DEBUG !!! "<<VertexBranch[0]<<endl;
+        t1.Fill();
         selEvents++;
     }
-    //TCanvas* h3 = new TCanvas("h3", "3D display", 800, 600);
-    //VoxelTruePE->Draw("BOX2");
     
     if (FileOutput->IsOpen())
     {
         FileOutput->cd();
+        
+        h_nuMom->Write("",TObject::kOverwrite); 
         for(int ik=0; ik<5; ik++) //// Could be in one loop but for convinience in reading output file this is advisable
         {
             hVertexActivity[ik]->Write("",TObject::kOverwrite); 
@@ -275,16 +291,21 @@ void VertexActivity()
         {
             hVertexActivityShell[ik]->Write("",TObject::kOverwrite); 
         }
-        for(int ik=0; ik<5; ik++)
+        for(int ik=0; ik<3; ik++)
         {
-            hVertexActivityDynamic[ik]->Write("",TObject::kOverwrite); 
+            hMomentumVsRange[ik]->Write("",TObject::kOverwrite);
         }
-         for(int ik=0; ik<5; ik++)
+        for(int ik=0; ik<3; ik++)
         {
-            for(int ig=0; ig<3; ig++)
-            {
-                hVertexActivityDynamicCategory[ig][ik]->Write("",TObject::kOverwrite); 
-            }
+            hEenrgyVsRange[ik]->Write("",TObject::kOverwrite);
+        }
+        for(int ik=0; ik<3; ik++)
+        {
+            hEenrgyPeVsRange[ik]->Write("",TObject::kOverwrite);
+        }
+        for(int ik=0; ik<3; ik++)
+        {
+            hEenrgyVsRangeRestricted[ik]->Write("",TObject::kOverwrite);
         }
         for(int ik=0; ik<5; ik++)
         {
@@ -296,8 +317,9 @@ void VertexActivity()
                 }
             }
         }
+        t1.Write();
         FileOutput->Close();
-    }
+    }    
     cout << endl << "\033[1;32mGenerated output: \033[0m" << fileOut.Data() << endl;
     handleEndOfExecution();
 }

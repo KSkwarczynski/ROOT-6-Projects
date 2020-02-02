@@ -20,8 +20,8 @@ float   start_time     = clock();
 bool    RM_CROSSTALK   = false;
 bool    SHOW_TRUE      = true;
 bool    SHOW_RECO      = true;
-TString fileOut        = "/mnt/home/kskwarczynski/t2k-nd280-upgrade/Output/VertexAcivityHits_Output.root";
-TString fileIn         = "/mnt/home/kskwarczynski/t2k-nd280-upgrade/Output/VertexActInput.root";
+TString fileOut        = "/mnt/home/kskwarczynski/t2k-nd280-upgrade/sfgd_framework/analysis/Output/VertexAcivityHits_Output.root";
+TString fileIn         = "/mnt/home/kskwarczynski/t2k-nd280-upgrade/Output/Reconstructed_SFGD_MC_0.root"; //VertexActInput  SubstractedReco_SFGD_MC_0
 int IsPrototype        = false;
 int SFGD_X             = 204;
 int SFGD_Y             = 56;
@@ -70,13 +70,12 @@ void vertexHitA()
     TH1F *hVertexActivityShellXZ[4];
     TH1F *hVertexActivityShellYZ[4];
     
-    int VAshiftVector[2]={1, -1}; //Adjust position of vertex
+    int VAshiftVector[2]={1, -1}; //Adjust starting position of vertex activity box, can be easily expanded
     const int SizeOfShiftVector= (sizeof(VAshiftVector)/sizeof(*VAshiftVector));
     
     TH1F *hVertexActivityXYShifted[SizeOfShiftVector][2][5]; //[VAshiftVector][X,Y][VetrexString]
     TH1F *hVertexActivityXZShifted[SizeOfShiftVector][2][5]; //[VAshiftVector][X,Z][VetrexString]
     TH1F *hVertexActivityYZShifted[SizeOfShiftVector][2][5]; //[VAshiftVector][Y,Z][VetrexString]
-    
     
     for(int ik=0; ik<5; ik++)
     {
@@ -116,6 +115,8 @@ void vertexHitA()
             }
         }
     }
+    
+    cout<< "\033[1;34mNumber of all events\033[0m"<<evtFin<<endl;
     // loop over events
     for (int iev=evtIni; iev<evtFin; iev++)
     {
@@ -129,6 +130,10 @@ void vertexHitA()
         // looking for vertex position
         convertVtxCoordiantes(inputEvent->GetTrueVertex());
         convertCoordinates(inputEvent->GetVoxels());
+            
+        recoEvent->SetHits(MergeHits(mppc_hits,0,true));
+        recoEvent->SetVoxels(HitsToVoxels(recoEvent->GetHits(),0));
+        FillTrueInformationInRecoEvent(inputEvent,recoEvent,0);
         
         ND280SFGDVoxel* trueVertex;
         trueVertex = inputEvent->GetTrueVertex();
@@ -144,24 +149,37 @@ void vertexHitA()
         if( VertexPosition[0]<FiducialVolume ||  VertexPosition[1]<FiducialVolume || VertexPosition[2]<FiducialVolume || VertexPosition[0]>SFGD_X-FiducialVolume ||  VertexPosition[1]>SFGD_Y-FiducialVolume || VertexPosition[2]>SFGD_Z-FiducialVolume)
         {
             VetrexInDetector=false;
-            cout<<"\033[1;31mOut of detector\033[0m"<<endl;
+            cout<<"\033[1;31mOut of detector FV\033[0m"<<endl;
         }
         if(!VetrexInDetector) continue;
-        
-        double VertexDepositCheck=0;
-        for(auto voxel:inputEvent->GetVoxels())
-        { 
-            if(abs(VertexPosition[0]-voxel->GetX() ) <= 0 && abs(VertexPosition[1]-voxel->GetY() ) <= 0 && abs(VertexPosition[2]-voxel->GetZ() ) <= 0)
+        int MuonCounter=0;
+        for(auto t:inputEvent->GetTrueTracks()) 
+        {
+            if( t->GetPDG() == 13 && t->GetParentID()==0)
             {
-                VertexDepositCheck+=voxel->GetTruePE();
+                MuonCounter++;
             }
         }
-        if(VertexDepositCheck==0)
+        if(MuonCounter==0)
+        {
+            cout<<"\033[1;31mNo muon from vertex\033[0m"<<endl;
+            continue;
+        } 
+        /*
+        double VertexDepositCheck=0;
+        for(auto AB:inputEvent->GetVoxels())
+        { 
+            if( abs(VertexPosition[0]-AB->GetX() )<= 0 && abs(VertexPosition[1]-AB->GetY())<= 0 && abs(VertexPosition[2]-AB->GetZ() )<= 0)
+            {
+                VertexDepositCheck+=AB->GetTruePE();
+            }
+        }
+        if(VertexDepositCheck<1.)
         {
             cout<<"\033[1;31mNo deposit in vertex\033[0m"<<endl;
             continue;
-        }
-        
+        }  
+        */
         double VertexDepositXY[5]={};
         double VertexDepositXZ[5]={};
         double VertexDepositYZ[5]={};
@@ -308,7 +326,6 @@ void vertexHitA()
                 }
             }
         }
-
         FileOutput->Close();
     }   
     
