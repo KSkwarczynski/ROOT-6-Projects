@@ -22,7 +22,7 @@ foreach (@ARGV) {
     elsif($_ eq '--use-view-yz'      ) { $useviewYZ       = $ARGV[$iarg+1]; }
     elsif($_ eq '--min-track-dist'   ) { $min_trk_dist    = $ARGV[$iarg+1]; }
     elsif($_ eq '--cut-truth-fv'     ) { $cut_truthfv     = $ARGV[$iarg+1]; }
-    elsif($_ eq '--substract'        ) { $substract       = $ARGV[$iarg+1]; }
+    elsif($_ eq '--substract'        ) { $substract       = $ARGV[$iarg+1]; } #0-default, 1-muon, 2-pion, 3-proton
     
     # where to put the output files
     elsif($_ eq '--job-dir'          ) { $job_dir         = $ARGV[$iarg+1]; }

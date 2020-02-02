@@ -239,7 +239,7 @@ int SFGD_Reconstruction(int argc,char** argv) {
         cout << " 11) Minimum track distance (if <=0 use default)" << endl;
         cout << " 12) Look only at tracks inside the Truth FV (use MC hits)" << endl;
         cout << " 13) Output file name. In iteractive run it can be first event, but for parallel need separate param" << endl;
-        cout << " 14) Substracctring muon hits and voxel, used for vertex activity study" << endl;
+        cout << " 14) Substracctring muon hits and voxel, used for vertex activity study" << endl; ///*0-default, 1-muon, 2-pion, 3-proton*/
         exit(1);
     }
 
@@ -249,8 +249,14 @@ int SFGD_Reconstruction(int argc,char** argv) {
     const int nevents = atoi(argv[3]);
     const int detectorID = atoi(argv[5]);
     outfilename = argv[13];
-
-    bool VertexAnalysis = atoi(argv[14]);
+    
+    //Substraction hits/voxels
+    int VertexAnalysis = atoi(argv[14]);
+    int PDGofSubstractedPar=0;
+    if(VertexAnalysis==1) PDGofSubstractedPar=13;   //Muon
+    if(VertexAnalysis==2) PDGofSubstractedPar=211;   //pion
+    if(VertexAnalysis==3) PDGofSubstractedPar=2212; //proton
+    
     
     cout << "evtfirst: " << evtfirst << ",nevents: " << nevents << endl;
 
@@ -324,7 +330,6 @@ int SFGD_Reconstruction(int argc,char** argv) {
         AllEvents->Branch( "all_trajParent",     all_trajParent,     "all_trajParent[1000]/I"         );       
     }
 
-    
     TTree *tinput = (TTree*) finput->Get("ND280upEvents");
     
     //
@@ -414,8 +419,10 @@ int SFGD_Reconstruction(int argc,char** argv) {
 
         int edep_without_clear_contributor = 0;
 
-        int MuonCounter=0;
-        std::vector<int> listOfMuons;
+        //Preparation for substraction
+        
+        int ParticleCounter=0;
+        std::vector<int> listOfParticles;
         
         std::vector<int> listOfParentID;
         std::vector <int> listOfTrueTrackID;
@@ -431,17 +438,17 @@ int SFGD_Reconstruction(int argc,char** argv) {
                      << ", prntID: " << track->GetParentID() << endl;
             if(track->GetPDG() == 13 && !track->GetParentID()) mu_found = true;
             
-            if(track->GetPDG() == 13 && VertexAnalysis)
+            if(track->GetPDG() == abs(PDGofSubstractedPar) && VertexAnalysis>0) //VertexActivityStudy
             {
-                listOfMuons.push_back(track->GetTrackID());
-                MuonCounter++; 
+                listOfParticles.push_back(track->GetTrackID());
+                ParticleCounter++; 
             }
         }
-        if(WriteText && VertexAnalysis && MuonCounter>0)
+        if(WriteText && VertexAnalysis>0 && ParticleCounter>0) //VertexActivityStudy
         {
-            for(int i=0; i<MuonCounter ; i++)
+            for(int i=0; i<ParticleCounter ; i++)
             {
-                cout<<i<<" lista mionow "<<listOfMuons.at(i)<<endl;
+                cout<<i<<" lista czaśtek o PDG "<<PDGofSubstractedPar<<"    "<<listOfParticles.at(i)<<endl;
             }
         }
         #ifdef FORCE_NUMU
@@ -526,13 +533,13 @@ int SFGD_Reconstruction(int argc,char** argv) {
                     }
                 }
 
-                if(m==0){ //// DO SPRAWDZENIA !!!!!!!
+                if(m==0){
                     if (trkID < 0) {trkID = nd280UpHit->GetPrimaryId(); edep_without_clear_contributor++;}
                      if(WriteText)
                      {
-                        cout << " DEBUG nd280UpHit->GetPrimaryId() " << nd280UpHit->GetPrimaryId() << endl;
-                        cout << " DEBUG trkID: " << trkID << endl;
-                        cout << " DEBUG fContributors: " << nd280UpHit->fContributors.size() << endl;
+                        cout << " nd280UpHit->GetPrimaryId() " << nd280UpHit->GetPrimaryId() << endl;
+                        cout << " trkID: " << trkID << endl;
+                        cout << " fContributors: " << nd280UpHit->fContributors.size() << endl;
                      }
                     //for (auto c:nd280UpHit->fContributors) cout << c << ",";
                     //cout << endl << endl;
@@ -616,11 +623,11 @@ int SFGD_Reconstruction(int argc,char** argv) {
                     if(view == 2) hit->SetPE(hitPE[index][2]);
 
                     voxHits.push_back(hit);
-                    if(VertexAnalysis && MuonCounter>0)
+                    if(VertexAnalysis>0 && ParticleCounter>0) //VertexActivityStudy
                     {
-                        for(int ik=0; ik<MuonCounter; ik++)
+                        for(int ik=0; ik<ParticleCounter; ik++)
                         {
-                            if(nd280UpHit->GetPrimaryId()==listOfMuons.at(ik))
+                            if(nd280UpHit->GetPrimaryId()==listOfParticles.at(ik))
                             {
                                 if(view == 0) hit->SetPE(0);
                                 if(view == 1) hit->SetPE(0);
@@ -771,7 +778,7 @@ int SFGD_Reconstruction(int argc,char** argv) {
             listOfVoxels[vxl]->AddTrueParentID(trackToParentID.find(listOfVoxels[vxl]->GetTrueTrackIDs()[0])->second);
             listOfVoxels[vxl]->AddTruePDG(trackToPDG.find(listOfVoxels[vxl]->GetTrueTrackIDs()[0])->second);
             //if(listOfVoxels[vxl]->GetTrueParentIDs()[0] <-1 ) { if(WriteText) cout << "ERROR IN PARENT ID! [ParentID, Id, PDG] (pdg 22 is gamma): " << listOfVoxels[vxl]->GetTrueParentIDs()[0] << "," << listOfVoxels[vxl]->GetTrueTrackIDs()[0] << "," << listOfVoxels[vxl]->GetTruePDGs()[0] << endl; store=false;}
-            if(VertexAnalysis)
+            if(VertexAnalysis>0) //KAMIL
             {
                 if(listOfVoxels[vxl]->GetTruePDGs()[0] == 13) //USUWANIE VOXLI
                 {
