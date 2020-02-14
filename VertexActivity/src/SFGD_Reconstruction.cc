@@ -438,7 +438,7 @@ int SFGD_Reconstruction(int argc,char** argv) {
                      << ", prntID: " << track->GetParentID() << endl;
             if(track->GetPDG() == 13 && !track->GetParentID()) mu_found = true;
             
-            if(track->GetPDG() == abs(PDGofSubstractedPar) && VertexAnalysis>0) //VertexActivityStudy
+            if( track->GetPDG() == PDGofSubstractedPar && VertexAnalysis>0) //VertexActivityStudy
             {
                 listOfParticles.push_back(track->GetTrackID());
                 ParticleCounter++; 
@@ -448,7 +448,7 @@ int SFGD_Reconstruction(int argc,char** argv) {
         {
             for(int i=0; i<ParticleCounter ; i++)
             {
-                cout<<i<<" lista czaśtek o PDG "<<PDGofSubstractedPar<<"    "<<listOfParticles.at(i)<<endl;
+                cout<<i<<" number of particles with PDG= "<<PDGofSubstractedPar<<"    "<<listOfParticles.at(i)<<endl;
             }
         }
         #ifdef FORCE_NUMU
@@ -778,9 +778,9 @@ int SFGD_Reconstruction(int argc,char** argv) {
             listOfVoxels[vxl]->AddTrueParentID(trackToParentID.find(listOfVoxels[vxl]->GetTrueTrackIDs()[0])->second);
             listOfVoxels[vxl]->AddTruePDG(trackToPDG.find(listOfVoxels[vxl]->GetTrueTrackIDs()[0])->second);
             //if(listOfVoxels[vxl]->GetTrueParentIDs()[0] <-1 ) { if(WriteText) cout << "ERROR IN PARENT ID! [ParentID, Id, PDG] (pdg 22 is gamma): " << listOfVoxels[vxl]->GetTrueParentIDs()[0] << "," << listOfVoxels[vxl]->GetTrueTrackIDs()[0] << "," << listOfVoxels[vxl]->GetTruePDGs()[0] << endl; store=false;}
-            if(VertexAnalysis>0) //KAMIL
+            if(VertexAnalysis>0) //VertexActivityStudy
             {
-                if(listOfVoxels[vxl]->GetTruePDGs()[0] == 13) //USUWANIE VOXLI
+                if(listOfVoxels[vxl]->GetTruePDGs()[0] == PDGofSubstractedPar) //Deleting voxels
                 {
                     listOfVoxels[vxl]->SetTrueEdep(0);
                     listOfVoxels[vxl]->SetTruePE(0);
