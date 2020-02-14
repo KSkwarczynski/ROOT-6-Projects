@@ -145,7 +145,7 @@ void vertexHitA()
         cout<<selEvents<<" Vertex position  X "<<VertexPosition[0]<<" Y "<< VertexPosition[1] <<" Z "<< VertexPosition[2]<<endl;
 
         bool VetrexInDetector=true; //sometimes vertex is outside  detector boundries
-        int FiducialVolume=1; //set how far from detector boundries we want to study Vertex Activity 
+        int FiducialVolume=3; //set how far from detector boundries we want to study Vertex Activity 
         if( VertexPosition[0]<FiducialVolume ||  VertexPosition[1]<FiducialVolume || VertexPosition[2]<FiducialVolume || VertexPosition[0]>SFGD_X-FiducialVolume ||  VertexPosition[1]>SFGD_Y-FiducialVolume || VertexPosition[2]>SFGD_Z-FiducialVolume)
         {
             VetrexInDetector=false;
@@ -165,21 +165,6 @@ void vertexHitA()
             cout<<"\033[1;31mNo muon from vertex\033[0m"<<endl;
             continue;
         } 
-        /*
-        double VertexDepositCheck=0;
-        for(auto AB:inputEvent->GetVoxels())
-        { 
-            if( abs(VertexPosition[0]-AB->GetX() )<= 0 && abs(VertexPosition[1]-AB->GetY())<= 0 && abs(VertexPosition[2]-AB->GetZ() )<= 0)
-            {
-                VertexDepositCheck+=AB->GetTruePE();
-            }
-        }
-        if(VertexDepositCheck<1.)
-        {
-            cout<<"\033[1;31mNo deposit in vertex\033[0m"<<endl;
-            continue;
-        }  
-        */
         double VertexDepositXY[5]={};
         double VertexDepositXZ[5]={};
         double VertexDepositYZ[5]={};
