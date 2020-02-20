@@ -21,7 +21,7 @@ bool    RM_CROSSTALK   = false;
 bool    SHOW_TRUE      = true;
 bool    SHOW_RECO      = true;
 TString fileOut        = "/mnt/home/kskwarczynski/t2k-nd280-upgrade/sfgd_framework/analysis/Output/VertexAcivity_Output.root";
-TString fileIn         = "/mnt/home/kskwarczynski/t2k-nd280-upgrade/Output/Reconstructed_SFGD_MC_0.root"; //VertexActInput SubstractedReco_SFGD_MC_0
+TString fileIn         = "/mnt/home/kskwarczynski/t2k-nd280-upgrade/Output/Reconstructed_SFGD_MC_0.root"; //VertexActInput SubtractedReco_SFGD_MC_0
 int IsPrototype        = false;
 int SFGD_X             = 204;
 int SFGD_Y             = 56;
@@ -49,9 +49,11 @@ Event*          unpackEvent;
 
 void VertexActivity() 
 {
+    //TODO zrobic jakis oddzielny program/liste wczytujace stale parametry jak fiducial vollume itd
     parseArguments();
     linkFilesToTTrees();
 
+    bool VERBOSE = true;
     std::vector<ND280SFGDHit*> mppc_hits;
         
     TString VertexName[5]={"VertexActivity1x1x1", "VertexActivity3x3x3", "VertexActivity5x5x5", "VertexActivity7x7x7", "VertexActivity9x9x9"};
@@ -63,35 +65,45 @@ void VertexActivity()
     
     TDirectory *FolderEnergyLoss = FileOutput->mkdir("FolderEnergyLoss");
     TDirectory *FolderEnergyLossNonZero = FileOutput->mkdir("FolderEnergyLossNonZero");
-    TDirectory *FolderSubstracted = FileOutput->mkdir("FolderSubstracted");
-    TDirectory *FolderSubstractedTrackLength = FileOutput->mkdir("FolderSubstractedTrackLength");
-    TDirectory *FolderSubstractedTrackLengthCondition = FileOutput->mkdir("FolderSubstractedTrackLengthCondition");
-    TDirectory *FolderSubstractedTrackLengthAll = FileOutput->mkdir("FolderSubstractedTrackLengthAll");
+    TDirectory *FolderSubtracted = FileOutput->mkdir("FolderSubtracted");
+    TDirectory *FolderSubtractedTrackLength = FileOutput->mkdir("FolderSubtractedTrackLength");
+    TDirectory *FolderSubtractedTrackLengthCondition = FileOutput->mkdir("FolderSubtractedTrackLengthCondition");
+    TDirectory *FolderSubtractedTrackLengthAll = FileOutput->mkdir("FolderSubtractedTrackLengthAll");
+    TDirectory *FolderSubtractedTrackLengthAllShell = FileOutput->mkdir("FolderSubtractedTrackLengthAllShell");
     TDirectory *FolderShift = FileOutput->mkdir("FolderShift");
     TDirectory *FolderCut = FileOutput->mkdir("FolderCut");
     TDirectory *FolderGarbage = FileOutput->mkdir("FolderGarbage");
-
+    TDirectory *Other = FileOutput->mkdir("Other");
+    
     double VertexBox[5]={0., 1., 2., 3., 4.}; // 1x1x1, 3x3x3, 5x5x5 and so on...
     int VAshiftVector[2]={1, -1}; //Adjust position of vertex
     const int SizeOfShiftVector= (sizeof(VAshiftVector)/sizeof(*VAshiftVector));
     const int SizeOfParticleVector = (sizeof(ParticleName)/sizeof(*ParticleName));
     const int ParticleNumberGO = 3; //Number of particles we put condition on, starting from 0
+    
     int ParticleNumberCut[7]={0, 1, 2, 3, 4, 5, 6};
     int ParticlePDG[SizeOfParticleVector]={13, 211, 2212}; //muon, pion+, proton
-    double ShortTrack=3.0;
+    double ShortTrack = 3.0;    //threshold for short tracks
+    double epsilon = 0.0001;   // value neccesary for comparing floating numbers
+    int FiducialVolume = 3;   //set how far from detector boundries we want to study Vertex Activity
+    int LongOrShort = 1;     //Set if you are interested in subtracting long and short [0] or just long [1]
     
     TH1F *h_nuMom = new TH1F("h_nuMom", "h_nuMom", 50,0,6000);
     h_nuMom->GetXaxis()->SetTitle("MeV?");
     
     TH1F *hVertexActivity[5]; //[vertexBox]
     TH1F *hVertexActivityShell[4]; //[vertexBox-1]
-    TH1F *hVertexActivitySubstractedParticle[SizeOfParticleVector][5]; //[substracted particle][vertexBox]
+    TH1F *hVertexActivitySubtractedParticle[SizeOfParticleVector][5]; //[substracted particle][vertexBox]
     TH1F *hVertexActivitySubTrackLengtParticle[2][SizeOfParticleVector][5]; //[0-short, long][substracted particle][vertexBox]
     TH1F *hVertexActivitySubTrackLengtParticleCondition[2][SizeOfParticleVector][5]; //[0-short, long][substracted particle][vertexBox]
     TH1F *hVertexActivityOnlyIfTrackLenght[2][SizeOfParticleVector][5]; //[0-short, long][substracted particle][vertexBox]
     
     TH1F *hVertexActivitySubTrackLengtAllCondition[2][5]; 
     TH1F *hVertexActivityOnlyIfTrackLenghtAll[2][5]; //[0-short, long][vertexBox]
+    
+    TH1F *hVertexActivitySubTrackLengtAllConditionShell[2][4]; 
+    TH1F *hVertexActivityOnlyIfTrackLenghtAllShell[2][4]; //[0-short, long][vertexBox]
+    TH1F *hVertexActivityOnlyLongShell[4]; //[vertexBox-1]
     
     TH1F *hEnergyDepoParticle[SizeOfParticleVector][5]; //[particle][vertexBox]
     TH1F *hEnergyDepoParticleWithCuts[ParticleNumberGO][2][SizeOfParticleVector][5]; //[condition][particle with cut][particle studied][vertexBox]
@@ -120,8 +132,11 @@ void VertexActivity()
         hGarbagePDG[ik]->GetXaxis()->SetTitle("PDG");
         if(ik>0)
         {
-            hVertexActivityShell[ik-1] = new TH1F( Form("%sShell",VertexName[ik].Data()) , Form("%sShell",VertexName[ik].Data()), 50, 0, 4000+ik*3000);  
+            hVertexActivityShell[ik-1] = new TH1F( Form("%sShell",VertexName[ik].Data()) , Form("%sShell",VertexName[ik].Data()), 50, 0, 8000);  
             hVertexActivityShell[ik-1]->GetXaxis()->SetTitle( Form("Energy deposit in box %s [p.e.]",VetrexString[ik].Data() ) );
+            
+            hVertexActivityOnlyLongShell[ik-1] = new TH1F( Form("%sShell_OnlyLong",VertexName[ik].Data()) , Form("%sShell_OnlyLong",VertexName[ik].Data()), 50, 0, 8000); 
+            hVertexActivityOnlyLongShell[ik-1]->GetXaxis()->SetTitle( Form("Energy deposit in box %s [p.e.]",VetrexString[ik].Data() ) );
         }
         for(int ig=0; ig<3; ig++)
         {
@@ -135,12 +150,12 @@ void VertexActivity()
         }
         for(int ig=0; ig<SizeOfParticleVector; ig++)//loop over studied particle
         {
-            hVertexActivitySubstractedParticle[ig][ik] = new TH1F( Form("VA%sSubstracted_%s", VetrexString[ik].Data(), ParticleName[ig].Data()), Form("VA%sSubstracted_%s", VetrexString[ik].Data(), ParticleName[ig].Data()), 50, 0, 4000+ik*3000);  
-            hVertexActivitySubstractedParticle[ig][ik]->GetXaxis()->SetTitle( Form("Energy deposit in box %s [p.e.]", VetrexString[ik].Data() ) );
+            hVertexActivitySubtractedParticle[ig][ik] = new TH1F( Form("VA%sSubtracted_%s", VetrexString[ik].Data(), ParticleName[ig].Data()), Form("VA%sSubtracted_%s", VetrexString[ik].Data(), ParticleName[ig].Data()), 50, 0, 4000+ik*3000);  
+            hVertexActivitySubtractedParticle[ig][ik]->GetXaxis()->SetTitle( Form("Energy deposit in box %s [p.e.]", VetrexString[ik].Data() ) );
             
             for(int il=0; il<2; il++) //loop over short long track
             {
-                hVertexActivitySubTrackLengtParticle[il][ig][ik] = new TH1F( Form("VA%sSubstracted_%s_%s", VetrexString[ik].Data(), TrackLenght[il].Data(), ParticleName[ig].Data()), Form("VA%sSubstracted_%s_%s", VetrexString[ik].Data(), TrackLenght[il].Data(), ParticleName[ig].Data()), 50, 0, 4000+ik*3000);  
+                hVertexActivitySubTrackLengtParticle[il][ig][ik] = new TH1F( Form("VA%sSubtracted_%s_%s", VetrexString[ik].Data(), TrackLenght[il].Data(), ParticleName[ig].Data()), Form("VA%sSubtracted_%s_%s", VetrexString[ik].Data(), TrackLenght[il].Data(), ParticleName[ig].Data()), 50, 0, 4000+ik*3000);  
                 hVertexActivitySubTrackLengtParticle[il][ig][ik]->GetXaxis()->SetTitle( Form("Energy deposit in box %s [p.e.]", VetrexString[ik].Data() ) );
                 
                 hVertexActivitySubTrackLengtParticleCondition[il][ig][ik] = new TH1F( Form("VA%sSubCondition_%s_%s", VetrexString[ik].Data(), TrackLenght[il].Data(), ParticleName[ig].Data()), Form("VA%sSubCondition_%s_%s", VetrexString[ik].Data(), TrackLenght[il].Data(), ParticleName[ig].Data()), 50, 0, 4000+ik*3000);  
@@ -156,6 +171,14 @@ void VertexActivity()
                     
                     hVertexActivityOnlyIfTrackLenghtAll[il][ik] = new TH1F( Form("VA%sIfThereAre_%s_All", VetrexString[ik].Data(), TrackLenght[il].Data()), Form("VA%sIfThereAre_%s_All", VetrexString[ik].Data(), TrackLenght[il].Data()), 50, 0, 4000+ik*3000);  
                     hVertexActivityOnlyIfTrackLenghtAll[il][ik]->GetXaxis()->SetTitle( Form("Energy deposit in box %s [p.e.]", VetrexString[ik].Data() ) );
+                    if(ik>0) //for shell we don't need 1x1x1 box
+                    {
+                        hVertexActivitySubTrackLengtAllConditionShell[il][ik-1] = new TH1F( Form("VA%sSubCondition_%s_All_Shell", VetrexString[ik].Data(), TrackLenght[il].Data()), Form("VA%sSubCondition_%s_All", VetrexString[ik].Data(), TrackLenght[il].Data()), 50, 0, 8000);  
+                        hVertexActivitySubTrackLengtAllConditionShell[il][ik-1]->GetXaxis()->SetTitle( Form("Energy deposit in box %s [p.e.]", VetrexString[ik].Data() ) );
+                    
+                        hVertexActivityOnlyIfTrackLenghtAllShell[il][ik-1] = new TH1F( Form("VA%sIfThereAre_%s_All_Shell", VetrexString[ik].Data(), TrackLenght[il].Data()), Form("VA%sIfThereAre_%s_All", VetrexString[ik].Data(), TrackLenght[il].Data()), 50, 0, 8000);  
+                        hVertexActivityOnlyIfTrackLenghtAllShell[il][ik-1]->GetXaxis()->SetTitle( Form("Energy deposit in box %s [p.e.]", VetrexString[ik].Data() ) );
+                    }
                 }
             }
             for(int is=0; is<SizeOfParticleVector-1; is++) //loop over conditioned particle
@@ -220,7 +243,7 @@ void VertexActivity()
         hScatteringPathVsMomentum[ig]->GetYaxis()->SetTitle("Range [cm]");
     }
     
-    cout<< "\033[1;34mNumber of all events\033[0m"<<evtFin<<endl;
+    if(VERBOSE) cout<< "\033[1;34mNumber of all events\033[0m" <<evtFin<<endl;
 
     TTree t1("t1","Tree");    
     Float_t VertexBranch[5];
@@ -259,46 +282,36 @@ void VertexActivity()
         VertexPosition[0] = trueVertex->GetX();
         VertexPosition[1] = trueVertex->GetY();
         VertexPosition[2] = trueVertex->GetZ();
-        cout<<selEvents+1<<" Vertex position  X "<<VertexPosition[0]<<" Y "<< VertexPosition[1] <<" Z "<< VertexPosition[2]<<endl;
+        if(VERBOSE) cout<<selEvents+1<<" Vertex position  X "<<VertexPosition[0]<<" Y "<< VertexPosition[1] <<" Z "<< VertexPosition[2]<<endl;
         
         double VertexDeposit[5][2]={}; //[VertexBox][0-PE, 1-MeV]
-        double VertexDepositSubstracted[SizeOfParticleVector][5][2]={}; //[studied particle][VertexBox][0-PE, 1-MeV]
-        double VertexDepositSubstractedLength[2][SizeOfParticleVector][5][2]={}; //[0-short, 1-long][studied particle][VertexBox][0-PE, 1-MeV]
-        double VertexDepositSubstractedLengthAll[2][5][2]={}; //[0-short, 1-long][VertexBox][0-PE, 1-MeV]
+        double VertexDepositSubtracted[SizeOfParticleVector][5][2]={}; //[studied particle][VertexBox][0-PE, 1-MeV]
+        double VertexDepositSubtractedLength[2][SizeOfParticleVector][5][2]={}; //[0-short, 1-long][studied particle][VertexBox][0-PE, 1-MeV]
+        double VertexDepositSubtractedLengthAll[2][5][2]={}; //[0-short, 1-long][VertexBox][0-PE, 1-MeV]
         
         double VertexDepositShifted[SizeOfShiftVector][3][5][2]={}; //[VAshiftVector][X,Y,Z][VertexBox][0-PE, 1-MeV]
         double VertexParticleDeposit[3][5][2]={}; //[0-muon, 1-pion, 2-proton][VertexBox][0-PE, 1-MeV]
         double VertexGarbageDeposit[5][2]={}; //[VertexBox][0-PE, 1-MeV]
         
-        bool VetrexInDetector=true; //sometimes vertex is outside  detector boundries
-        int FiducialVolume=3; //set how far from detector boundries we want to study Vertex Activity 
+        bool VetrexInDetector=true; //sometimes vertex is outside  detector boundries/fiducial volume
         if( VertexPosition[0]<FiducialVolume ||  VertexPosition[1]<FiducialVolume || VertexPosition[2]<FiducialVolume || VertexPosition[0]>SFGD_X-FiducialVolume ||  VertexPosition[1]>SFGD_Y-FiducialVolume || VertexPosition[2]>SFGD_Z-FiducialVolume)
         {
             VetrexInDetector=false;
-            cout<<"\033[1;31mOut of detector FV\033[0m"<<endl;
+            if(VERBOSE) cout<<"\033[1;31mOut of detector FV\033[0m"<<endl;
         }
         if(!VetrexInDetector) continue;
-        
-        double VertexDepositCheck=0;
-        for(auto AB:inputEvent->GetVoxels())
-        { 
-            if( abs(VertexPosition[0]-AB->GetX() )<= 0 && abs(VertexPosition[1]-AB->GetY())<= 0 && abs(VertexPosition[2]-AB->GetZ() )<= 0)
-            {
-                VertexDepositCheck+=AB->GetTruePE();
-            }
-        }
         int MuonCounter=0;
         for(auto t:inputEvent->GetTrueTracks()) 
         {
-            if( t->GetPDG() == 13 && t->GetParentID()==0 && t->GetMaxEuclDist()>ShortTrack ) //TODO sprawdzic jak to dziala
+            if( t->GetPDG() == 13 && t->GetParentID()==0 && t->GetMaxEuclDist()>ShortTrack )
             {
-                //cout<<"True track PDG= "<<t->GetPDG()<<" range "<<t->GetMaxEuclDist()<<" mom "<<t->GetMomentum()<<" cosTheta "<<t->GetCosTheta()<<endl;
+                if(VERBOSE) cout<<"True track PDG= "<<t->GetPDG()<<" range "<<t->GetMaxEuclDist()<<" mom "<<t->GetMomentum()<<" cosTheta "<<t->GetCosTheta()<<endl;
                 MuonCounter++;
             }
         }
         if(MuonCounter==0)
         {
-            cout<<"\033[1;31mNo muon from vertex\033[0m"<<endl;
+            if(VERBOSE) cout<<"\033[1;31mNo muon from vertex\033[0m"<<endl;
             continue;
         } 
         double Edep=0;
@@ -308,7 +321,6 @@ void VertexActivity()
         std::vector<int> TrackIdLengthParticle[2][SizeOfParticleVector];
         std::vector<int> TrackIdLengthAll[2];
         std::vector<int> TrackIdConditionLengthParticle[2];
-        //int TrackIdConditionLengthParticleCounter[SizeOfParticleVector][2]; ///TODO do wywalenia
         
         std::vector<int> ParticleTrackId[SizeOfParticleVector][2];//[particle of interes][0-original, 1-after scaterring]
         std::vector<int> GarbageTrackId;
@@ -316,7 +328,7 @@ void VertexActivity()
         
         for(auto t:inputEvent->GetTrueTracks())
         {
-            double TrackDistance=t->GetMaxEuclDist(); //TODO wporwadz dalej
+            double TrackDistance=t->GetMaxEuclDist();
             if( t->GetParentID()!=0 ) 
             {
                 GarbageTrackId.push_back( t->GetTrackID() );
@@ -332,7 +344,7 @@ void VertexActivity()
             {
                 if( t->GetPDG() == ParticlePDG[ig] && t->GetParentID()==0)
                 {
-                    int OutGoingCounter=0;
+                    int OutGoingCounter=0; //counts particles after scattering
                     double momentumTemp=0;
                     ParticleTrackId[ig][0].push_back( t->GetTrackID() );
                     for(auto track:inputEvent->GetTrueTracks())
@@ -381,7 +393,6 @@ void VertexActivity()
                 }
                 if( t->GetPDG() == ParticlePDG[ig] && TrackDistance > ShortTrack)
                 {
-                    
                     TrackIdLengthParticle[1][ig].pop_back();
                 }
             }
@@ -406,7 +417,7 @@ void VertexActivity()
             for(int ik=0; ik<5; ik++)
             {
                 //A->DistToVoxel(B);
-                bool StudiedShape[3]={}; //[X, Y, Z]
+                bool StudiedShape[3]={}; //[X, Y, Z] Could be in one if() but this seems to give more flexibility
                 if( abs(VertexPosition[0]-voxel->GetX() ) <= VertexBox[ik]) StudiedShape[0]=true;
                 if( abs(VertexPosition[1]-voxel->GetY() ) <= VertexBox[ik]) StudiedShape[1]=true;
                 if( abs(VertexPosition[2]-voxel->GetZ() ) <= VertexBox[ik]) StudiedShape[2]=true;                
@@ -419,8 +430,8 @@ void VertexActivity()
                     {
                         if(voxel->GetTruePDGs()[0]!=ParticlePDG[ig])
                         {
-                            VertexDepositSubstracted[ig][ik][0]+=voxel->GetTruePE();
-                            VertexDepositSubstracted[ig][ik][1]+=voxel->GetTrueEdep();
+                            VertexDepositSubtracted[ig][ik][0]+=voxel->GetTruePE();
+                            VertexDepositSubtracted[ig][ik][1]+=voxel->GetTrueEdep();
                         }
                         for(int io=0; io<2; io++) //loop over short long DrawTrueTracks
                         {
@@ -428,8 +439,8 @@ void VertexActivity()
                             {
                                 if( voxel->GetTrueTrackIDs()[0]==TrackIdLengthParticle[io][ig].at(il) )
                                 {
-                                    VertexDepositSubstractedLength[io][ig][ik][0]+=voxel->GetTruePE();
-                                    VertexDepositSubstractedLength[io][ig][ik][1]+=voxel->GetTrueEdep();
+                                    VertexDepositSubtractedLength[io][ig][ik][0]+=voxel->GetTruePE();
+                                    VertexDepositSubtractedLength[io][ig][ik][1]+=voxel->GetTrueEdep();
                                 }
                             }
                         }
@@ -440,8 +451,8 @@ void VertexActivity()
                         {
                             if( voxel->GetTrueTrackIDs()[0]==TrackIdLengthAll[io].at(il) )
                             {
-                                VertexDepositSubstractedLengthAll[io][ik][0]+=voxel->GetTruePE();
-                                VertexDepositSubstractedLengthAll[io][ik][1]+=voxel->GetTrueEdep();
+                                VertexDepositSubtractedLengthAll[io][ik][0]+=voxel->GetTruePE();
+                                VertexDepositSubtractedLengthAll[io][ik][1]+=voxel->GetTrueEdep();
                             }
                         }
                     }
@@ -452,30 +463,13 @@ void VertexActivity()
                             VertexGarbageDeposit[ik][0]+=voxel->GetTruePE();
                             VertexGarbageDeposit[ik][1]+=voxel->GetTrueEdep(); 
                             
-                            if(voxel->GetTruePE()>0.0001 && GarbageTrackCounter[ik].at(ig)==1)
+                            if(voxel->GetTruePE()>epsilon && GarbageTrackCounter[ik].at(ig)==1)
                             {
                                 hGarbagePDG[ik]->Fill(voxel->GetTruePDGs()[0]);
                                 GarbageTrackCounter[ik].at(ig)=0;
                             }
                         }
                     }
-                    /*
-                    if(ik==4) // we only check in last VA box
-                    {
-                        for(int il=0; il<2; il++) /////TODO TODO
-                        {
-                            for(int ip=0; ip<TrackIdConditionLengthParticle[il].size(); ip++)
-                            {
-                                for(int ig=0; ig<SizeOfParticleVector; ig++) /////TODO TODO
-                                {
-                                    if(TrackIdConditionLengthParticle[il].at(ip)==voxel->GetTrueTrackIDs()[0] && voxel->GetTruePE()>0.0001 && TrackIdConditionLengthParticleCounter[ig][il]==0 && voxel->GetTruePDGs()[0] == ParticlePDG[ig])
-                                    {
-                                        TrackIdConditionLengthParticleCounter[ig][il]=1;
-                                    }
-                                }
-                            }
-                        }
-                    }*/
                     for(int ig=0; ig<SizeOfParticleVector; ig++)
                     {
                         for(int io=0; io<ParticleTrackId[ig][0].size(); io++)
@@ -515,26 +509,27 @@ void VertexActivity()
         }
         double nuMom = inputEvent->GetNuMom();
         h_nuMom->Fill(nuMom);
-        for(int ik=0; ik<5; ik++)
+        
+        for(int ik=0; ik<5; ik++) //Filling histograms starts here
         {
             hVertexActivity[ik]->Fill(VertexDeposit[ik][0]); 
             VertexBranch[ik]=VertexDeposit[ik][1];
             if(ik>0) hVertexActivityShell[ik-1]->Fill(VertexDeposit[ik][0]-VertexDeposit[ik-1][0]);
             if(TrackLengthParticleCounter[0][0]==0 && TrackLengthParticleCounter[0][1]==0) hVertexActivityTrackLength[0][ik]->Fill(VertexDeposit[ik][0]); 
             if(TrackLengthParticleCounter[1][0]==0 && TrackLengthParticleCounter[1][1]==0) hVertexActivityTrackLength[1][ik]->Fill(VertexDeposit[ik][0]);
-            if(VertexGarbageDeposit[ik][1]>0.00001) hVertexActivityByGarbage[ik]->Fill( VertexGarbageDeposit[ik][1] );
+            if(VertexGarbageDeposit[ik][1]>epsilon) hVertexActivityByGarbage[ik]->Fill( VertexGarbageDeposit[ik][1] );
             
             for(int ig=0; ig<SizeOfParticleVector; ig++)
             {
-                hVertexActivitySubstractedParticle[ig][ik]->Fill(VertexDepositSubstracted[ig][ik][0]);
+                hVertexActivitySubtractedParticle[ig][ik]->Fill(VertexDepositSubtracted[ig][ik][0]);
                 hEnergyDepoParticle[ig][ik]->Fill( VertexParticleDeposit[ig][ik][1] );
-                if(ig==0 && VertexParticleDeposit[0][0][1]>0.00001) hEnergyDepoParticleNonZero[ik]->Fill( VertexParticleDeposit[ig][ik][1] );
+                if(ig==0 && VertexParticleDeposit[0][0][1]>) hEnergyDepoParticleNonZero[ik]->Fill( VertexParticleDeposit[ig][ik][1] );
                 for(int is=0; is<2; is++) //loop over condition particle
                 {
-                    for(int il=0; il<3; il++) //loop over # of condition particles
+                    for(int il=0; il<ParticleNumberGO; il++) //loop over # of condition particles
                     {
                         if(ParticleCounter[is+1]==ParticleNumberCut[il]) hEnergyDepoParticleWithCuts[il][is][ig][ik]->Fill( VertexParticleDeposit[ig][ik][1] );
-                        if(ParticleCounter[is+1]==ParticleNumberCut[il] && ig>0 && VertexParticleDeposit[ig][0][1]>0.0001)
+                        if(ParticleCounter[is+1]==ParticleNumberCut[il] && ig>0 && VertexParticleDeposit[ig][0][1]>epsilon)
                         {
                             hEnergyDepoParticleWithCutsNonZero[il][is][ig-1][ik]->Fill( VertexParticleDeposit[ig][ik][1] );
                         }
@@ -542,19 +537,29 @@ void VertexActivity()
                 }
                 for(int il=0; il<2; il++)
                 {
-                    hVertexActivitySubTrackLengtParticle[il][ig][ik]->Fill(VertexDepositSubstractedLength[il][ig][ik][0]);
-                    if( abs( VertexDeposit[ik][0]-VertexDepositSubstractedLength[il][ig][ik][0])>0.01 /*TrackIdConditionLengthParticleCounter[ig][il]==1*/)
+                    hVertexActivitySubTrackLengtParticle[il][ig][ik]->Fill(VertexDepositSubtractedLength[il][ig][ik][0]);
+                    if( abs( VertexDeposit[ik][0]-VertexDepositSubtractedLength[il][ig][ik][0])>epsilon )
                     //TODO mozna pomyśleć zmienic [ik]->[4]
                     {
-                        hVertexActivitySubTrackLengtParticleCondition[il][ig][ik]->Fill( VertexDepositSubstractedLength[il][ig][ik][0] );
+                        hVertexActivitySubTrackLengtParticleCondition[il][ig][ik]->Fill( VertexDepositSubtractedLength[il][ig][ik][0] );
                         hVertexActivityOnlyIfTrackLenght[il][ig][ik]->Fill( VertexDeposit[ik][0] );
                     }
-                    if(ig==0 && abs( VertexDeposit[ik][0]-VertexDepositSubstractedLengthAll[0][ik][0])>0.01)
+                    if(ig==0 && abs( VertexDeposit[ik][0]-VertexDepositSubtractedLengthAll[0][ik][0] )> epsilon )
                     {
-                        hVertexActivitySubTrackLengtAllCondition[il][ik]->Fill( VertexDepositSubstractedLengthAll[il][ik][0] );
+                        hVertexActivitySubTrackLengtAllCondition[il][ik]->Fill( VertexDepositSubtractedLengthAll[il][ik][0] );
                         hVertexActivityOnlyIfTrackLenghtAll[il][ik]->Fill( VertexDeposit[ik][0] ); 
+                        
+                        if(ik>0) //TODO pomyśl nad warunkiem zeby porownywac to samo
+                        {
+                            hVertexActivitySubTrackLengtAllConditionShell[il][ik-1]->Fill( VertexDepositSubtractedLengthAll[il][ik][0] - VertexDepositSubtractedLengthAll[il][ik-1][0] );
+                            hVertexActivityOnlyIfTrackLenghtAllShell[il][ik-1]->Fill(VertexDeposit[ik][0]-VertexDeposit[ik-1][0] ); 
+                        }
                     }
                 }
+            }
+            if(ik>0 && abs( VertexDeposit[ik][0]-VertexDepositSubtractedLengthAll[0][ik][0] )<= epsilon )
+            {
+                hVertexActivityOnlyLongShell[ik-1]->Fill(VertexDeposit[ik][0]-VertexDeposit[ik-1][0] );
             }
             for(int ih=0; ih<SizeOfShiftVector; ih++)
             {
@@ -578,7 +583,6 @@ void VertexActivity()
     if (FileOutput->IsOpen())
     {
         FileOutput->cd();
-        
         h_nuMom->Write("",TObject::kOverwrite); 
         //// Could be in one loop but for convinience in reading output file this is advisable
         for(int ik=0; ik<5; ik++)
@@ -608,17 +612,6 @@ void VertexActivity()
         for(int ig=0; ig<SizeOfParticleVector; ig++)
         {
             hScatteringPathVsMomentum[ig]->Write("",TObject::kOverwrite);
-        }
-        for(int ig=0; ig<2; ig++)
-        {
-            for(int ik=0; ik<5; ik++)
-            {
-                hVertexActivityTrackLength[ig][ik]->Write("",TObject::kOverwrite);
-            }
-        }
-        for(int ig=0; ig<SizeOfParticleVector; ig++)
-        {
-            hMeanScatteringRange[ig]->Write("",TObject::kOverwrite);
         }
         FolderEnergyLoss->cd();
         for(int ig=0; ig<SizeOfParticleVector; ig++)
@@ -659,16 +652,16 @@ void VertexActivity()
                 }
             }
         }
-        FolderSubstracted->cd();
+        FolderSubtracted->cd();
         for(int ig=0; ig<SizeOfParticleVector; ig++)
         {
             for(int ik=0; ik<5; ik++)
             {
-                hVertexActivitySubstractedParticle[ig][ik]->Write("",TObject::kOverwrite); 
+                hVertexActivitySubtractedParticle[ig][ik]->Write("",TObject::kOverwrite); 
             }
         }
-        FolderSubstractedTrackLength->cd();
-        for(int il=0; il<2; il++)
+        FolderSubtractedTrackLength->cd();
+        for(int il=LongOrShort; il<2; il++)
         {
             for(int ig=0; ig<SizeOfParticleVector; ig++)
             {
@@ -678,8 +671,8 @@ void VertexActivity()
                 }
             }
         }
-        FolderSubstractedTrackLengthCondition->cd();
-        for(int il=0; il<2; il++)
+        FolderSubtractedTrackLengthCondition->cd();
+        for(int il=LongOrShort; il<2; il++)
         {
             for(int ig=0; ig<SizeOfParticleVector; ig++)
             {
@@ -696,8 +689,8 @@ void VertexActivity()
                 }
             }
         }
-        FolderSubstractedTrackLengthAll->cd();
-        for(int il=0; il<2; il++)
+        FolderSubtractedTrackLengthAll->cd();
+        for(int il=LongOrShort; il<2; il++)
         {
             for(int ik=0; ik<5; ik++)
             {
@@ -707,6 +700,22 @@ void VertexActivity()
             {
                 hVertexActivityOnlyIfTrackLenghtAll[il][ik]->Write("",TObject::kOverwrite); 
             }
+        }
+        FolderSubtractedTrackLengthAllShell->cd();
+        for(int il=LongOrShort; il<2; il++)
+        {
+            for(int ik=0; ik<4; ik++)
+            {
+                hVertexActivitySubTrackLengtAllConditionShell[il][ik]->Write("",TObject::kOverwrite); 
+            }
+            for(int ik=0; ik<4; ik++)
+            {
+                hVertexActivityOnlyIfTrackLenghtAllShell[il][ik]->Write("",TObject::kOverwrite); 
+            }
+        }
+        for(int ik=0; ik<4; ik++)
+        {
+            hVertexActivityOnlyLongShell[ik]->Write("",TObject::kOverwrite); 
         }
         FolderShift->cd();
         for(int ik=0; ik<5; ik++)
@@ -738,6 +747,18 @@ void VertexActivity()
         for(int ik=0; ik<5; ik++)
         {
             hGarbagePDG[ik]->Write("",TObject::kOverwrite);
+        }
+        Other->cd();
+        for(int ig=0; ig<2; ig++)
+        {
+            for(int ik=0; ik<5; ik++)
+            {
+                hVertexActivityTrackLength[ig][ik]->Write("",TObject::kOverwrite);
+            }
+        }
+        for(int ig=0; ig<SizeOfParticleVector; ig++)
+        {
+            hMeanScatteringRange[ig]->Write("",TObject::kOverwrite);
         }
         FileOutput->cd();
         t1.Write();
