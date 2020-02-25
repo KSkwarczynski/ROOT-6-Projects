@@ -7,32 +7,31 @@
 
 void ComparisonPlot()
 {
-    //TODO rozwinac to i zbadać
-    Int_t WhichStyle = 1; 
-    // -- WhichStyle --
+// -- WhichStyle --
     // 1 = presentation large fonts
     // 2 = presentation small fonts
     // 3 = publication/paper
+    Int_t WhichStyle = 1;
     
     Int_t FontStyle = 22;
     Float_t FontSizeLabel = 0.035;
     Float_t FontSizeTitle = 0.05;
     Float_t YOffsetTitle = 1.3;
 
-    switch(WhichStyle) 
-    {
-        case 1:
+  switch(WhichStyle) 
+  {
+    case 1:
         FontStyle = 42;
         FontSizeLabel = 0.05;
         FontSizeTitle = 0.065;
         YOffsetTitle = 1.19;
         break;
-        case 2:
+    case 2:
         FontStyle = 42;
         FontSizeLabel = 0.035;
         FontSizeTitle = 0.05;
         YOffsetTitle = 1.6;
-    break;
+        break;
     case 3:
         FontStyle = 132;
         FontSizeLabel = 0.035;
@@ -40,16 +39,34 @@ void ComparisonPlot()
         YOffsetTitle = 1.6;
         break;
     }
-  
-    gStyle->SetOptStat(1111);
-    gStyle->SetOptFit(111);
-    gStyle->SetPalette(1,0);
+
+    // use plain black on white colors
+    gStyle->SetFrameBorderMode(0);
+    gStyle->SetCanvasBorderMode(0);
+    gStyle->SetPadBorderMode(0);
+    gStyle->SetCanvasBorderSize(0);
+    gStyle->SetFrameBorderSize(0);
+    gStyle->SetDrawBorder(0);
+    gStyle->SetTitleBorderSize(0);
+
     gStyle->SetPadColor(0);
     gStyle->SetCanvasColor(0);
-    gStyle->SetOptStat(0);
-    gStyle->SetPadTickX(1);
-    gStyle->SetPadTickY(1);
-  
+    gStyle->SetStatColor(0);
+    gStyle->SetFillColor(0);
+
+    gStyle->SetEndErrorSize(4);
+    gStyle->SetStripDecimals(kFALSE);
+
+    //gStyle->SetLegendBorderSize(0); //This option dsables legends borders
+    gStyle->SetLegendFont(FontStyle);
+
+    // set the paper & margin sizes
+    gStyle->SetPaperSize(20, 26);
+    gStyle->SetPadTopMargin(0.1);
+    gStyle->SetPadBottomMargin(0.15);
+    gStyle->SetPadRightMargin(0.13); // 0.075 -> 0.13 for colz option
+    gStyle->SetPadLeftMargin(0.16);//to include both large/small font options
+
     // Fonts, sizes, offsets
     gStyle->SetTextFont(FontStyle);
     gStyle->SetTextSize(0.08);
@@ -82,17 +99,68 @@ void ComparisonPlot()
     gStyle->SetTitleBorderSize(0);
     gStyle->SetTitleX(0.1f);
     gStyle->SetTitleW(0.8f);
-  
+
+    // use bold lines and markers
+    gStyle->SetMarkerStyle(20);
+    gStyle->SetHistLineWidth( Width_t(2.5) );
+    gStyle->SetLineStyleString(2, "[12 12]"); // postscript dashes
+
+    // get rid of X error bars and y error bar caps
+    gStyle->SetErrorX(0.001);
+
+    // do not display any of the standard histogram decorations
+    //gStyle->SetOptTitle(0); //Set 0 to disable histogram tittle
+    gStyle->SetOptStat(0); //Set 0 to disable statystic box
+    gStyle->SetOptFit(0);
+
+    // put tick marks on top and RHS of plots
+    gStyle->SetPadTickX(1);
+    gStyle->SetPadTickY(1);
+
+    // -- color --
+    // functions blue
+    //gStyle->SetFuncColor(600-4);
+    gStyle->SetFuncColor(2);
+    gStyle->SetFuncWidth(2);
+
+    gStyle->SetFillColor(1); // make color fillings (not white)
+    // - color setup for 2D -
+    // - "cold"/ blue-ish -
+    Double_t red[]   = { 0.00, 0.00, 0.00 };
+    Double_t green[] = { 1.00, 0.00, 0.00 };
+    Double_t blue[]  = { 1.00, 1.00, 0.25 };
+    // - "warm" red-ish colors -
+    //  Double_t red[]   = {1.00, 1.00, 0.25 };
+    //  Double_t green[] = {1.00, 0.00, 0.00 };
+    //  Double_t blue[]  = {0.00, 0.00, 0.00 };
+
+    Double_t stops[] = { 0.25, 0.75, 1.00 };
+    const Int_t NRGBs = 3;
+    const Int_t NCont = 500;
+
+    TColor::CreateGradientColorTable(NRGBs, stops, red, green, blue, NCont);
+    gStyle->SetNumberContours(NCont);
+
+    // - Rainbow -
+    gStyle->SetPalette(1);  // use the rainbow color set
+
+    // -- axis --
+    gStyle->SetStripDecimals(kFALSE); // don't do 1.0 -> 1
+    //  TGaxis::SetMaxDigits(3); // doesn't have an effect
+    // no supressed zeroes!
+    gStyle->SetHistMinimumZero(kTRUE);
+/////////////////////////////////////////////////////////////////////  
+        
     const int SizeOfParticleVector = 3;
-    const int ParticleNumberGO = 3; //Number of particles we put condition on, starting from 0
+    const int ParticleNumberGO = 2; //Number of particles we put condition on, starting from 0
     int LongOrShort = 1; //Set if you are interested in subtracting long and short [0] or just long [1]
-    
+
     TString Directory="/Users/kolos/Desktop/sFGD/Output/";
     TString DirectoryPlots="/Users/kolos/Desktop/sFGD/Plots/";
     //TString Directory="/mnt/home/kskwarczynski/t2k-nd280-upgrade/sfgd_framework/analysis/Output/";
     //TString DirectoryPlots="/mnt/home/kskwarczynski/t2k-nd280-upgrade/sfgd_framework/analysis/PlotOutput/VertexActivity/";
     
-    TString FileName[1]={"VertexAcivity_Output"};
+    TString FileName="VertexAcivity_Output";
     TString VetrexString[5]={"1x1x1" , "3x3x3" , "5x5x5", "7x7x7", "9x9x9"};
     TString VertexName[5]={"VertexActivity1x1x1", "VertexActivity3x3x3", "VertexActivity5x5x5", "VertexActivity7x7x7", "VertexActivity9x9x9"};
     TString ParticleName[SizeOfParticleVector]={"Muon", "Pion+", "Proton"};        
@@ -101,14 +169,14 @@ void ComparisonPlot()
     
     TFile *file;
     TTree *t1;
-        
+
     TH1F *hVertexActivity[5];
     TH1F *hVertexActivityShell[4]; //[vertexBox-1]
     TH1F *hVertexActivitySubtractedParticle[SizeOfParticleVector][5];
     TH1F *hVertexActivityParticleCuts[SizeOfParticleVector-1][ParticleNumberGO][5];
     
-    TH1F *hVertexActivitySubTrackLengtParticleCondition[2][SizeOfParticleVector][5];
-    TH1F *hVertexActivityOnlyIfTrackLenght[2][SizeOfParticleVector][5];
+    TH1F *hVASubTrackLengtParticleCondition[2][SizeOfParticleVector][5];
+    TH1F *hVAOnlyIfTrackLenght[2][SizeOfParticleVector][5];
     
     TH1F *hVertexActivitySubTrackLengtAllCondition[2][5];
     TH1F *hVertexActivityOnlyIfTrackLenghtAll[2][5];
@@ -128,13 +196,15 @@ void ComparisonPlot()
     {
         printf("File opened successfully\n");
     }  
-    
+
     TDirectory *FolderSubtracted = (TDirectory*)file->Get("FolderSubtracted"); 
     TDirectory *FolderCut = (TDirectory*)file->Get("FolderCut"); 
     TDirectory *FolderSubtractedTrackLengthCondition = (TDirectory*)file->Get("FolderSubtractedTrackLengthCondition"); 
     TDirectory *FolderSubtractedTrackLengthAll = (TDirectory*)file->Get("FolderSubtractedTrackLengthAll"); 
     TDirectory *FolderSubtractedTrackLengthAllShell = (TDirectory*)file->Get("FolderSubtractedTrackLengthAllShell");
+    TDirectory *FolderHist2D = (TDirectory*)file->Get("FolderHist2D");
     file->cd();
+    
     for(int ik=0; ik<5; ik++)
     {
         hVertexActivity[ik] = (TH1F*) file->Get(VertexName[ik]);
@@ -155,11 +225,11 @@ void ComparisonPlot()
         
             for(int il=LongOrShort; il<2; il++) //loop over short or long track
             {
-               hVertexActivitySubTrackLengtParticleCondition[il][ig][ik] = (TH1F*) FolderSubtractedTrackLengthCondition->Get( Form("VA%sSubCondition_%s_%s", VetrexString[ik].Data(), TrackLenght[il].Data(), ParticleName[ig].Data() ) ); 
-               hVertexActivitySubTrackLengtParticleCondition[il][ig][ik]->GetYaxis()->SetTitleOffset(1.4);
+               hVASubTrackLengtParticleCondition[il][ig][ik] = (TH1F*) FolderSubtractedTrackLengthCondition->Get( Form("VA%sSubCondition_%s_%s", VetrexString[ik].Data(), TrackLenght[il].Data(), ParticleName[ig].Data() ) ); 
+               hVASubTrackLengtParticleCondition[il][ig][ik]->GetYaxis()->SetTitleOffset(1.4);
                
-               hVertexActivityOnlyIfTrackLenght[il][ig][ik] = (TH1F*) FolderSubtractedTrackLengthCondition->Get( Form("VA%sIfThereAre_%s_%s", VetrexString[ik].Data(), TrackLenght[il].Data(), ParticleName[ig].Data() ) ); 
-               hVertexActivityOnlyIfTrackLenght[il][ig][ik]->GetYaxis()->SetTitleOffset(1.4);
+               hVAOnlyIfTrackLenght[il][ig][ik] = (TH1F*) FolderSubtractedTrackLengthCondition->Get( Form("VA%sIfThereAre_%s_%s", VetrexString[ik].Data(), TrackLenght[il].Data(), ParticleName[ig].Data() ) ); 
+               hVAOnlyIfTrackLenght[il][ig][ik]->GetYaxis()->SetTitleOffset(1.4);
             }
         }
         for(int il=LongOrShort; il<2; il++) //loop over short or long track
@@ -191,19 +261,19 @@ void ComparisonPlot()
     }
     for(int ig=0; ig<SizeOfParticleVector; ig++)
     {
-        hMomentumVsRange[ig] = (TH2F*) file->Get( Form("MomentumVsRange_%s", ParticleName[ig].Data() ) );
+        hMomentumVsRange[ig] = (TH2F*) FolderHist2D->Get( Form("MomentumVsRange_%s", ParticleName[ig].Data() ) );
         hMomentumVsRange[ig]->GetYaxis()->SetTitleOffset(1.4);
             
-        hEnergyVsRange[ig] = (TH2F*) file->Get( Form("EnergyVsRange_%s", ParticleName[ig].Data()) );
+        hEnergyVsRange[ig] = (TH2F*) FolderHist2D->Get( Form("EnergyVsRange_%s", ParticleName[ig].Data()) );
         hEnergyVsRange[ig]->GetYaxis()->SetTitleOffset(1.4);
                 
-        hEnergyPeVsRange[ig] = (TH2F*) file->Get( Form("EnergyPeVsRange_%s", ParticleName[ig].Data()) );
+        hEnergyPeVsRange[ig] = (TH2F*) FolderHist2D->Get( Form("EnergyPeVsRange_%s", ParticleName[ig].Data()) );
         hEnergyPeVsRange[ig]->GetYaxis()->SetTitleOffset(1.4);
                 
-        hEenrgyVsRangehEenrgyVsRangeRestricted[ig] = (TH2F*) file->Get( Form("EnergyVsRange_Restricted_%s", ParticleName[ig].Data()) );
+        hEenrgyVsRangehEenrgyVsRangeRestricted[ig] = (TH2F*) FolderHist2D->Get( Form("EnergyVsRange_Restricted_%s", ParticleName[ig].Data()) );
         hEenrgyVsRangehEenrgyVsRangeRestricted[ig]->GetYaxis()->SetTitleOffset(1.4);
         
-        hScatteringPathVsMomentum[ig] = (TH2F*) file->Get( Form("ScatteringPathVsMomentum_%s", ParticleName[ig].Data()) );
+        hScatteringPathVsMomentum[ig] = (TH2F*) FolderHist2D->Get( Form("ScatteringPathVsMomentum_%s", ParticleName[ig].Data()) );
         hScatteringPathVsMomentum[ig]->GetYaxis()->SetTitleOffset(1.4);
     }
     file->GetObject("t1",t1);
@@ -211,7 +281,9 @@ void ComparisonPlot()
     TCanvas *Canvas[300];
     TLegend *legend[300];
     int canvasCounter=0;
+    
  ///////////////////////////////// DRAWING PART STARTS HERE/////////////////////////////   
+    
     for(int ig=0; ig<SizeOfParticleVector; ig++)
     {
         Canvas[canvasCounter] = new TCanvas( Form("Canvas%i",canvasCounter), Form("Canvas%i",canvasCounter), 1400, 1000);
@@ -296,9 +368,9 @@ void ComparisonPlot()
         delete Canvas[canvasCounter];
         canvasCounter++;
     }
-
-    for(int ik=0; ik<5; ik++) //TODO normalizacja by sie przydala
+    for(int ik=0; ik<5; ik++) //TODO normalizacja by sie przydala LOW PRIORITY
     {
+        //TODO trzeba by dodac jakas ladna  petle abt ominac problemu zmiany badanych czastek LOW PRIORITY
         for(int ig=0; ig<SizeOfParticleVector-1; ig++)
         {
             Canvas[canvasCounter] = new TCanvas( Form("Canvas%i",canvasCounter), Form("Canvas%i",canvasCounter), 1400, 1000);
@@ -309,17 +381,17 @@ void ComparisonPlot()
             hVertexActivityParticleCuts[ig][1][ik]->SetLineColorAlpha(kGreen, 1);
             hVertexActivityParticleCuts[ig][1][ik]->SetLineWidth(1.5);
         
-            hVertexActivityParticleCuts[ig][2][ik]->SetLineColorAlpha(kRed, 1);
-            hVertexActivityParticleCuts[ig][2][ik]->SetLineWidth(1.5);
+            //hVertexActivityParticleCuts[ig][2][ik]->SetLineColorAlpha(kRed, 1);
+            //hVertexActivityParticleCuts[ig][2][ik]->SetLineWidth(1.5);
             
             hVertexActivityParticleCuts[ig][0][ik]->Draw("");
             hVertexActivityParticleCuts[ig][1][ik]->Draw("SAME");
-            hVertexActivityParticleCuts[ig][2][ik]->Draw("SAME");
+            //hVertexActivityParticleCuts[ig][2][ik]->Draw("SAME");
         
             legend[canvasCounter] = new TLegend(0.55,0.65,0.9,0.9);
             legend[canvasCounter]->AddEntry(hVertexActivityParticleCuts[ig][0][ik], Form( "VA_NumOf_%s_=0", ParticleName[ig+1].Data() ),"l");
             legend[canvasCounter]->AddEntry(hVertexActivityParticleCuts[ig][1][ik], Form( "VA_NumOf_%s_=1", ParticleName[ig+1].Data() ),"l");
-            legend[canvasCounter]->AddEntry(hVertexActivityParticleCuts[ig][2][ik], Form( "VA_NumOf_%s_=2", ParticleName[ig+1].Data() ),"l");
+            //legend[canvasCounter]->AddEntry(hVertexActivityParticleCuts[ig][2][ik], Form( "VA_NumOf_%s_=2", ParticleName[ig+1].Data() ),"l");
             legend[canvasCounter]->SetTextSize(0.04);
             legend[canvasCounter]->Draw();
         
@@ -337,18 +409,18 @@ void ComparisonPlot()
             {  
                 Canvas[canvasCounter] = new TCanvas( Form("Canvas%i",canvasCounter), Form("Canvas%i",canvasCounter), 1400, 1000);
                 
-                hVertexActivitySubTrackLengtParticleCondition[il][ig][ik]->SetLineColorAlpha(kBlue, 1);
-                hVertexActivitySubTrackLengtParticleCondition[il][ig][ik]->SetLineWidth(1.5);
+                hVASubTrackLengtParticleCondition[il][ig][ik]->SetLineColorAlpha(kBlue, 1);
+                hVASubTrackLengtParticleCondition[il][ig][ik]->SetLineWidth(1.5);
                 
-                hVertexActivityOnlyIfTrackLenght[il][ig][ik]->SetLineColorAlpha(kRed, 1);
-                hVertexActivityOnlyIfTrackLenght[il][ig][ik]->SetLineWidth(1.5);
+                hVAOnlyIfTrackLenght[il][ig][ik]->SetLineColorAlpha(kRed, 1);
+                hVAOnlyIfTrackLenght[il][ig][ik]->SetLineWidth(1.5);
                 
-                hVertexActivitySubTrackLengtParticleCondition[il][ig][ik]->Draw("");
-                hVertexActivityOnlyIfTrackLenght[il][ig][ik]->Draw("SAME");
+                hVASubTrackLengtParticleCondition[il][ig][ik]->Draw("");
+                hVAOnlyIfTrackLenght[il][ig][ik]->Draw("SAME");
                 
                 legend[canvasCounter] = new TLegend(0.55,0.7,0.9,0.9);
-                legend[canvasCounter]->AddEntry(hVertexActivitySubTrackLengtParticleCondition[il][ig][ik], Form( "VA_Sub_%s_%s",TrackLenght[il].Data(), ParticleName[ig].Data() ),"l");
-                legend[canvasCounter]->AddEntry(hVertexActivityOnlyIfTrackLenght[il][ig][ik], Form( "VA_Default_If_%s_%s", TrackLenght[il].Data(), ParticleName[ig].Data() ),"l");
+                legend[canvasCounter]->AddEntry(hVASubTrackLengtParticleCondition[il][ig][ik], Form( "VA_Sub_%s_%s",TrackLenght[il].Data(), ParticleName[ig].Data() ),"l");
+                legend[canvasCounter]->AddEntry(hVAOnlyIfTrackLenght[il][ig][ik], Form( "VA_Default_If_%s_%s", TrackLenght[il].Data(), ParticleName[ig].Data() ),"l");
                 legend[canvasCounter]->SetTextSize(0.03);
                 legend[canvasCounter]->Draw();
             
@@ -518,4 +590,5 @@ void ComparisonPlot()
     Canvas[canvasCounter]->Print( Form("%sShellComparisonOnlyLong.pdf", DirectoryPlots.Data() ) ); 
     delete Canvas[canvasCounter];
     canvasCounter++;
+    
 }
