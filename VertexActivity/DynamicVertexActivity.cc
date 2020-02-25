@@ -63,7 +63,6 @@ void DynamicVertexActivity()
     
     TDirectory *FolderCut = FileOutput->mkdir("FolderCut");
     TDirectory *FolderSubtractedTrackLengthAll = FileOutput->mkdir("FolderSubtractedTrackLengthAll");
-    TDirectory *FolderShift = FileOutput->mkdir("FolderShift");
     TDirectory *FolderSubtractedTrackLengthAllShell = FileOutput->mkdir("FolderSubtractedTrackLengthAllShell");
          
     //double VertexBox[5]={0., 1., 2., 3., 4.}; // 1x1x1, 3x3x3, 5x5x5 and so on...
@@ -98,11 +97,11 @@ void DynamicVertexActivity()
             hVertexActivityDynamicCategory[ib][ik]->GetXaxis()->SetTitle( Form("Energy deposit in step %i box [p.e.]", ik ) );
             if(ik>0)
             {
-                hVertexActivityDynamicCategoryShell[ib][ik-1] = new TH1F( Form("Step%iDynamic_Cat%s_Shell", ik ,StringBox[ib].Data()) , Form("Step%iDynamic_Cat%s_Shell", ik ,StringBox[ib].Data()), 50, 0, 2000);  
+                hVertexActivityDynamicCategoryShell[ib][ik-1] = new TH1F( Form("Step%iDynamic_Cat%s_Shell", ik ,StringBox[ib].Data()) , Form("Step%iDynamic_Cat%s_Shell", ik ,StringBox[ib].Data()), 50, 0, 4000);  
                 hVertexActivityDynamicCategoryShell[ib][ik-1]->GetXaxis()->SetTitle( Form("Energy deposit in step %i box [p.e.]", ik ) );
                 if(ik>0)
                 {
-                    hVertexActivityOnlyLongShell[ib][ik-1] = new TH1F( Form("%s_%s_Shell_OnlyLong",VertexName[ik].Data(), StringBox[ib].Data()) , Form("%s_%s_Shell_OnlyLong",VertexName[ik].Data(), StringBox[ib].Data()), 50, 0, 2000);
+                    hVertexActivityOnlyLongShell[ib][ik-1] = new TH1F( Form("Step%i_%s_Shell_OnlyLong",ik, StringBox[ib].Data()) , Form("Step%i_%s_Shell_OnlyLong",ik, StringBox[ib].Data() ) , 50, 0, 4000);
                     hVertexActivityOnlyLongShell[ib][ik-1]->GetXaxis()->SetTitle( Form("Energy deposit in step %i box [p.e.]", ik ) );
                     
                 }
@@ -125,10 +124,10 @@ void DynamicVertexActivity()
                 
                 if(ik>0)
                 {
-                    hVertexActivitySubTrackLengtAllConditionShell[ib][il][ik-1] = new TH1F( Form("Step%i_%s_SubCondition_%s_All_Shell", ik, StringBox[ib].Data(), TrackLenght[il].Data()), Form("Step%i_%s_SubCondition_%s_All_Shell", ik, StringBox[ib].Data(), TrackLenght[il].Data()), 50, 0, 2000);  
+                    hVertexActivitySubTrackLengtAllConditionShell[ib][il][ik-1] = new TH1F( Form("Step%i_%s_SubCondition_%s_All_Shell", ik, StringBox[ib].Data(), TrackLenght[il].Data()), Form("Step%i_%s_SubCondition_%s_All_Shell", ik, StringBox[ib].Data(), TrackLenght[il].Data()), 50, 0, 4000);  
                     hVertexActivitySubTrackLengtAllConditionShell[ib][il][ik-1]->GetXaxis()->SetTitle( Form("Energy deposit in step %i box [p.e.]", ik ) );
                     
-                    hVertexActivityOnlyIfTrackLenghtAllShell[ib][il][ik-1] = new TH1F( Form("Step%i_%s_IfThereAre_%s_All_Shell", ik, StringBox[ib].Data(), TrackLenght[il].Data()), Form("Step%i_%s_IfThereAre_%s_All_Shell", ik, StringBox[ib].Data(), TrackLenght[il].Data()), 50, 0, 2000);  
+                    hVertexActivityOnlyIfTrackLenghtAllShell[ib][il][ik-1] = new TH1F( Form("Step%i_%s_IfThereAre_%s_All_Shell", ik, StringBox[ib].Data(), TrackLenght[il].Data()), Form("Step%i_%s_IfThereAre_%s_All_Shell", ik, StringBox[ib].Data(), TrackLenght[il].Data()), 50, 0, 4000);  
                     hVertexActivityOnlyIfTrackLenghtAllShell[ib][il][ik-1]->GetXaxis()->SetTitle( Form("Energy deposit in step %i box [p.e.]", ik ) );
                     
                 }

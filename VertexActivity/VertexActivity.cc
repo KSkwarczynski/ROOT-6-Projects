@@ -50,18 +50,27 @@ Event*          unpackEvent;
 void VertexActivity() 
 {
     //TODO zrobic jakis oddzielny program/liste wczytujace stale parametry jak fiducial vollume itd
+    //TODO histo gdy mamy wieskzy depo w 9x9 niz 7x7 lub 5x5x5 na stopujace protony
+    //TODO w zaleznosci od roznej liczby czastek
     parseArguments();
     linkFilesToTTrees();
 
     bool VERBOSE = true;
     std::vector<ND280SFGDHit*> mppc_hits;
         
+    int VAshiftVector[2]={1, -1}; //Adjust position of vertex
+    const int SizeOfShiftVector= (sizeof(VAshiftVector)/sizeof(*VAshiftVector));
+    const int SizeOfParticleVector = 4;
+    const int ParticleNumberGO = 2; //Number of particles we put condition on, starting from 0
+    const int SelectionNumber = 4;
+    
     TString VertexName[5]={"VertexActivity1x1x1", "VertexActivity3x3x3", "VertexActivity5x5x5", "VertexActivity7x7x7", "VertexActivity9x9x9"};
     TString VertexNameShifted[3]={"X", "Y", "Z"};
     TString VetrexString[5]={"1x1x1" , "3x3x3" , "5x5x5", "7x7x7", "9x9x9"};
-    TString ParticleName[3]={"Muon", "Pion+", "Proton"};
-    TString ParticleNameBranch[3]={"Muon", "PionP", "Proton"};
+    TString ParticleName[SizeOfParticleVector]={"Muon", "Pion+", "Proton", "Pion-"};
+    TString ParticleNameBranch[SizeOfParticleVector]={"Muon", "PionP", "Proton", "PionN"};
     TString TrackLenght[2]={"Short", "Long"};
+    TString SelectionsName[SelectionNumber]={"CC0Pi", "CC0p0Pi", "CC1Pi", "CCOther"};
     
     TDirectory *FolderEnergyLoss = FileOutput->mkdir("FolderEnergyLoss");
     TDirectory *FolderEnergyLossNonZero = FileOutput->mkdir("FolderEnergyLossNonZero");
@@ -70,19 +79,21 @@ void VertexActivity()
     TDirectory *FolderSubtractedTrackLengthCondition = FileOutput->mkdir("FolderSubtractedTrackLengthCondition");
     TDirectory *FolderSubtractedTrackLengthAll = FileOutput->mkdir("FolderSubtractedTrackLengthAll");
     TDirectory *FolderSubtractedTrackLengthAllShell = FileOutput->mkdir("FolderSubtractedTrackLengthAllShell");
+    TDirectory *FolderParticleSelections[SelectionNumber];
+    TDirectory *FolderHist2D = FileOutput->mkdir("FolderHist2D");
     TDirectory *FolderShift = FileOutput->mkdir("FolderShift");
     TDirectory *FolderCut = FileOutput->mkdir("FolderCut");
     TDirectory *FolderGarbage = FileOutput->mkdir("FolderGarbage");
     TDirectory *Other = FileOutput->mkdir("Other");
     
-    double VertexBox[5]={0., 1., 2., 3., 4.}; // 1x1x1, 3x3x3, 5x5x5 and so on...
-    int VAshiftVector[2]={1, -1}; //Adjust position of vertex
-    const int SizeOfShiftVector= (sizeof(VAshiftVector)/sizeof(*VAshiftVector));
-    const int SizeOfParticleVector = (sizeof(ParticleName)/sizeof(*ParticleName));
-    const int ParticleNumberGO = 3; //Number of particles we put condition on, starting from 0
+    for(int ic=0; ic<SelectionNumber; ic++) //TODO pozniej bedzie trzeba przesunac aby kolejnosc byla ladna
+    {
+       FolderParticleSelections[ic]= FileOutput->mkdir( Form( "Folder%s", SelectionsName[ic].Data() ) );
+    }
     
+    double VertexBox[5]={0., 1., 2., 3., 4.}; // 1x1x1, 3x3x3, 5x5x5 and so on...
     int ParticleNumberCut[7]={0, 1, 2, 3, 4, 5, 6};
-    int ParticlePDG[SizeOfParticleVector]={13, 211, 2212}; //muon, pion+, proton
+    int ParticlePDG[SizeOfParticleVector]={13, 211, 2212, -211}; //muon, pion+, proton
     double ShortTrack = 3.0;    //threshold for short tracks
     double epsilon = 0.0001;   // value neccesary for comparing floating numbers
     int FiducialVolume = 3;   //set how far from detector boundries we want to study Vertex Activity
@@ -94,9 +105,17 @@ void VertexActivity()
     TH1F *hVertexActivity[5]; //[vertexBox]
     TH1F *hVertexActivityShell[4]; //[vertexBox-1]
     TH1F *hVertexActivitySubtractedParticle[SizeOfParticleVector][5]; //[substracted particle][vertexBox]
+    
     TH1F *hVertexActivitySubTrackLengtParticle[2][SizeOfParticleVector][5]; //[0-short, long][substracted particle][vertexBox]
-    TH1F *hVertexActivitySubTrackLengtParticleCondition[2][SizeOfParticleVector][5]; //[0-short, long][substracted particle][vertexBox]
-    TH1F *hVertexActivityOnlyIfTrackLenght[2][SizeOfParticleVector][5]; //[0-short, long][substracted particle][vertexBox]
+    TH1F *hVASubTrackLengtParticleCondition[2][SizeOfParticleVector][5]; //[0-short, long][substracted particle][vertexBox]
+    TH1F *hVAOnlyIfTrackLenght[2][SizeOfParticleVector][5]; //[0-short, long][substracted particle][vertexBox]
+    
+    //TODO selections
+    TH1F *hVertexActivitySelections[SelectionNumber][5]; //[vertexBox]
+    TH1F *h_nuMomSelections[SelectionNumber];
+    TH1F *hVertexActivityShellCondition[SelectionNumber][4]; //[vertexBox-1]
+    TH1F *hVASubTrackLengtAllCondSelection[SelectionNumber][2][5]; //[Selection][0-short, long][vertexBox]
+    TH1F *hVAOnlyIfTrackLenghtAllCondition[SelectionNumber][2][5];
     
     TH1F *hVertexActivitySubTrackLengtAllCondition[2][5]; 
     TH1F *hVertexActivityOnlyIfTrackLenghtAll[2][5]; //[0-short, long][vertexBox]
@@ -106,9 +125,9 @@ void VertexActivity()
     TH1F *hVertexActivityOnlyLongShell[4]; //[vertexBox-1]
     
     TH1F *hEnergyDepoParticle[SizeOfParticleVector][5]; //[particle][vertexBox]
-    TH1F *hEnergyDepoParticleWithCuts[ParticleNumberGO][2][SizeOfParticleVector][5]; //[condition][particle with cut][particle studied][vertexBox]
+    TH1F *hEnergyDepoParticleWithCuts[ParticleNumberGO][SizeOfParticleVector-1][SizeOfParticleVector][5]; //[condition][particle with cut][particle studied][vertexBox]
     TH1F *hEnergyDepoParticleNonZero[5]; //[vertexBox]
-    TH1F *hEnergyDepoParticleWithCutsNonZero[ParticleNumberGO][2][SizeOfParticleVector-1][5]; //[condition][particle with cut][particle studied][vertexBox]
+    TH1F *hEnergyDepoParticleWithCutsNonZero[ParticleNumberGO][SizeOfParticleVector-1][SizeOfParticleVector-1][5]; //[condition][particle with cut][particle studied][vertexBox]
    
     TH1F *hVertexActivityShifted[SizeOfShiftVector][3][5]; // Which array represent what [VAshiftVector][X,Y,Z][VetrexString]
     TH1F *hVertexActivityParticleCuts[SizeOfParticleVector-1][ParticleNumberGO][5]; // [particle][condition][vertexBox]
@@ -117,6 +136,8 @@ void VertexActivity()
     TH1F *hMeanScatteringRange[SizeOfParticleVector]; //[particle]
     TH1F *hVertexActivityByGarbage[5]; //[vertexBox]
     TH1F *hGarbagePDG[5]; //[vertexBox]
+    
+    TH1F *hRecParticleCounter[4]; //[particles]
     for(int ik=0; ik<5; ik++)
     {
         hVertexActivity[ik] = new TH1F(VertexName[ik], VertexName[ik], 50, 0, 4000+ik*3000);  
@@ -138,7 +159,25 @@ void VertexActivity()
             hVertexActivityOnlyLongShell[ik-1] = new TH1F( Form("%sShell_OnlyLong",VertexName[ik].Data()) , Form("%sShell_OnlyLong",VertexName[ik].Data()), 50, 0, 8000); 
             hVertexActivityOnlyLongShell[ik-1]->GetXaxis()->SetTitle( Form("Energy deposit in box %s [p.e.]",VetrexString[ik].Data() ) );
         }
-        for(int ig=0; ig<3; ig++)
+        for(int ic=0; ic<SelectionNumber; ic++) //TODO dla selekcji
+        {
+            hVertexActivitySelections[ic][ik] = new TH1F( Form("VA%s_%s", VetrexString[ik].Data(), SelectionsName[ic].Data() ), Form("VA%s_%s", VetrexString[ik].Data(), SelectionsName[ic].Data() ), 50, 0, 4000+ik*3000);  
+            hVertexActivitySelections[ic][ik]->GetXaxis()->SetTitle( Form("Energy deposit in box %s [p.e.]",VetrexString[ik].Data() ) );
+            if(ik>0)
+            {
+                hVertexActivityShellCondition[ic][ik-1] = new TH1F( Form("VA%s_Shell_%s", VetrexString[ik].Data(), SelectionsName[ic].Data() ) , Form("VA%s_Shell_%s", VetrexString[ik].Data(), SelectionsName[ic].Data() ), 50, 0, 8000);
+                hVertexActivityShellCondition[ic][ik-1]->GetXaxis()->SetTitle( Form("Energy deposit in box %s [p.e.]",VetrexString[ik].Data() ) );
+            }
+            for(int il=0; il<2; il++) //loop over short long track
+            {
+                hVASubTrackLengtAllCondSelection[ic][il][ik] = new TH1F( Form("VA%sSubCondition_%s_%s_All", VetrexString[ik].Data(),SelectionsName[ic].Data(), TrackLenght[il].Data()), Form("VA%sSubCondition_%s_All", VetrexString[ik].Data(), TrackLenght[il].Data()), 50, 0, 4000+ik*3000); 
+                hVASubTrackLengtAllCondSelection[ic][il][ik]->GetXaxis()->SetTitle( Form("Energy deposit in box %s [p.e.]",VetrexString[ik].Data() ) );
+                
+                hVAOnlyIfTrackLenghtAllCondition[ic][il][ik]= new TH1F( Form("VA%sIfThereAre_%s_%s_All", VetrexString[ik].Data(), SelectionsName[ic].Data(), TrackLenght[il].Data()), Form("VA%sIfThereAre_%s_All", VetrexString[ik].Data(), TrackLenght[il].Data()), 50, 0, 4000+ik*3000);  
+                hVAOnlyIfTrackLenghtAllCondition[ic][il][ik]->GetXaxis()->SetTitle( Form("Energy deposit in box %s [p.e.]",VetrexString[ik].Data() ) );
+            }
+        }
+        for(int ig=0; ig<SizeOfParticleVector; ig++)
         {
             for(int ih=0; ih<SizeOfShiftVector; ih++)
             {
@@ -158,11 +197,11 @@ void VertexActivity()
                 hVertexActivitySubTrackLengtParticle[il][ig][ik] = new TH1F( Form("VA%sSubtracted_%s_%s", VetrexString[ik].Data(), TrackLenght[il].Data(), ParticleName[ig].Data()), Form("VA%sSubtracted_%s_%s", VetrexString[ik].Data(), TrackLenght[il].Data(), ParticleName[ig].Data()), 50, 0, 4000+ik*3000);  
                 hVertexActivitySubTrackLengtParticle[il][ig][ik]->GetXaxis()->SetTitle( Form("Energy deposit in box %s [p.e.]", VetrexString[ik].Data() ) );
                 
-                hVertexActivitySubTrackLengtParticleCondition[il][ig][ik] = new TH1F( Form("VA%sSubCondition_%s_%s", VetrexString[ik].Data(), TrackLenght[il].Data(), ParticleName[ig].Data()), Form("VA%sSubCondition_%s_%s", VetrexString[ik].Data(), TrackLenght[il].Data(), ParticleName[ig].Data()), 50, 0, 4000+ik*3000);  
-                hVertexActivitySubTrackLengtParticleCondition[il][ig][ik]->GetXaxis()->SetTitle( Form("Energy deposit in box %s [p.e.]", VetrexString[ik].Data() ) );
+                hVASubTrackLengtParticleCondition[il][ig][ik] = new TH1F( Form("VA%sSubCondition_%s_%s", VetrexString[ik].Data(), TrackLenght[il].Data(), ParticleName[ig].Data()), Form("VA%sSubCondition_%s_%s", VetrexString[ik].Data(), TrackLenght[il].Data(), ParticleName[ig].Data()), 50, 0, 4000+ik*3000);  
+                hVASubTrackLengtParticleCondition[il][ig][ik]->GetXaxis()->SetTitle( Form("Energy deposit in box %s [p.e.]", VetrexString[ik].Data() ) );
                 
-                hVertexActivityOnlyIfTrackLenght[il][ig][ik] = new TH1F( Form("VA%sIfThereAre_%s_%s", VetrexString[ik].Data(), TrackLenght[il].Data(), ParticleName[ig].Data()), Form("VA%sIfThereAre_%s_%s", VetrexString[ik].Data(), TrackLenght[il].Data(), ParticleName[ig].Data()), 50, 0, 4000+ik*3000);  
-                hVertexActivityOnlyIfTrackLenght[il][ig][ik]->GetXaxis()->SetTitle( Form("Energy deposit in box %s [p.e.]", VetrexString[ik].Data() ) );
+                hVAOnlyIfTrackLenght[il][ig][ik] = new TH1F( Form("VA%sIfThereAre_%s_%s", VetrexString[ik].Data(), TrackLenght[il].Data(), ParticleName[ig].Data()), Form("VA%sIfThereAre_%s_%s", VetrexString[ik].Data(), TrackLenght[il].Data(), ParticleName[ig].Data()), 50, 0, 4000+ik*3000);  
+                hVAOnlyIfTrackLenght[il][ig][ik]->GetXaxis()->SetTitle( Form("Energy deposit in box %s [p.e.]", VetrexString[ik].Data() ) );
                 
                 if(ig==0) //For substracting all we don't need loop over particels
                 {
@@ -196,10 +235,10 @@ void VertexActivity()
                 }
             }
         }
-        for(int is=0; is<2; is++)
+        for(int il=0; il<2; il++)
         {
-            hVertexActivityTrackLength[is][ik] = new TH1F( Form("%sIfNo%sTracks", VertexName[ik].Data(), TrackLenght[is].Data()), Form("%sIfNo%sTracks", VertexName[ik].Data(), TrackLenght[is].Data()), 50, 0, 4000+ik*3000);  
-            hVertexActivityTrackLength[is][ik]->GetXaxis()->SetTitle( Form("Energy deposit in box %s [p.e.]",VetrexString[ik].Data() ) );
+            hVertexActivityTrackLength[il][ik] = new TH1F( Form("%sIfNo%sTracks", VertexName[ik].Data(), TrackLenght[il].Data()), Form("%sIfNo%sTracks", VertexName[ik].Data(), TrackLenght[il].Data()), 50, 0, 4000+ik*3000);  
+            hVertexActivityTrackLength[il][ik]->GetXaxis()->SetTitle( Form("Energy deposit in box %s [p.e.]",VetrexString[ik].Data() ) );
         }
         for(int ih=0; ih<ParticleNumberGO; ih++)
         {
@@ -214,6 +253,14 @@ void VertexActivity()
     {
         hMeanScatteringRange[ig] = new TH1F( Form("%sScatteringDistance", ParticleName[ig].Data() ), Form("%sScatteringDistance", ParticleName[ig].Data() ) , 50, 0, 300 );  
         hMeanScatteringRange[ig]->GetXaxis()->SetTitle( "Distance [cm]" );
+        
+        hRecParticleCounter[ig] = new TH1F( Form("NumberOfReconstructed%s", ParticleName[ig].Data() ), Form("NumberOfReconstructed%s", ParticleName[ig].Data() ) , 10, 0, 9 );  
+        hRecParticleCounter[ig]->GetXaxis()->SetTitle( "Number of particles" );
+    }
+    for(int ic=0; ic<SelectionNumber; ic++)
+    {
+        h_nuMomSelections[ic] = new TH1F( Form("nuMom%s", SelectionsName[ic].Data() ), Form("nuMom%s", SelectionsName[ic].Data() ), 50,0,6000);
+        h_nuMomSelections[ic]->GetXaxis()->SetTitle( "MeV?" );
     }
     TH2F *hMomentumVsRange[SizeOfParticleVector];
     TH2F *hEenrgyVsRange[SizeOfParticleVector];
@@ -290,7 +337,7 @@ void VertexActivity()
         double VertexDepositSubtractedLengthAll[2][5][2]={}; //[0-short, 1-long][VertexBox][0-PE, 1-MeV]
         
         double VertexDepositShifted[SizeOfShiftVector][3][5][2]={}; //[VAshiftVector][X,Y,Z][VertexBox][0-PE, 1-MeV]
-        double VertexParticleDeposit[3][5][2]={}; //[0-muon, 1-pion, 2-proton][VertexBox][0-PE, 1-MeV]
+        double VertexParticleDeposit[SizeOfParticleVector][5][2]={}; //[particle][VertexBox][0-PE, 1-MeV]
         double VertexGarbageDeposit[5][2]={}; //[VertexBox][0-PE, 1-MeV]
         
         bool VetrexInDetector=true; //sometimes vertex is outside  detector boundries/fiducial volume
@@ -303,7 +350,7 @@ void VertexActivity()
         int MuonCounter=0;
         for(auto t:inputEvent->GetTrueTracks()) 
         {
-            if( t->GetPDG() == 13 && t->GetParentID()==0 && t->GetMaxEuclDist()>ShortTrack )
+            if( t->GetPDG() == 13 && t->GetParentID()==0 && t->GetMaxEuclDist() > ShortTrack )
             {
                 if(VERBOSE) cout<<"True track PDG= "<<t->GetPDG()<<" range "<<t->GetMaxEuclDist()<<" mom "<<t->GetMomentum()<<" cosTheta "<<t->GetCosTheta()<<endl;
                 MuonCounter++;
@@ -316,7 +363,8 @@ void VertexActivity()
         } 
         double Edep=0;
         double EdepPE=0;
-        int ParticleCounter[SizeOfParticleVector]={}; // [0-muon, 1-pion, 2-proton]
+        int ParticleCounter[SizeOfParticleVector]={}; // [0-muon, 1-pion+, 2-proton, 3-pion-]
+        int RecoParticleCounter[SizeOfParticleVector]={}; // [0-muon, 1-pion+, 2-proton, 3-pion-]
         int TrackLengthParticleCounter[2][SizeOfParticleVector-1]={}; // [0-short track, 1-long track][1-pion, 2-proton]
         std::vector<int> TrackIdLengthParticle[2][SizeOfParticleVector];
         std::vector<int> TrackIdLengthAll[2];
@@ -337,8 +385,8 @@ void VertexActivity()
                     GarbageTrackCounter[ik].push_back(1);
                 }
             }
-            if(TrackDistance < ShortTrack)  TrackIdConditionLengthParticle[0].push_back( t->GetTrackID() );
-            if(TrackDistance >= ShortTrack) TrackIdConditionLengthParticle[1].push_back( t->GetTrackID() );
+            if(TrackDistance <= ShortTrack)  TrackIdConditionLengthParticle[0].push_back( t->GetTrackID() );
+            if(TrackDistance >  ShortTrack) TrackIdConditionLengthParticle[1].push_back( t->GetTrackID() );
 
             for(int ig=0; ig<SizeOfParticleVector; ig++) //loop over studied particles
             {
@@ -377,8 +425,9 @@ void VertexActivity()
                     hEenrgyVsRange[ig]->Fill(Edep, TrackDistance );
                     hEenrgyPeVsRange[ig]->Fill(EdepPE/100, TrackDistance );
                     ParticleCounter[ig]++;
-                    if(ig>0 && TrackDistance <ShortTrack)  TrackLengthParticleCounter[0][ig-1]++; //short track
-                    if(ig>0 && TrackDistance >=ShortTrack) TrackLengthParticleCounter[1][ig-1]++; //long track
+                    if(TrackDistance > ShortTrack) RecoParticleCounter[ig]++;
+                    if(ig>0 && TrackDistance <= ShortTrack)  TrackLengthParticleCounter[0][ig-1]++; //short track
+                    if(ig>0 && TrackDistance >  ShortTrack) TrackLengthParticleCounter[1][ig-1]++; //long track
                     
                     if(t->GetCosTheta()>0.7 || t->GetCosTheta()<-0.7) hEenrgyVsRangeRestricted[ig]->Fill(Edep, TrackDistance );
                     Edep=0;
@@ -399,7 +448,7 @@ void VertexActivity()
             TrackIdLengthAll[0].push_back( t->GetTrackID() );
             TrackIdLengthAll[1].push_back( t->GetTrackID() );
             //TODO moze da się to łądniej zrobić
-            if(t->GetPDG() == ParticlePDG[0] || t->GetPDG() == ParticlePDG[1] || t->GetPDG() == ParticlePDG[2] || t->GetPDG() == -211) 
+            if(t->GetPDG() == ParticlePDG[0] || t->GetPDG() == ParticlePDG[1] || t->GetPDG() == ParticlePDG[2] || t->GetPDG() == ParticlePDG[3]) 
             {
                 if( TrackDistance <= ShortTrack )
                 {
@@ -412,6 +461,13 @@ void VertexActivity()
             }
         }
         for(int ig=0; ig<SizeOfParticleVector; ig++){ ParticleCounterBranch[ig]=ParticleCounter[ig]; }
+        bool TopologySelection[SelectionNumber]={}; 
+        //This might be confusing but keep in mind [0-muon, 1-pion+, 2-proton, 3-pion-]
+        if(RecoParticleCounter[0]==1 && RecoParticleCounter[1]==0 && RecoParticleCounter[2]==1 && RecoParticleCounter[3]==0) TopologySelection[0]=true;
+        if(RecoParticleCounter[0]==1 && RecoParticleCounter[1]==0 && RecoParticleCounter[2]==0 && RecoParticleCounter[3]==0) TopologySelection[1]=true;
+        if(RecoParticleCounter[0]==1 && RecoParticleCounter[2]==1 && (RecoParticleCounter[3]+RecoParticleCounter[1])==1 ) TopologySelection[2]=true;
+        if(!TopologySelection[0] && !TopologySelection[2]) TopologySelection[3]=true;
+        
         for(auto voxel:inputEvent->GetVoxels())
         {   
             for(int ik=0; ik<5; ik++)
@@ -510,6 +566,11 @@ void VertexActivity()
         double nuMom = inputEvent->GetNuMom();
         h_nuMom->Fill(nuMom);
         
+        for(int ic=0; ic<SelectionNumber; ic++)
+        {
+            if(TopologySelection[ic]) h_nuMomSelections[ic]->Fill( nuMom );
+        }
+        
         for(int ik=0; ik<5; ik++) //Filling histograms starts here
         {
             hVertexActivity[ik]->Fill(VertexDeposit[ik][0]); 
@@ -517,19 +578,35 @@ void VertexActivity()
             if(ik>0) hVertexActivityShell[ik-1]->Fill(VertexDeposit[ik][0]-VertexDeposit[ik-1][0]);
             if(TrackLengthParticleCounter[0][0]==0 && TrackLengthParticleCounter[0][1]==0) hVertexActivityTrackLength[0][ik]->Fill(VertexDeposit[ik][0]); 
             if(TrackLengthParticleCounter[1][0]==0 && TrackLengthParticleCounter[1][1]==0) hVertexActivityTrackLength[1][ik]->Fill(VertexDeposit[ik][0]);
-            if(VertexGarbageDeposit[ik][1]>epsilon) hVertexActivityByGarbage[ik]->Fill( VertexGarbageDeposit[ik][1] );
+            if(VertexGarbageDeposit[ik][1] > epsilon) hVertexActivityByGarbage[ik]->Fill( VertexGarbageDeposit[ik][1] );
             
+            for(int ic=0; ic<SelectionNumber; ic++)
+            {
+                if(TopologySelection[ic])
+                {
+                    hVertexActivitySelections[ic][ik]->Fill(VertexDeposit[ik][0]);
+                    if(ik>0) hVertexActivityShellCondition[ic][ik-1]->Fill( VertexDeposit[ik][0]-VertexDeposit[ik-1][0]);
+                    for(int il=0; il<2; il++)
+                    {
+                        if( abs( VertexDeposit[ik][0]-VertexDepositSubtractedLengthAll[0][ik][0] ) > epsilon )
+                        {
+                            hVASubTrackLengtAllCondSelection[ic][il][ik]->Fill( VertexDepositSubtractedLengthAll[il][ik][0] );
+                            hVAOnlyIfTrackLenghtAllCondition[ic][il][ik]->Fill( VertexDeposit[ik][0] );
+                        }
+                    }
+                }
+            }
             for(int ig=0; ig<SizeOfParticleVector; ig++)
             {
                 hVertexActivitySubtractedParticle[ig][ik]->Fill(VertexDepositSubtracted[ig][ik][0]);
                 hEnergyDepoParticle[ig][ik]->Fill( VertexParticleDeposit[ig][ik][1] );
-                if(ig==0 && VertexParticleDeposit[0][0][1]>) hEnergyDepoParticleNonZero[ik]->Fill( VertexParticleDeposit[ig][ik][1] );
-                for(int is=0; is<2; is++) //loop over condition particle
+                if(ig==0 && VertexParticleDeposit[0][0][1] > epsilon) hEnergyDepoParticleNonZero[ik]->Fill( VertexParticleDeposit[ig][ik][1] );
+                for(int is=0; is<SizeOfParticleVector-1; is++) //loop over condition particle
                 {
                     for(int il=0; il<ParticleNumberGO; il++) //loop over # of condition particles
                     {
                         if(ParticleCounter[is+1]==ParticleNumberCut[il]) hEnergyDepoParticleWithCuts[il][is][ig][ik]->Fill( VertexParticleDeposit[ig][ik][1] );
-                        if(ParticleCounter[is+1]==ParticleNumberCut[il] && ig>0 && VertexParticleDeposit[ig][0][1]>epsilon)
+                        if(ParticleCounter[is+1]==ParticleNumberCut[il] && ig>0 && VertexParticleDeposit[ig][0][1] > epsilon)
                         {
                             hEnergyDepoParticleWithCutsNonZero[il][is][ig-1][ik]->Fill( VertexParticleDeposit[ig][ik][1] );
                         }
@@ -538,13 +615,13 @@ void VertexActivity()
                 for(int il=0; il<2; il++)
                 {
                     hVertexActivitySubTrackLengtParticle[il][ig][ik]->Fill(VertexDepositSubtractedLength[il][ig][ik][0]);
-                    if( abs( VertexDeposit[ik][0]-VertexDepositSubtractedLength[il][ig][ik][0])>epsilon )
+                    if( abs( VertexDeposit[ik][0]-VertexDepositSubtractedLength[il][ig][ik][0]) > epsilon )
                     //TODO mozna pomyśleć zmienic [ik]->[4]
                     {
-                        hVertexActivitySubTrackLengtParticleCondition[il][ig][ik]->Fill( VertexDepositSubtractedLength[il][ig][ik][0] );
-                        hVertexActivityOnlyIfTrackLenght[il][ig][ik]->Fill( VertexDeposit[ik][0] );
+                        hVASubTrackLengtParticleCondition[il][ig][ik]->Fill( VertexDepositSubtractedLength[il][ig][ik][0] );
+                        hVAOnlyIfTrackLenght[il][ig][ik]->Fill( VertexDeposit[ik][0] );
                     }
-                    if(ig==0 && abs( VertexDeposit[ik][0]-VertexDepositSubtractedLengthAll[0][ik][0] )> epsilon )
+                    if(ig==0 && abs( VertexDeposit[ik][0]-VertexDepositSubtractedLengthAll[0][ik][0] ) > epsilon )
                     {
                         hVertexActivitySubTrackLengtAllCondition[il][ik]->Fill( VertexDepositSubtractedLengthAll[il][ik][0] );
                         hVertexActivityOnlyIfTrackLenghtAll[il][ik]->Fill( VertexDeposit[ik][0] ); 
@@ -557,7 +634,7 @@ void VertexActivity()
                     }
                 }
             }
-            if(ik>0 && abs( VertexDeposit[ik][0]-VertexDepositSubtractedLengthAll[0][ik][0] )<= epsilon )
+            if(ik>0 && abs( VertexDeposit[ik][0]-VertexDepositSubtractedLengthAll[0][ik][0] ) <= epsilon )
             {
                 hVertexActivityOnlyLongShell[ik-1]->Fill(VertexDeposit[ik][0]-VertexDeposit[ik-1][0] );
             }
@@ -576,6 +653,10 @@ void VertexActivity()
                 }
             }
         }
+        for(int ig=0; ig<SizeOfParticleVector; ig++) //loop over conditioned particle/ no muon(-1)
+        {
+            hRecParticleCounter[ig]->Fill(RecoParticleCounter[ig]);
+        }
         t1.Fill();
         selEvents++; 
         //inputEvent->DrawTrueTracks(true,"trueTracks");
@@ -593,6 +674,11 @@ void VertexActivity()
         {
             hVertexActivityShell[ik]->Write("",TObject::kOverwrite); 
         }
+        for(int ig=0; ig<SizeOfParticleVector; ig++)
+        {
+            hRecParticleCounter[ig]->Write("",TObject::kOverwrite);
+        }
+        FolderHist2D->cd();
         for(int ig=0; ig<SizeOfParticleVector; ig++)
         {
             hMomentumVsRange[ig]->Write("",TObject::kOverwrite);
@@ -678,14 +764,14 @@ void VertexActivity()
             {
                 for(int ik=0; ik<5; ik++)
                 {
-                    hVertexActivityOnlyIfTrackLenght[il][ig][ik]->Write("",TObject::kOverwrite); 
+                    hVAOnlyIfTrackLenght[il][ig][ik]->Write("",TObject::kOverwrite); 
                 }
             }
             for(int ig=0; ig<SizeOfParticleVector; ig++)
             {
                 for(int ik=0; ik<5; ik++)
                 {
-                    hVertexActivitySubTrackLengtParticleCondition[il][ig][ik]->Write("",TObject::kOverwrite); 
+                    hVASubTrackLengtParticleCondition[il][ig][ik]->Write("",TObject::kOverwrite); 
                 }
             }
         }
@@ -722,9 +808,9 @@ void VertexActivity()
         {
             for(int ih=0; ih<SizeOfShiftVector; ih++)
             {
-                for(int ic=0; ic<3; ic++) //loop over coordiantes XYZ
+                for(int iw=0; iw<3; iw++) //loop over coordiantes XYZ
                 {
-                    hVertexActivityShifted[ih][ic][ik]->Write("",TObject::kOverwrite); 
+                    hVertexActivityShifted[ih][iw][ik]->Write("",TObject::kOverwrite); 
                 }
             }
         }
@@ -749,17 +835,46 @@ void VertexActivity()
             hGarbagePDG[ik]->Write("",TObject::kOverwrite);
         }
         Other->cd();
-        for(int ig=0; ig<2; ig++)
+        for(int il=0; il<2; il++)
         {
             for(int ik=0; ik<5; ik++)
             {
-                hVertexActivityTrackLength[ig][ik]->Write("",TObject::kOverwrite);
+                hVertexActivityTrackLength[il][ik]->Write("",TObject::kOverwrite);
             }
         }
         for(int ig=0; ig<SizeOfParticleVector; ig++)
         {
             hMeanScatteringRange[ig]->Write("",TObject::kOverwrite);
         }
+        //////TODO
+        for(int ic=0; ic<SelectionNumber; ic++)
+        {
+            FolderParticleSelections[ic]->cd();
+            h_nuMomSelections[ic]->Write("",TObject::kOverwrite);
+            for(int ik=0; ik<5; ik++)
+            {   
+                hVertexActivitySelections[ic][ik]->Write("",TObject::kOverwrite);
+            }
+            for(int ik=0; ik<4; ik++)
+            {   
+                hVertexActivityShellCondition[ic][ik]->Write("",TObject::kOverwrite);
+            }
+            for(int ik=0; ik<5; ik++)
+            { 
+                for(int il=LongOrShort; il<2; il++)
+                {
+                    hVASubTrackLengtAllCondSelection[ic][il][ik]->Write("",TObject::kOverwrite);
+                }
+            }
+            for(int ik=0; ik<5; ik++)
+            { 
+                for(int il=LongOrShort; il<2; il++)
+                {
+                    hVAOnlyIfTrackLenghtAllCondition[ic][il][ik]->Write("",TObject::kOverwrite);
+                }
+            }
+        }
+        
         FileOutput->cd();
         t1.Write();
         FileOutput->Close();
