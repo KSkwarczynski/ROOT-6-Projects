@@ -4,14 +4,15 @@
 #include <iostream>
 #include "TStyle.h"
 #include <TColor.h>
+#include <TLatex.h>
 
 void ComparisonPlot()
 {
-// -- WhichStyle --
+    // -- WhichStyle --
     // 1 = presentation large fonts
     // 2 = presentation small fonts
     // 3 = publication/paper
-    Int_t WhichStyle = 1;
+    Int_t WhichStyle = 2;
     
     Int_t FontStyle = 22;
     Float_t FontSizeLabel = 0.035;
@@ -39,7 +40,6 @@ void ComparisonPlot()
         YOffsetTitle = 1.6;
         break;
     }
-
     // use plain black on white colors
     gStyle->SetFrameBorderMode(0);
     gStyle->SetCanvasBorderMode(0);
@@ -148,24 +148,38 @@ void ComparisonPlot()
     gStyle->SetStripDecimals(kFALSE); // don't do 1.0 -> 1
     //  TGaxis::SetMaxDigits(3); // doesn't have an effect
     // no supressed zeroes!
-    gStyle->SetHistMinimumZero(kTRUE);
+    gStyle->SetHistMinimumZero(kTRUE);    
 /////////////////////////////////////////////////////////////////////  
-        
-    const int SizeOfParticleVector = 3;
+/////////////////////////////////////////////////////////////////////     
+/////////////////////////////////////////////////////////////////////  
+    const int SizeOfParticleVector = 4;
     const int ParticleNumberGO = 2; //Number of particles we put condition on, starting from 0
     int LongOrShort = 1; //Set if you are interested in subtracting long and short [0] or just long [1]
-
+    const int SelectionNumber = 4;
+    const int ReacTypeNum = 5;
+    bool CIS = true;
+    
     TString Directory="/Users/kolos/Desktop/sFGD/Output/";
     TString DirectoryPlots="/Users/kolos/Desktop/sFGD/Plots/";
-    //TString Directory="/mnt/home/kskwarczynski/t2k-nd280-upgrade/sfgd_framework/analysis/Output/";
-    //TString DirectoryPlots="/mnt/home/kskwarczynski/t2k-nd280-upgrade/sfgd_framework/analysis/PlotOutput/VertexActivity/";
+    TString DirectorySelePlots="/Users/kolos/Desktop/sFGD/Plots/Selections/";
+    TString DirectoryReacPlots="/Users/kolos/Desktop/sFGD/Plots/Reactions/";
     
+    if(CIS)
+    {
+        Directory="/mnt/home/kskwarczynski/t2k-nd280-upgrade/sfgd_framework/analysis/Output/";
+        DirectoryPlots="/mnt/home/kskwarczynski/t2k-nd280-upgrade/sfgd_framework/analysis/PlotOutput/VertexActivity/";
+        DirectorySelePlots="/mnt/home/kskwarczynski/t2k-nd280-upgrade/sfgd_framework/analysis/PlotOutput/VertexActivity/Selections/";
+        DirectoryReacPlots="/mnt/home/kskwarczynski/t2k-nd280-upgrade/sfgd_framework/analysis/PlotOutput/VertexActivity/Reactions/";
+    }
     TString FileName="VertexAcivity_Output";
     TString VetrexString[5]={"1x1x1" , "3x3x3" , "5x5x5", "7x7x7", "9x9x9"};
     TString VertexName[5]={"VertexActivity1x1x1", "VertexActivity3x3x3", "VertexActivity5x5x5", "VertexActivity7x7x7", "VertexActivity9x9x9"};
-    TString ParticleName[SizeOfParticleVector]={"Muon", "Pion+", "Proton"};        
-    TString ParticleNameBranch[SizeOfParticleVector]={"Muon", "PionP", "Proton"};
+    TString ParticleName[SizeOfParticleVector]={"Muon", "Pion+", "Proton", "Pion-"};        
+    TString ParticleNameBranch[SizeOfParticleVector]={"Muon", "PionP", "Proton", "PionN"};
     TString TrackLenght[2]={"Short", "Long"};
+    TString OppositeLenght[2]={"Long", "Short"};
+    TString SelectionsName[SelectionNumber]={"CC0Pi", "CC0p0Pi", "CC1Pi", "CCOther"};
+    TString ReactionName[ReacTypeNum]={"CCQE", "RES", "DIS", "COH", "NC"};
     
     TFile *file;
     TTree *t1;
@@ -185,6 +199,13 @@ void ComparisonPlot()
     TH1F *hVertexActivityOnlyIfTrackLenghtAllShell[2][4]; //[0-short, long][vertexBox]
     TH1F *hVertexActivityOnlyLongShell[4]; //[vertexBox-1]
     
+    //TODO Selections
+    TH1F *hVertexActivitySelections[SelectionNumber][5]; //[SelectionNumber][vertexBox]
+    TH1F *hVASubTrackLengtAllCondSelection[SelectionNumber][2][5];
+    //TODO Reactions
+    TH1F *hVertexActivityReaction[ReacTypeNum][5]; //[ReacTypeNum][vertexBox]
+    TH1F *hVASubTrackLengtAllCondReaction[ReacTypeNum][2][5];
+    
     TH2F *hMomentumVsRange[SizeOfParticleVector];
     TH2F *hEnergyVsRange[SizeOfParticleVector];
     TH2F *hEenrgyVsRangehEenrgyVsRangeRestricted[SizeOfParticleVector];
@@ -203,6 +224,18 @@ void ComparisonPlot()
     TDirectory *FolderSubtractedTrackLengthAll = (TDirectory*)file->Get("FolderSubtractedTrackLengthAll"); 
     TDirectory *FolderSubtractedTrackLengthAllShell = (TDirectory*)file->Get("FolderSubtractedTrackLengthAllShell");
     TDirectory *FolderHist2D = (TDirectory*)file->Get("FolderHist2D");
+    
+    TDirectory *FolderParticleSelections[SelectionNumber];
+    for(int ic=0; ic<SelectionNumber; ic++) 
+    {
+       FolderParticleSelections[ic]= (TDirectory*)file->Get( Form( "Folder%s", SelectionsName[ic].Data() ) );
+    }
+    TDirectory *FolderReaction[ReacTypeNum];
+    for(int ir=0; ir<ReacTypeNum; ir++) 
+    {
+       FolderReaction[ir]= (TDirectory*)file->Get( Form( "Folder%s", ReactionName[ir].Data() ) );
+    }
+
     file->cd();
     
     for(int ik=0; ik<5; ik++)
@@ -214,10 +247,32 @@ void ComparisonPlot()
             hVertexActivityShell[ik-1] = (TH1F*) file->Get( Form("%sShell",VertexName[ik].Data() ) );
             hVertexActivityShell[ik-1]->GetYaxis()->SetTitleOffset(1.4);
             
-            hVertexActivityOnlyLongShell[ik-1] = (TH1F*) FolderSubtractedTrackLengthAllShell->Get( Form("%sShell_OnlyLong",VertexName[ik].Data()) );
+            hVertexActivityOnlyLongShell[ik-1] = (TH1F*) FolderSubtractedTrackLengthAllShell->Get( Form("%s_OnlyLong_Shell",VertexName[ik].Data()) );
             hVertexActivityOnlyLongShell[ik-1]->GetYaxis()->SetTitleOffset(1.4);
         }
-        
+        for(int ic=0; ic<SelectionNumber; ic++)
+        {
+            hVertexActivitySelections[ic][ik] = (TH1F*) FolderParticleSelections[ic]->Get(Form("VA%s_%s", VetrexString[ik].Data(), SelectionsName[ic].Data()));
+            hVertexActivitySelections[ic][ik]->GetYaxis()->SetTitleOffset(1.4);
+            
+            for(int il=0; il<2; il++) //loop over short long track
+            {
+                hVASubTrackLengtAllCondSelection[ic][il][ik] = (TH1F*) FolderParticleSelections[ic]->Get( Form("VA%sSubCondition_%s_%s_All", VetrexString[ik].Data(), SelectionsName[ic].Data(), TrackLenght[il].Data()) );
+                //hVASubTrackLengtAllCondSelection[ic][il][ik]->GetYaxis()->SetTitleOffset(1.4); //TODO dlaczego nie dizala
+            }
+            
+        }
+        for(int ir=0; ir<ReacTypeNum; ir++) //TODO
+        {
+            hVertexActivityReaction[ir][ik] = (TH1F*) FolderReaction[ir]->Get( Form("VA%s_%s", VetrexString[ik].Data(), ReactionName[ir].Data()) );
+            hVertexActivityReaction[ir][ik]->GetYaxis()->SetTitleOffset(1.4);
+            
+            for(int il=0; il<2; il++) //loop over short long track
+            {
+                hVASubTrackLengtAllCondReaction[ir][il][ik] = (TH1F*) FolderReaction[ir]->Get( Form("VA%sSubCondition_%s_%s_All", VetrexString[ik].Data(),ReactionName[ir].Data(), TrackLenght[il].Data()) );
+                //hVASubTrackLengtAllCondReaction[ir][il][ik]->GetYaxis()->SetTitleOffset(1.4); //TODO dlaczego nie dziala
+            }
+        }
         for(int ig=0; ig<SizeOfParticleVector; ig++)
         {
             hVertexActivitySubtractedParticle[ig][ik] = (TH1F*) FolderSubtracted->Get( Form("VA%sSubtracted_%s", VetrexString[ik].Data(), ParticleName[ig].Data()) );
@@ -228,7 +283,7 @@ void ComparisonPlot()
                hVASubTrackLengtParticleCondition[il][ig][ik] = (TH1F*) FolderSubtractedTrackLengthCondition->Get( Form("VA%sSubCondition_%s_%s", VetrexString[ik].Data(), TrackLenght[il].Data(), ParticleName[ig].Data() ) ); 
                hVASubTrackLengtParticleCondition[il][ig][ik]->GetYaxis()->SetTitleOffset(1.4);
                
-               hVAOnlyIfTrackLenght[il][ig][ik] = (TH1F*) FolderSubtractedTrackLengthCondition->Get( Form("VA%sIfThereAre_%s_%s", VetrexString[ik].Data(), TrackLenght[il].Data(), ParticleName[ig].Data() ) ); 
+               hVAOnlyIfTrackLenght[il][ig][ik] = (TH1F*) FolderSubtractedTrackLengthCondition->Get( Form("VA%s_IfThereAre_%s_%s", VetrexString[ik].Data(), OppositeLenght[il].Data(), ParticleName[ig].Data() ) ); 
                hVAOnlyIfTrackLenght[il][ig][ik]->GetYaxis()->SetTitleOffset(1.4);
             }
         }
@@ -237,7 +292,7 @@ void ComparisonPlot()
             hVertexActivitySubTrackLengtAllCondition[il][ik] = (TH1F*) FolderSubtractedTrackLengthAll->Get( Form("VA%sSubCondition_%s_All", VetrexString[ik].Data(), TrackLenght[il].Data()) ); 
             hVertexActivitySubTrackLengtAllCondition[il][ik]->GetYaxis()->SetTitleOffset(1.4);
                
-            hVertexActivityOnlyIfTrackLenghtAll[il][ik] = (TH1F*) FolderSubtractedTrackLengthAll->Get( Form("VA%sIfThereAre_%s_All", VetrexString[ik].Data(), TrackLenght[il].Data()) ); 
+            hVertexActivityOnlyIfTrackLenghtAll[il][ik] = (TH1F*) FolderSubtractedTrackLengthAll->Get( Form("VA%s_IfThereAre_%s_All", VetrexString[ik].Data(), OppositeLenght[il].Data()) ); 
             hVertexActivityOnlyIfTrackLenghtAll[il][ik]->GetYaxis()->SetTitleOffset(1.4);
             
             if(ik>0)
@@ -245,7 +300,7 @@ void ComparisonPlot()
                 hVertexActivitySubTrackLengtAllConditionShell[il][ik-1] = (TH1F*) FolderSubtractedTrackLengthAllShell->Get( Form("VA%sSubCondition_%s_All_Shell", VetrexString[ik].Data(), TrackLenght[il].Data()) ); 
                 hVertexActivitySubTrackLengtAllConditionShell[il][ik-1]->GetYaxis()->SetTitleOffset(1.4);
                
-                hVertexActivityOnlyIfTrackLenghtAllShell[il][ik-1] = (TH1F*) FolderSubtractedTrackLengthAllShell->Get( Form("VA%sIfThereAre_%s_All_Shell", VetrexString[ik].Data(), TrackLenght[il].Data()) ); 
+                hVertexActivityOnlyIfTrackLenghtAllShell[il][ik-1] = (TH1F*) FolderSubtractedTrackLengthAllShell->Get( Form("VA%s_IfThereAre_%s_All_Shell", VetrexString[ik].Data(), OppositeLenght[il].Data()) ); 
                 hVertexActivityOnlyIfTrackLenghtAllShell[il][ik-1]->GetYaxis()->SetTitleOffset(1.4);
             }
         }
@@ -283,7 +338,7 @@ void ComparisonPlot()
     int canvasCounter=0;
     
  ///////////////////////////////// DRAWING PART STARTS HERE/////////////////////////////   
-    
+/*
     for(int ig=0; ig<SizeOfParticleVector; ig++)
     {
         Canvas[canvasCounter] = new TCanvas( Form("Canvas%i",canvasCounter), Form("Canvas%i",canvasCounter), 1400, 1000);
@@ -591,4 +646,216 @@ void ComparisonPlot()
     delete Canvas[canvasCounter];
     canvasCounter++;
     
+    for(int ik=0; ik<5; ik++)
+    {
+        Canvas[canvasCounter] = new TCanvas( Form("Canvas%i",canvasCounter), Form("Canvas%i",canvasCounter), 1400, 1000);
+        
+        hVertexActivitySelections[0][ik]->SetLineColorAlpha(kBlue, 1);
+        hVertexActivitySelections[0][ik]->SetLineWidth(1.5);
+                
+        hVertexActivitySelections[1][ik]->SetLineColorAlpha(kRed, 1);
+        hVertexActivitySelections[1][ik]->SetLineWidth(1.5);
+    
+        hVertexActivitySelections[2][ik]->SetLineColorAlpha(kGreen, 1);
+        hVertexActivitySelections[2][ik]->SetLineWidth(1.5);
+    
+        hVertexActivitySelections[3][ik]->SetLineColorAlpha(kMagenta, 1);
+        hVertexActivitySelections[3][ik]->SetLineWidth(1.5);
+            
+        hVertexActivitySelections[0][ik]->Draw("");
+        hVertexActivitySelections[1][ik]->Draw("SAME");
+        hVertexActivitySelections[2][ik]->Draw("SAME");
+        hVertexActivitySelections[3][ik]->Draw("SAME");
+    
+        legend[canvasCounter] = new TLegend(0.60,0.7,0.9,0.9);
+        for(int ic=0; ic<SelectionNumber; ic++)
+        {
+            legend[canvasCounter]->AddEntry(hVertexActivitySelections[ic][ik], Form( "VA%s_%s", VetrexString[ik].Data(), SelectionsName[ic].Data() ),"l");
+        }
+        legend[canvasCounter]->SetTextSize(0.04);
+        legend[canvasCounter]->Draw();
+    
+        gPad->Modified();
+        Canvas[canvasCounter]->Print( Form("%sVA%s_Selections.pdf", DirectorySelePlots.Data(), VetrexString[ik].Data()) ); 
+        delete Canvas[canvasCounter];
+        canvasCounter++;
+    }
+    
+    */
+    THStack *VAstackSelec[5];
+    for(int ik=0; ik<5; ik++)
+    {
+        Canvas[canvasCounter] = new TCanvas( Form("Canvas%i",canvasCounter), Form("Canvas%i",canvasCounter), 1400, 1000);
+        hVertexActivitySelections[0][ik]->SetFillColor(kRed);
+        hVertexActivitySelections[0][ik]->SetMarkerStyle(21);
+        hVertexActivitySelections[0][ik]->SetMarkerColor(kRed);
+
+        hVertexActivitySelections[1][ik]->SetFillColor(kGreen);
+        hVertexActivitySelections[1][ik]->SetMarkerStyle(21);
+        hVertexActivitySelections[1][ik]->SetMarkerColor(kGreen);
+        
+        hVertexActivitySelections[2][ik]->SetFillColor(kBlue);
+        hVertexActivitySelections[2][ik]->SetMarkerStyle(21);
+        hVertexActivitySelections[2][ik]->SetMarkerColor(kBlue);
+        
+        hVertexActivitySelections[3][ik]->SetFillColor(kCyan);
+        hVertexActivitySelections[3][ik]->SetMarkerStyle(21);
+        hVertexActivitySelections[3][ik]->SetMarkerColor(kCyan);
+        
+        VAstackSelec[ik] = new THStack( Form("VAstackSelec%s",  VetrexString[ik].Data() ), Form("VAstackSelec%s",  VetrexString[ik].Data()) );
+        VAstackSelec[ik]->Add( hVertexActivitySelections[0][ik] );
+        VAstackSelec[ik]->Add( hVertexActivitySelections[1][ik] );
+        VAstackSelec[ik]->Add( hVertexActivitySelections[2][ik] );
+        VAstackSelec[ik]->Add( hVertexActivitySelections[3][ik] );
+        
+        VAstackSelec[ik]->Draw("");
+        
+        VAstackSelec[ik]->GetXaxis()->SetTitle( Form("Energy deposit in box %s [p.e.]", VetrexString[ik].Data()) );
+        
+        legend[canvasCounter] = new TLegend(0.60,0.7,0.9,0.9);
+        for(int ir=0; ir<SelectionNumber; ir++)
+        {
+            legend[canvasCounter]->AddEntry(hVertexActivitySelections[ir][ik], Form( "VA%s_%s", VetrexString[ik].Data(), SelectionsName[ir].Data() ),"f");
+        }
+        legend[canvasCounter]->SetTextSize(0.04);
+        legend[canvasCounter]->Draw();
+        
+        gPad->Modified();
+        Canvas[canvasCounter]->Print( Form("%sVA%s_StackSelections.pdf", DirectorySelePlots.Data(), VetrexString[ik].Data()) ); 
+        delete Canvas[canvasCounter];
+        canvasCounter++;
+    }
+    THStack *VAstackSelectionsSubtract[5];
+    for(int ik=0; ik<5; ik++)
+    {
+        Canvas[canvasCounter] = new TCanvas( Form("Canvas%i",canvasCounter), Form("Canvas%i",canvasCounter), 1400, 1000);
+        hVASubTrackLengtAllCondSelection[0][1][ik]->SetFillColor(kRed);
+        hVASubTrackLengtAllCondSelection[0][1][ik]->SetMarkerStyle(21);
+        hVASubTrackLengtAllCondSelection[0][1][ik]->SetMarkerColor(kRed);
+
+        hVASubTrackLengtAllCondSelection[1][1][ik]->SetFillColor(kGreen);
+        hVASubTrackLengtAllCondSelection[1][1][ik]->SetMarkerStyle(21);
+        hVASubTrackLengtAllCondSelection[1][1][ik]->SetMarkerColor(kGreen);
+        
+        hVASubTrackLengtAllCondSelection[2][1][ik]->SetFillColor(kBlue);
+        hVASubTrackLengtAllCondSelection[2][1][ik]->SetMarkerStyle(21);
+        hVASubTrackLengtAllCondSelection[2][1][ik]->SetMarkerColor(kBlue);
+        
+        hVASubTrackLengtAllCondSelection[3][1][ik]->SetFillColor(kCyan);
+        hVASubTrackLengtAllCondSelection[3][1][ik]->SetMarkerStyle(21);
+        hVASubTrackLengtAllCondSelection[3][1][ik]->SetMarkerColor(kCyan);
+        
+        VAstackSelectionsSubtract[ik] = new THStack( Form("VAstackSelectionsSubtract%s",  VetrexString[ik].Data() ), Form("VAstackSelectionsSubtract%s",  VetrexString[ik].Data()) );
+        VAstackSelectionsSubtract[ik]->Add( hVASubTrackLengtAllCondSelection[0][1][ik] );
+        VAstackSelectionsSubtract[ik]->Add( hVASubTrackLengtAllCondSelection[1][1][ik] );
+        VAstackSelectionsSubtract[ik]->Add( hVASubTrackLengtAllCondSelection[2][1][ik] );
+        VAstackSelectionsSubtract[ik]->Add( hVASubTrackLengtAllCondSelection[3][1][ik] );
+        
+        VAstackSelectionsSubtract[ik]->Draw("");
+        VAstackSelectionsSubtract[ik]->GetXaxis()->SetTitle( Form("Energy deposit in box %s [p.e.]", VetrexString[ik].Data()) );
+        
+        legend[canvasCounter] = new TLegend(0.60,0.7,0.9,0.9);
+        for(int ir=0; ir<SelectionNumber; ir++)
+        {
+            legend[canvasCounter]->AddEntry(hVASubTrackLengtAllCondSelection[ir][1][ik], Form( "VA%s_%s", VetrexString[ik].Data(), SelectionsName[ir].Data() ),"f");
+        }
+        legend[canvasCounter]->SetTextSize(0.04);
+        legend[canvasCounter]->Draw();
+        
+        gPad->Modified();
+        Canvas[canvasCounter]->Print( Form("%sVA%s_StackSelectionSubtract.pdf", DirectorySelePlots.Data(), VetrexString[ik].Data()) ); 
+        delete Canvas[canvasCounter];
+        canvasCounter++;
+    }
+    /*
+    ////REACTIONS   TODO
+    THStack *VAstackReac[5];
+    for(int ik=0; ik<5; ik++)
+    {
+        Canvas[canvasCounter] = new TCanvas( Form("Canvas%i",canvasCounter), Form("Canvas%i",canvasCounter), 1400, 1000);
+        //CCQE RES DIS COH NC
+        hVertexActivityReaction[0][ik]->SetFillColor(kRed);
+        hVertexActivityReaction[0][ik]->SetMarkerStyle(21);
+        hVertexActivityReaction[0][ik]->SetMarkerColor(kRed);
+
+        hVertexActivityReaction[1][ik]->SetFillColor(kGreen);
+        hVertexActivityReaction[1][ik]->SetMarkerStyle(21);
+        hVertexActivityReaction[1][ik]->SetMarkerColor(kGreen);
+        
+        hVertexActivityReaction[2][ik]->SetFillColor(kBlue);
+        hVertexActivityReaction[2][ik]->SetMarkerStyle(21);
+        hVertexActivityReaction[2][ik]->SetMarkerColor(kBlue);
+        
+        hVertexActivityReaction[3][ik]->SetFillColor(kCyan);
+        hVertexActivityReaction[3][ik]->SetMarkerStyle(21);
+        hVertexActivityReaction[3][ik]->SetMarkerColor(kCyan);
+        
+        VAstackReac[ik] = new THStack( Form("VAstackReac%s",  VetrexString[ik].Data() ), Form("VAstackReac%s",  VetrexString[ik].Data()) );
+        VAstackReac[ik]->Add( hVertexActivityReaction[0][ik] );
+        VAstackReac[ik]->Add( hVertexActivityReaction[1][ik] );
+        VAstackReac[ik]->Add( hVertexActivityReaction[2][ik] );
+        VAstackReac[ik]->Add( hVertexActivityReaction[3][ik] );
+        
+        VAstackReac[ik]->Draw("");
+        
+        VAstackReac[ik]->GetXaxis()->SetTitle( Form("Energy deposit in box %s [p.e.]", VetrexString[ik].Data()) );
+        
+        legend[canvasCounter] = new TLegend(0.60,0.7,0.9,0.9);
+        for(int ir=0; ir<4; ir++)
+        {
+            legend[canvasCounter]->AddEntry(hVertexActivityReaction[ir][ik], Form( "VA%s_%s", VetrexString[ik].Data(), ReactionName[ir].Data() ),"f");
+        }
+        legend[canvasCounter]->SetTextSize(0.04);
+        legend[canvasCounter]->Draw();
+        
+        gPad->Modified();
+        Canvas[canvasCounter]->Print( Form("%sVA%s_StackReactions.pdf", DirectoryReacPlots.Data(), VetrexString[ik].Data()) ); 
+        delete Canvas[canvasCounter];
+        canvasCounter++;
+    }
+    
+    THStack *VAstackReacSubtract[5];
+    for(int ik=0; ik<5; ik++)
+    {
+        Canvas[canvasCounter] = new TCanvas( Form("Canvas%i",canvasCounter), Form("Canvas%i",canvasCounter), 1400, 1000);
+        //CCQE RES DIS COH NC
+        hVASubTrackLengtAllCondReaction[0][1][ik]->SetFillColor(kRed);
+        hVASubTrackLengtAllCondReaction[0][1][ik]->SetMarkerStyle(21);
+        hVASubTrackLengtAllCondReaction[0][1][ik]->SetMarkerColor(kRed);
+
+        hVASubTrackLengtAllCondReaction[1][1][ik]->SetFillColor(kGreen);
+        hVASubTrackLengtAllCondReaction[1][1][ik]->SetMarkerStyle(21);
+        hVASubTrackLengtAllCondReaction[1][1][ik]->SetMarkerColor(kGreen);
+        
+        hVASubTrackLengtAllCondReaction[2][1][ik]->SetFillColor(kBlue);
+        hVASubTrackLengtAllCondReaction[2][1][ik]->SetMarkerStyle(21);
+        hVASubTrackLengtAllCondReaction[2][1][ik]->SetMarkerColor(kBlue);
+        
+        hVASubTrackLengtAllCondReaction[3][1][ik]->SetFillColor(kCyan);
+        hVASubTrackLengtAllCondReaction[3][1][ik]->SetMarkerStyle(21);
+        hVASubTrackLengtAllCondReaction[3][1][ik]->SetMarkerColor(kCyan);
+        
+        VAstackReacSubtract[ik] = new THStack( Form("VAstackReacSubtract%s",  VetrexString[ik].Data() ), Form("VAstackReacSubtract%s",  VetrexString[ik].Data()) );
+        VAstackReacSubtract[ik]->Add( hVASubTrackLengtAllCondReaction[0][1][ik] );
+        VAstackReacSubtract[ik]->Add( hVASubTrackLengtAllCondReaction[1][1][ik] );
+        VAstackReacSubtract[ik]->Add( hVASubTrackLengtAllCondReaction[2][1][ik] );
+        VAstackReacSubtract[ik]->Add( hVASubTrackLengtAllCondReaction[3][1][ik] );
+        
+        VAstackReacSubtract[ik]->Draw("");
+        VAstackReacSubtract[ik]->GetXaxis()->SetTitle( Form("Energy deposit in box %s [p.e.]", VetrexString[ik].Data()) );
+        
+        legend[canvasCounter] = new TLegend(0.60,0.7,0.9,0.9);
+        for(int ir=0; ir<4; ir++)
+        {
+            legend[canvasCounter]->AddEntry(hVASubTrackLengtAllCondReaction[ir][1][ik], Form( "VA%s_%s", VetrexString[ik].Data(), ReactionName[ir].Data() ),"f");
+        }
+        legend[canvasCounter]->SetTextSize(0.04);
+        legend[canvasCounter]->Draw();
+        
+        gPad->Modified();
+        Canvas[canvasCounter]->Print( Form("%sVA%s_StackReactionsSubtract.pdf", DirectoryReacPlots.Data(), VetrexString[ik].Data()) ); 
+        delete Canvas[canvasCounter];
+        canvasCounter++;
+    }
+    */
 }
