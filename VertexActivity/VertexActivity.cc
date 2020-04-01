@@ -21,7 +21,7 @@ bool    RM_CROSSTALK   = false;
 bool    SHOW_TRUE      = true;
 bool    SHOW_RECO      = true;
 TString fileOut        = "/mnt/home/kskwarczynski/t2k-nd280-upgrade/sfgd_framework/analysis/Output/VertexAcivity_Output.root";
-TString fileIn         = "/mnt/home/kskwarczynski/t2k-nd280-upgrade/Output/Reconstructed_SFGD_MC_0.root"; //VertexActInput SubtractedReco_SFGD_MC_0
+TString fileIn         = "/mnt/home/kskwarczynski/t2k-nd280-upgrade/Output/Reconstructed_SFGD_MC_0.root";
 int IsPrototype        = false;
 int SFGD_X             = 204;
 int SFGD_Y             = 56;
@@ -53,6 +53,7 @@ void VertexActivity()
     //TODO zrobic jakis oddzielny program/liste wczytujace stale parametry jak fiducial vollume itd
     //TODO histo gdy mamy wieskzy depo w 9x9 niz 7x7 lub 5x5x5 na stopujace protony
     //TODO proton powinien byc 2 a nie pion to jest mylace i nie intuicyjne
+    //TODO zmien reakcje zby odpowiadaly tym z highlanda czy cos
     parseArguments();
     linkFilesToTTrees();
 
@@ -65,7 +66,7 @@ void VertexActivity()
     const int SizeOfShiftVector= (sizeof(VAshiftVector)/sizeof(*VAshiftVector));
     const int SizeOfParticleVector = 4;
     const int ParticleNumberGO = 2; //Number of particles we put condition on, starting from 0
-    const int SelectionNumber = 4;
+    const int SelectionNumber = 5;
     const int ReacTypeNum = 5;
     
     TString VertexName[5]={"VertexActivity1x1x1", "VertexActivity3x3x3", "VertexActivity5x5x5", "VertexActivity7x7x7", "VertexActivity9x9x9"};
@@ -75,8 +76,8 @@ void VertexActivity()
     TString ParticleNameBranch[SizeOfParticleVector]={"Muon", "PionP", "Proton", "PionN"};
     TString TrackLenght[2]={"Short", "Long"};
     TString OppositeLenght[2]={"Long", "Short"};
-    TString SelectionsName[SelectionNumber]={"CC0Pi", "CC0p0Pi", "CC1Pi", "CCOther"};
-    TString ReactionName[ReacTypeNum]={"CCQE", "RES", "DIS", "COH", "NC"}; //We won't see NC due to applied cuts
+    TString SelectionsName[SelectionNumber]={"1mu1p", "1mu", "1muNp", "CC1Pi", "CCOther"};
+    TString ReactionName[ReacTypeNum]={"CCQE","2p2h", "RES", "DIS", "COH"}; //We won't see NC due to applied cuts
     //TODO TODO bedzie trzebadodac 2p2h do reakcji jak juz beda wysmulowane
     TDirectory *FolderEnergyLoss = FileOutput->mkdir("FolderEnergyLoss");
     TDirectory *FolderEnergyLossNonZero = FileOutput->mkdir("FolderEnergyLossNonZero");
@@ -101,7 +102,11 @@ void VertexActivity()
     {
        FolderReaction[ir]= FileOutput->mkdir( Form( "Folder%s", ReactionName[ir].Data() ) );
     }
-    
+    TDirectory *FolderSplitedSelection[SelectionNumber];
+    for(int ic=0; ic<SelectionNumber; ic++)
+    {
+        FolderSplitedSelection[ic]= FileOutput->mkdir( Form( "FolderSplited%s", SelectionsName[ic].Data() ) );
+    }
     double VertexBox[5]={0., 1., 2., 3., 4.}; // 1x1x1, 3x3x3, 5x5x5 and so on...
     int ParticleNumberCut[7]={0, 1, 2, 3, 4, 5, 6};
     int ParticlePDG[SizeOfParticleVector]={13, 211, 2212, -211}; //muon, pion+, proton
@@ -118,26 +123,32 @@ void VertexActivity()
     TH1F *hVertexActivityShell[4]; //[vertexBox-1]
     TH1F *hVertexActivitySubtractedParticle[SizeOfParticleVector][5]; //[substracted particle][vertexBox]
     
-    TH1F *hVertexActivitySubTrackLengtParticle[2][SizeOfParticleVector][5]; //[0-short, long][substracted particle][vertexBox]
-    TH1F *hVASubTrackLengtParticleCondition[2][SizeOfParticleVector][5]; //[0-short, long][substracted particle][vertexBox]
+    TH1F *hVertexActivitySubTrackLengtParticle[2][SizeOfParticleVector][5]; //[0-short, 1-long][substracted particle][vertexBox]
+    TH1F *hVASubTrackLengtParticleCondition[2][SizeOfParticleVector][5]; //[0-short, 1-long][substracted particle][vertexBox]
     TH1F *hVAOnlyIfTrackLenght[2][SizeOfParticleVector][5]; //[0-short, long][substracted particle][vertexBox]
     
-    //TODO selections
     TH1F *hVertexActivitySelections[SelectionNumber][5]; //[vertexBox]
     TH1F *h_nuMomSelections[SelectionNumber];
     TH1F *hVertexActivityShellSelection[SelectionNumber][4]; //[vertexBox-1]
-    TH1F *hVASubTrackLengtAllCondSelection[SelectionNumber][2][5]; //[Selection][0-short, long][vertexBox]
+    TH1F *hVASubTrackLengtAllCondSelection[SelectionNumber][2][5]; //[Selection][0-short, 1-long][vertexBox]
     TH1F *hVAOnlyIfTrackLenghtAllSelection[SelectionNumber][2][5];
-    TH1F *hParticleMomentumSelections[SizeOfParticleVector][SelectionNumber]; //TODO
+    TH1F *hVertexActivityOnlyIfTrackLenghtAllSelectionShell[SelectionNumber][2][4]; //[0-short, long][vertexBox]
+    TH1F *hParticleMomentumSelections[SizeOfParticleVector][SelectionNumber];
     
-    //TODO Reaction type
     TH1F *hVertexActivityReaction[ReacTypeNum][5]; //[vertexBox]
     TH1F *h_nuMomReaction[ReacTypeNum];
     TH1F *hVertexActivityShellReaction[ReacTypeNum][4]; //[vertexBox-1]
-    TH1F *hVASubTrackLengtAllCondReaction[ReacTypeNum][2][5]; //[Selection][0-short, long][vertexBox]
+    TH1F *hVASubTrackLengtAllCondReaction[ReacTypeNum][2][5]; //[0-short, 1-long][vertexBox]
     TH1F *hVAOnlyIfTrackLenghtAllReaction[ReacTypeNum][2][5];
-    TH1F *hParticleMomentumReactions[SizeOfParticleVector][ReacTypeNum]; //TODO
+    TH1F *hVertexActivityIfTrackLenghtAllReactionShell[ReacTypeNum][2][4]; //[0-short, 1-long][vertexBox]
+    TH1F *hParticleMomentumReactions[SizeOfParticleVector][ReacTypeNum];
     
+    //TODO SplittedSelections
+    TH1F *hVASplitSelection[SelectionNumber][ReacTypeNum][5];
+    TH1F *h_nuMomSplitSelections[SelectionNumber][ReacTypeNum];
+    TH1F *hParticleMomentumSplitSelection[SizeOfParticleVector][SelectionNumber][ReacTypeNum];
+    TH1F *hVertexActivityOnlyIfTrackLenghtAllSplitSelectionShell[SelectionNumber][ReacTypeNum][2][4]; //[0-short, long][vertexBox]
+        
     TH1F *hVertexActivitySubTrackLengtAllCondition[2][5]; 
     TH1F *hVertexActivityOnlyIfTrackLenghtAll[2][5]; //[0-short, long][vertexBox]
     
@@ -180,7 +191,24 @@ void VertexActivity()
             hVertexActivityOnlyLongShell[ik-1] = new TH1F( Form("%s_OnlyLong_Shell",VertexName[ik].Data()) , Form("%s_OnlyLong_Shell",VertexName[ik].Data()), 50, 0, 8000); 
             hVertexActivityOnlyLongShell[ik-1]->GetXaxis()->SetTitle( Form("Energy deposit in box %s [p.e.]",VetrexString[ik].Data() ) );
         }
-        for(int ir=0; ir<ReacTypeNum; ir++)//TODO
+        for(int ic=0; ic<SelectionNumber; ic++)
+        {
+            for(int ir=0; ir<ReacTypeNum; ir++)
+            {
+                hVASplitSelection[ic][ir][ik] = new TH1F( Form("VA%s_%s_%s", VetrexString[ik].Data(), SelectionsName[ic].Data(), ReactionName[ir].Data() ), Form("VA%s_%s_%s", VetrexString[ik].Data(), SelectionsName[ic].Data(), ReactionName[ir].Data() ), 50, 0, 4000+ik*3000);  
+                hVASplitSelection[ic][ir][ik]->GetXaxis()->SetTitle( Form("Energy deposit in box %s [p.e.]",VetrexString[ik].Data() ) );
+                
+                for(int il=0; il<2; il++) //loop over short long track
+                {
+                    if(ik>0)
+                    {
+                        hVertexActivityOnlyIfTrackLenghtAllSplitSelectionShell[ic][ir][il][ik-1] = new TH1F( Form("VA%s_IfThereAre_%s__%s_%s_Shell", VetrexString[ik].Data(), OppositeLenght[il].Data(), SelectionsName[ic].Data(), ReactionName[ir].Data()), Form("VA%s_IfThereAre_%s__%s_%s_Shell", VetrexString[ik].Data(), OppositeLenght[il].Data(), SelectionsName[ic].Data(), ReactionName[ir].Data()), 50, 0, 8000);  
+                        hVertexActivityOnlyIfTrackLenghtAllSplitSelectionShell[ic][ir][il][ik-1]->GetXaxis()->SetTitle( Form("Energy deposit in box %s [p.e.]", VetrexString[ik].Data() ) );
+                    }
+                }
+            }
+        }
+        for(int ir=0; ir<ReacTypeNum; ir++)
         {
             hVertexActivityReaction[ir][ik] = new TH1F( Form("VA%s_%s", VetrexString[ik].Data(), ReactionName[ir].Data() ), Form("VA%s_%s", VetrexString[ik].Data(), ReactionName[ir].Data() ), 50, 0, 4000+ik*3000);  
             hVertexActivityReaction[ir][ik]->GetXaxis()->SetTitle( Form("Energy deposit in box %s [p.e.]",VetrexString[ik].Data() ) );
@@ -197,6 +225,12 @@ void VertexActivity()
                 
                 hVAOnlyIfTrackLenghtAllReaction[ir][il][ik]= new TH1F( Form("VA%s_IfThereAre_%s_%s_All", VetrexString[ik].Data(),OppositeLenght[il].Data(), ReactionName[ir].Data()), Form("VA%s_IfThereAre_%s_%s_All", VetrexString[ik].Data(), OppositeLenght[il].Data(), ReactionName[ir].Data()), 50, 0, 4000+ik*3000);  
                 hVAOnlyIfTrackLenghtAllReaction[ir][il][ik]->GetXaxis()->SetTitle( Form("Energy deposit in box %s [p.e.]", VetrexString[ik].Data() ) );
+                
+                if(ik>0)
+                {
+                    hVertexActivityIfTrackLenghtAllReactionShell[ir][il][ik-1] = new TH1F( Form("VA%s_IfThereAre_%s_%s_Shell", VetrexString[ik].Data(), OppositeLenght[il].Data(), ReactionName[ir].Data()), Form("VA%s_IfThereAre_%s_%s_Shell", VetrexString[ik].Data(), OppositeLenght[il].Data(), ReactionName[ir].Data()), 50, 0, 8000);  
+                    hVertexActivityIfTrackLenghtAllReactionShell[ir][il][ik-1]->GetXaxis()->SetTitle( Form("Energy deposit in box %s [p.e.]", VetrexString[ik].Data() ) );
+                }
             }
         }
         for(int ic=0; ic<SelectionNumber; ic++) //TODO
@@ -215,6 +249,11 @@ void VertexActivity()
                 
                 hVAOnlyIfTrackLenghtAllSelection[ic][il][ik]= new TH1F( Form("VA%s_IfThereAre_%s_%s_All", VetrexString[ik].Data(), OppositeLenght[il].Data(), SelectionsName[ic].Data()), Form("VA%s_IfThereAre_%s_%s_All", VetrexString[ik].Data(), OppositeLenght[il].Data(), SelectionsName[ic].Data()), 50, 0, 4000+ik*3000);  
                 hVAOnlyIfTrackLenghtAllSelection[ic][il][ik]->GetXaxis()->SetTitle( Form("Energy deposit in box %s [p.e.]",VetrexString[ik].Data() ) );
+                if(ik>0)
+                {
+                    hVertexActivityOnlyIfTrackLenghtAllSelectionShell[ic][il][ik-1] = new TH1F( Form("VA%s_IfThereAre_%s_%s_Shell", VetrexString[ik].Data(), OppositeLenght[il].Data(), SelectionsName[ic].Data()), Form("VA%s_IfThereAre_%s_%s_Shell", VetrexString[ik].Data(), OppositeLenght[il].Data(), SelectionsName[ic].Data()), 50, 0, 8000);  
+                    hVertexActivityOnlyIfTrackLenghtAllSelectionShell[ic][il][ik-1]->GetXaxis()->SetTitle( Form("Energy deposit in box %s [p.e.]", VetrexString[ik].Data() ) );
+                }
             }
         }
         for(int ig=0; ig<SizeOfParticleVector; ig++)
@@ -296,18 +335,33 @@ void VertexActivity()
         
         hRecParticleCounter[ig] = new TH1F( Form("NumberOfReconstructed%s", ParticleName[ig].Data() ), Form("NumberOfReconstructed%s", ParticleName[ig].Data() ) , 10, 0, 9 );  
         hRecParticleCounter[ig]->GetXaxis()->SetTitle( "Number of particles" );
-        //TODO
+
+        //TODO still in development
         for(int ic=0; ic<SelectionNumber; ic++)
         {
-            hParticleMomentumSelections[ig][ic] = new TH1F( Form("Short_%s_mom_%s", ParticleName[ig].Data(), SelectionsName[ic].Data() ),Form("Short_%s_mom_%s", ParticleName[ig].Data(), SelectionsName[ic].Data() ) , 50,0,1500);
+            for(int ir=0; ir<ReacTypeNum; ir++)
+            {
+                hParticleMomentumSplitSelection[ig][ic][ir] = new TH1F( Form("Short_%s_mom_%s_%s", ParticleName[ig].Data(), SelectionsName[ic].Data(), ReactionName[ir].Data() ), Form("Short_%s_mom_%s_%s", ParticleName[ig].Data(), SelectionsName[ic].Data(), ReactionName[ir].Data() ) , 50, 0, 1000); 
+            }
+        }
+        for(int ic=0; ic<SelectionNumber; ic++)
+        {
+            hParticleMomentumSelections[ig][ic] = new TH1F( Form("Short_%s_mom_%s", ParticleName[ig].Data(), SelectionsName[ic].Data() ),Form("Short_%s_mom_%s", ParticleName[ig].Data(), SelectionsName[ic].Data() ) , 50,0,1000);
             hParticleMomentumSelections[ig][ic]->GetXaxis()->SetTitle("MeV/c");
         }
         for(int ir=0; ir<ReacTypeNum; ir++)
         {
-            hParticleMomentumReactions[ig][ir] = new TH1F( Form("Short_%s_mom_%s", ParticleName[ig].Data(), ReactionName[ir].Data() ),Form("Short_%s_mom_%s", ParticleName[ig].Data(), ReactionName[ir].Data() ) , 50,0,1500);
+            hParticleMomentumReactions[ig][ir] = new TH1F( Form("Short_%s_mom_%s", ParticleName[ig].Data(), ReactionName[ir].Data() ),Form("Short_%s_mom_%s", ParticleName[ig].Data(), ReactionName[ir].Data() ) , 50,0,1000);
             hParticleMomentumReactions[ig][ir]->GetXaxis()->SetTitle("MeV/c");
         }
         
+    }
+    for(int ic=0; ic<SelectionNumber; ic++)
+    {
+        for(int ir=0; ir<ReacTypeNum; ir++)
+        {
+            h_nuMomSplitSelections[ic][ir] = new TH1F( Form("nuMom%s_%s", SelectionsName[ic].Data(), ReactionName[ir].Data() ), Form("nuMom%s_%s", SelectionsName[ic].Data(), ReactionName[ir].Data() ), 50,0,6000);
+        }
     }
     for(int ic=0; ic<SelectionNumber; ic++)
     {
@@ -365,7 +419,7 @@ void VertexActivity()
     for (int iev=evtIni; iev<evtFin; iev++)
     {
         if(iev == maxEvents-1 or selEvents >= maxSelEvents) 
-        //if(iev == maxEvents-1 or selEvents >= 3) //DEBUG MODE
+        //if(iev == maxEvents-1 or selEvents >= 1000) //DEBUG MODE
         {   
             break;
         }
@@ -382,13 +436,25 @@ void VertexActivity()
         ND280SFGDVoxel* trueVertex;
         trueVertex = inputEvent->GetTrueVertex();
         
-        if(VERBOSE) cout<<"Interaction Mode"<<inputEvent->GetReactionType()<<endl;
+        if(VERBOSE) cout<<"Interaction Mode "<<inputEvent->GetReactionType()<<endl;
         
         double VertexPosition[3]={}; //X-position, Y-position, Z-position
         VertexPosition[0] = trueVertex->GetX();
         VertexPosition[1] = trueVertex->GetY();
         VertexPosition[2] = trueVertex->GetZ();
+        
+        bool VetrexInDetector=true; //sometimes vertex is outside  detector boundries/fiducial volume
+        bool TopologySelection[SelectionNumber]={}; 
+        bool ReactionSelection[ReacTypeNum]={};  //CCQE 2p2h RES DIS COH
+        
         if(VERBOSE) cout<<selEvents+1<<" Vertex position  X "<<VertexPosition[0]<<" Y "<< VertexPosition[1] <<" Z "<< VertexPosition[2]<<endl;
+        
+        if( VertexPosition[0]<FiducialVolume ||  VertexPosition[1]<FiducialVolume || VertexPosition[2]<FiducialVolume || VertexPosition[0]>SFGD_X-FiducialVolume ||  VertexPosition[1]>SFGD_Y-FiducialVolume || VertexPosition[2]>SFGD_Z-FiducialVolume)
+        {
+            VetrexInDetector=false;
+            if(VERBOSE) cout<<"\033[1;31mOut of detector FV\033[0m"<<endl;
+        }
+        if(!VetrexInDetector) continue;
         
         double VertexDeposit[5][2]={}; //[VertexBox][0-PE, 1-MeV]
         double VertexDepositSubtracted[SizeOfParticleVector][5][2]={}; //[studied particle][VertexBox][0-PE, 1-MeV]
@@ -399,15 +465,12 @@ void VertexActivity()
         double VertexParticleDeposit[SizeOfParticleVector][5][2]={}; //[particle][VertexBox][0-PE, 1-MeV]
         double VertexGarbageDeposit[5][2]={}; //[VertexBox][0-PE, 1-MeV]
         
-        bool VetrexInDetector=true; //sometimes vertex is outside  detector boundries/fiducial volume
-        bool TopologySelection[SelectionNumber]={}; 
-        bool ReactionSelection[ReacTypeNum]={};  //CCQE RES DIS COH NC
-       
-        if(inputEvent->GetReactionType()==1) ReactionSelection[0]=true;
-        if( (inputEvent->GetReactionType() >=11 &&  inputEvent->GetReactionType()<=13 ) || inputEvent->GetReactionType()==17 || inputEvent->GetReactionType()==22 || inputEvent->GetReactionType()==23) ReactionSelection[1]=true;
-        if(inputEvent->GetReactionType()==26 || inputEvent->GetReactionType()==21) ReactionSelection[2]=true;
-        if(inputEvent->GetReactionType()==16) ReactionSelection[3]=true;
-        if(inputEvent->GetReactionType() >=31 && inputEvent->GetReactionType()<=46) ReactionSelection[4]=true;
+        if(inputEvent->GetReactionType()==1) ReactionSelection[0]=true; //CCQE
+        if(inputEvent->GetReactionType()==2) ReactionSelection[1]=true; //2p2h
+        if( (inputEvent->GetReactionType() >=11 &&  inputEvent->GetReactionType()<=13 ) || inputEvent->GetReactionType()==17 || inputEvent->GetReactionType()==22 || inputEvent->GetReactionType()==23) ReactionSelection[2]=true; //RES
+        if(inputEvent->GetReactionType()==26 || inputEvent->GetReactionType()==21) ReactionSelection[3]=true; //DIS
+        if(inputEvent->GetReactionType()==16) ReactionSelection[4]=true; //COH
+        //if(inputEvent->GetReactionType() >=31 && inputEvent->GetReactionType()<=46) ReactionSelection[4]=true; //TODO NC
         
         for(auto t:inputEvent->GetTrueTracks()) 
         {
@@ -416,7 +479,8 @@ void VertexActivity()
                 hprotonMomentum->Fill( t->GetMomentum() );
             }
         }
-        if(!VetrexInDetector) continue;
+        
+
         int MuonCounter=0;
         for(auto t:inputEvent->GetTrueTracks()) 
         {
@@ -535,8 +599,9 @@ void VertexActivity()
         //This might be confusing but keep in mind [0-muon, 1-pion+, 2-proton, 3-pion-]
         if(RecoParticleCounter[0]==1 && RecoParticleCounter[1]==0 && RecoParticleCounter[2]==1 && RecoParticleCounter[3]==0) TopologySelection[0]=true;
         if(RecoParticleCounter[0]==1 && RecoParticleCounter[1]==0 && RecoParticleCounter[2]==0 && RecoParticleCounter[3]==0) TopologySelection[1]=true;
-        if(RecoParticleCounter[0]==1 && RecoParticleCounter[2]==1 && (RecoParticleCounter[3]+RecoParticleCounter[1])==1 ) TopologySelection[2]=true;
-        if(!TopologySelection[0] && !TopologySelection[2]) TopologySelection[3]=true;
+        if(RecoParticleCounter[0]==1 && RecoParticleCounter[1]==0 && RecoParticleCounter[2]>1 &&  RecoParticleCounter[3]==0 ) TopologySelection[2]=true;
+        if(RecoParticleCounter[0]==1 && RecoParticleCounter[2]==1 && RecoParticleCounter[1]==1 && RecoParticleCounter[3]==0 ) TopologySelection[3]=true;
+        if(!TopologySelection[0] && !TopologySelection[3]) TopologySelection[4]=true;
         
         for(auto t:inputEvent->GetTrueTracks())
         {
@@ -544,6 +609,13 @@ void VertexActivity()
             {
                 if(t->GetPDG() == ParticlePDG[ig] && t->GetMaxEuclDist() <= ShortTrack && t->GetParentID()==0)
                 {
+                    for(int ic=0; ic<SelectionNumber; ic++)
+                    {
+                        for(int ir=0; ir<ReacTypeNum; ir++)
+                        {
+                            if( TopologySelection[ic] && ReactionSelection[ir]) hParticleMomentumSplitSelection[ig][ic][ir]->Fill( t->GetMomentum() );
+                        }
+                    }
                     for(int ic=0; ic<SelectionNumber; ic++)
                     {
                         if( TopologySelection[ic] ) hParticleMomentumSelections[ig][ic]->Fill( t->GetMomentum() );
@@ -557,6 +629,12 @@ void VertexActivity()
         }
         for(auto voxel:inputEvent->GetVoxels())
         {   
+            /*
+            if(voxel->GetTrueType()==1)
+            {
+                cout<<"Debug kurwa "<<voxel->GetTruePE()<<endl;
+            }
+            */
             for(int ik=0; ik<5; ik++)
             {
                 //A->DistToVoxel(B);
@@ -661,10 +739,12 @@ void VertexActivity()
         {
             if( ReactionSelection[ir] ) h_nuMomReaction[ir]->Fill( nuMom );
         }
-        if( VertexPosition[0]<FiducialVolume ||  VertexPosition[1]<FiducialVolume || VertexPosition[2]<FiducialVolume || VertexPosition[0]>SFGD_X-FiducialVolume ||  VertexPosition[1]>SFGD_Y-FiducialVolume || VertexPosition[2]>SFGD_Z-FiducialVolume)
+        for(int ic=0; ic<SelectionNumber; ic++)
         {
-            VetrexInDetector=false;
-            if(VERBOSE) cout<<"\033[1;31mOut of detector FV\033[0m"<<endl;
+            for(int ir=0; ir<ReacTypeNum; ir++)
+            {
+               if(TopologySelection[ic] && ReactionSelection[ir]) h_nuMomSplitSelections[ic][ir]->Fill( nuMom );
+            }
         }
         for(int ik=0; ik<5; ik++) //Filling histograms starts here
         {
@@ -675,7 +755,7 @@ void VertexActivity()
             if(TrackLengthParticleCounter[1][0]==0 && TrackLengthParticleCounter[1][1]==0) hVertexActivityTrackLength[1][ik]->Fill(VertexDeposit[ik][0]);
             if(VertexGarbageDeposit[ik][1] > epsilon) hVertexActivityByGarbage[ik]->Fill( VertexGarbageDeposit[ik][1] );
             
-            for(int ic=0; ic<SelectionNumber; ic++) //TODO
+            for(int ic=0; ic<SelectionNumber; ic++) //TODO still in development
             {
                 if(TopologySelection[ic])
                 {
@@ -687,11 +767,15 @@ void VertexActivity()
                         {
                             hVASubTrackLengtAllCondSelection[ic][il][ik]->Fill( VertexDepositSubtractedLengthAll[il][ik][0] );
                             hVAOnlyIfTrackLenghtAllSelection[ic][il][ik]->Fill( VertexDeposit[ik][0] );
+                            if(ik>0) //TODO pomyśl nad warunkiem zeby porownywac to samo
+                            {
+                                hVertexActivityOnlyIfTrackLenghtAllSelectionShell[ic][il][ik-1]->Fill(VertexDeposit[ik][0]-VertexDeposit[ik-1][0] ); 
+                            }
                         }
                     }
                 }
             }
-            for(int ir=0; ir<ReacTypeNum; ir++) //TODO
+            for(int ir=0; ir<ReacTypeNum; ir++) //TODO still in development
             {
                 if( ReactionSelection[ir])
                 {
@@ -703,11 +787,34 @@ void VertexActivity()
                         {
                             hVASubTrackLengtAllCondReaction[ir][il][ik]->Fill( VertexDepositSubtractedLengthAll[il][ik][0] );
                             hVAOnlyIfTrackLenghtAllReaction[ir][il][ik]->Fill( VertexDeposit[ik][0] );
+                            if(ik>0) //TODO pomyśl nad warunkiem zeby porownywac to samo
+                            {
+                                hVertexActivityIfTrackLenghtAllReactionShell[ir][il][ik-1]->Fill(VertexDeposit[ik][0]-VertexDeposit[ik-1][0] ); 
+                            }
                         }
                     }
                 }
             }
-            
+            for(int ic=0; ic<SelectionNumber; ic++) //TODO NEEEEW
+            {
+                for(int ir=0; ir<ReacTypeNum; ir++)
+                {
+                    if(TopologySelection[ic] && ReactionSelection[ir])
+                    {
+                        hVASplitSelection[ic][ir][ik]->Fill(VertexDeposit[ik][0]);
+                        for(int il=0; il<2; il++)
+                        {   
+                            if( abs( VertexDeposit[ik][0]-VertexDepositSubtractedLengthAll[0][ik][0] ) > epsilon )
+                            {
+                                if(ik>0) //TODO pomyśl nad warunkiem zeby porownywac to samo
+                                {
+                                    hVertexActivityOnlyIfTrackLenghtAllSplitSelectionShell[ic][ir][il][ik-1]->Fill(VertexDeposit[ik][0]-VertexDeposit[ik-1][0] ); 
+                                } 
+                            }
+                        }
+                    }
+                }
+            }
             for(int ig=0; ig<SizeOfParticleVector; ig++)
             {
                 hVertexActivitySubtractedParticle[ig][ik]->Fill(VertexDepositSubtracted[ig][ik][0]);
@@ -959,7 +1066,7 @@ void VertexActivity()
         {
             hMeanScatteringRange[ig]->Write("",TObject::kOverwrite);
         }
-        //////TODO
+        //////TODO still in development
         for(int ic=0; ic<SelectionNumber; ic++)
         {
             FolderParticleSelections[ic]->cd();
@@ -986,13 +1093,19 @@ void VertexActivity()
                     hVAOnlyIfTrackLenghtAllSelection[ic][il][ik]->Write("",TObject::kOverwrite);
                 }
             }
+            for(int ik=0; ik<4; ik++)
+            { 
+                for(int il=LongOrShort; il<2; il++)
+                {
+                    hVertexActivityOnlyIfTrackLenghtAllSelectionShell[ic][il][ik]->Write("",TObject::kOverwrite);
+                }
+            }
             for(int ig=0; ig<SizeOfParticleVector; ig++)
             {
                 hParticleMomentumSelections[ig][ic]->Write("",TObject::kOverwrite);
             }
         }
-         //////TODO
-         
+        //////TODO still in development
         for(int ir=0; ir<ReacTypeNum; ir++)
         {
             FolderReaction[ir]->cd();
@@ -1019,12 +1132,50 @@ void VertexActivity()
                     hVAOnlyIfTrackLenghtAllReaction[ir][il][ik]->Write("",TObject::kOverwrite);
                 }
             }
+            for(int ik=0; ik<4; ik++)
+            { 
+                for(int il=LongOrShort; il<2; il++)
+                {
+                    hVertexActivityIfTrackLenghtAllReactionShell[ir][il][ik]->Write("",TObject::kOverwrite);
+                }
+            }
             for(int ig=0; ig<SizeOfParticleVector; ig++)
             {
                 hParticleMomentumReactions[ig][ir]->Write("",TObject::kOverwrite);
             }
         } 
-        
+        for(int ic=0; ic<SelectionNumber; ic++)
+        {
+            FolderSplitedSelection[ic]->cd();
+            for(int ir=0; ir<ReacTypeNum; ir++)
+            {
+                h_nuMomSplitSelections[ic][ir]->Write("",TObject::kOverwrite);
+            }
+            for(int ir=0; ir<ReacTypeNum; ir++)
+            {
+                for(int ik=0; ik<5; ik++)
+                {
+                    hVASplitSelection[ic][ir][ik]->Write("",TObject::kOverwrite);
+                }
+            }
+            for(int ig=0; ig<SizeOfParticleVector; ig++)
+            {
+                for(int ir=0; ir<ReacTypeNum; ir++)
+                {
+                    hParticleMomentumSplitSelection[ig][ic][ir]->Write("",TObject::kOverwrite);
+                }
+            }
+            for(int ir=0; ir<ReacTypeNum; ir++)
+            {
+                for(int ik=0; ik<4; ik++)
+                {
+                    for(int il=LongOrShort; il<2; il++)
+                    {
+                        hVertexActivityOnlyIfTrackLenghtAllSplitSelectionShell[ic][ir][il][ik]->Write("",TObject::kOverwrite);
+                    }
+                }
+            }
+        }
         FileOutput->cd();
         t1.Write();
         FileOutput->Close();
