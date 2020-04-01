@@ -155,22 +155,17 @@ void ComparisonPlot()
     const int SizeOfParticleVector = 4;
     const int ParticleNumberGO = 2; //Number of particles we put condition on, starting from 0
     int LongOrShort = 1; //Set if you are interested in subtracting long and short [0] or just long [1]
-    const int SelectionNumber = 4;
+    const int SelectionNumber = 5;
     const int ReacTypeNum = 5;
     bool CIS = true;
+    bool NEUT = true;
     
     TString Directory="/Users/kolos/Desktop/sFGD/Output/";
-    TString DirectoryPlots="/Users/kolos/Desktop/sFGD/Plots/";
-    TString DirectorySelePlots="/Users/kolos/Desktop/sFGD/Plots/Selections/";
-    TString DirectoryReacPlots="/Users/kolos/Desktop/sFGD/Plots/Reactions/";
+    TString DirectoryPlots="/Users/kolos/Desktop/sFGD/Plots/GENIE/";
+    TString DirectorySelePlots="/Users/kolos/Desktop/sFGD/Plots/GENIE/Selections/";
+    TString DirectoryReacPlots="/Users/kolos/Desktop/sFGD/PlotsGENIE/GENIE/Reactions/";
+    TString DirectorySplitSelectionsPlots="/Users/kolos/Desktop/sFGD/Plots/GENIE/SplitSelections/";
     
-    if(CIS)
-    {
-        Directory="/mnt/home/kskwarczynski/t2k-nd280-upgrade/sfgd_framework/analysis/Output/";
-        DirectoryPlots="/mnt/home/kskwarczynski/t2k-nd280-upgrade/sfgd_framework/analysis/PlotOutput/VertexActivity/";
-        DirectorySelePlots="/mnt/home/kskwarczynski/t2k-nd280-upgrade/sfgd_framework/analysis/PlotOutput/VertexActivity/Selections/";
-        DirectoryReacPlots="/mnt/home/kskwarczynski/t2k-nd280-upgrade/sfgd_framework/analysis/PlotOutput/VertexActivity/Reactions/";
-    }
     TString FileName="VertexAcivity_Output";
     TString VetrexString[5]={"1x1x1" , "3x3x3" , "5x5x5", "7x7x7", "9x9x9"};
     TString VertexName[5]={"VertexActivity1x1x1", "VertexActivity3x3x3", "VertexActivity5x5x5", "VertexActivity7x7x7", "VertexActivity9x9x9"};
@@ -178,8 +173,38 @@ void ComparisonPlot()
     TString ParticleNameBranch[SizeOfParticleVector]={"Muon", "PionP", "Proton", "PionN"};
     TString TrackLenght[2]={"Short", "Long"};
     TString OppositeLenght[2]={"Long", "Short"};
-    TString SelectionsName[SelectionNumber]={"CC0Pi", "CC0p0Pi", "CC1Pi", "CCOther"};
-    TString ReactionName[ReacTypeNum]={"CCQE", "RES", "DIS", "COH", "NC"};
+    TString SelectionsName[SelectionNumber]={"1mu1p", "1mu", "1muNp", "CC1Pi", "CCOther"};
+    TString ReactionName[ReacTypeNum]={"CCQE", "2p2h", "RES", "DIS", "COH"};
+    
+    
+    if(CIS)
+    {
+        Directory="/mnt/home/kskwarczynski/t2k-nd280-upgrade/sfgd_framework/analysis/Output/";
+        DirectoryPlots="/mnt/home/kskwarczynski/t2k-nd280-upgrade/sfgd_framework/analysis/PlotOutput/VertexActivity/GENIE/";
+        DirectorySelePlots="/mnt/home/kskwarczynski/t2k-nd280-upgrade/sfgd_framework/analysis/PlotOutput/VertexActivity/GENIE/Selections/";
+        DirectoryReacPlots="/mnt/home/kskwarczynski/t2k-nd280-upgrade/sfgd_framework/analysis/PlotOutput/VertexActivity/GENIE/Reactions/";
+        DirectorySplitSelectionsPlots="/mnt/home/kskwarczynski/t2k-nd280-upgrade/sfgd_framework/analysis/PlotOutput/VertexActivity/GENIE/SplitSelections/";
+    }
+    if(NEUT)
+    {
+        FileName="NeutVertexAcivity_Output";
+        
+        DirectoryPlots="/Users/kolos/Desktop/sFGD/Plots/NEUT/";
+        DirectorySelePlots="/Users/kolos/Desktop/sFGD/Plots/NEUT/Selections/";
+        DirectoryReacPlots="/Users/kolos/Desktop/sFGD/PlotsGENIE/NEUT/Reactions/";
+        DirectorySplitSelectionsPlots="/Users/kolos/Desktop/sFGD/Plots/NEUT/SplitSelections/";
+        
+        if(CIS)
+        {
+            DirectoryPlots="/mnt/home/kskwarczynski/t2k-nd280-upgrade/sfgd_framework/analysis/PlotOutput/VertexActivity/NEUT/";
+            DirectorySelePlots="/mnt/home/kskwarczynski/t2k-nd280-upgrade/sfgd_framework/analysis/PlotOutput/VertexActivity/NEUT/Selections/";
+            DirectoryReacPlots="/mnt/home/kskwarczynski/t2k-nd280-upgrade/sfgd_framework/analysis/PlotOutput/VertexActivity/NEUT/Reactions/";
+            DirectorySplitSelectionsPlots="/mnt/home/kskwarczynski/t2k-nd280-upgrade/sfgd_framework/analysis/PlotOutput/VertexActivity/NEUT/SplitSelections/";
+        }
+    }
+    
+    
+
     
     TFile *file;
     TTree *t1;
@@ -198,13 +223,16 @@ void ComparisonPlot()
     TH1F *hVertexActivitySubTrackLengtAllConditionShell[2][4]; 
     TH1F *hVertexActivityOnlyIfTrackLenghtAllShell[2][4]; //[0-short, long][vertexBox]
     TH1F *hVertexActivityOnlyLongShell[4]; //[vertexBox-1]
-    
-    //TODO Selections
+
     TH1F *hVertexActivitySelections[SelectionNumber][5]; //[SelectionNumber][vertexBox]
     TH1F *hVASubTrackLengtAllCondSelection[SelectionNumber][2][5];
-    //TODO Reactions
+    
     TH1F *hVertexActivityReaction[ReacTypeNum][5]; //[ReacTypeNum][vertexBox]
     TH1F *hVASubTrackLengtAllCondReaction[ReacTypeNum][2][5];
+    
+    //TODO SplitReactions
+    TH1F *hVASplitSelection[SelectionNumber][ReacTypeNum][5];
+    TH1F *h_nuMomSplitSelections[SelectionNumber][ReacTypeNum];
     
     TH2F *hMomentumVsRange[SizeOfParticleVector];
     TH2F *hEnergyVsRange[SizeOfParticleVector];
@@ -235,7 +263,11 @@ void ComparisonPlot()
     {
        FolderReaction[ir]= (TDirectory*)file->Get( Form( "Folder%s", ReactionName[ir].Data() ) );
     }
-
+    TDirectory *FolderSplitedSelection[SelectionNumber];
+    for(int ic=0; ic<SelectionNumber; ic++) 
+    {
+       FolderSplitedSelection[ic]= (TDirectory*)file->Get( Form( "FolderSplited%s", SelectionsName[ic].Data() ) );
+    }
     file->cd();
     
     for(int ik=0; ik<5; ik++)
@@ -247,8 +279,20 @@ void ComparisonPlot()
             hVertexActivityShell[ik-1] = (TH1F*) file->Get( Form("%sShell",VertexName[ik].Data() ) );
             hVertexActivityShell[ik-1]->GetYaxis()->SetTitleOffset(1.4);
             
-            hVertexActivityOnlyLongShell[ik-1] = (TH1F*) FolderSubtractedTrackLengthAllShell->Get( Form("%s_OnlyLong_Shell",VertexName[ik].Data()) );
+            hVertexActivityOnlyLongShell[ik-1] = (TH1F*) FolderSubtractedTrackLengthAllShell->Get( Form("%s_OnlyLong_Shell",VertexName[ik].Data() ) );
             hVertexActivityOnlyLongShell[ik-1]->GetYaxis()->SetTitleOffset(1.4);
+        }
+        for(int ic=0; ic<SelectionNumber; ic++)//TODO
+        {
+            for(int ir=0; ir<ReacTypeNum; ir++) 
+            {
+                hVASplitSelection[ic][ir][ik] = (TH1F*) FolderSplitedSelection[ic]->Get( Form("VA%s_%s_%s", VetrexString[ik].Data(), SelectionsName[ic].Data(), ReactionName[ir].Data() ) );
+                
+                if(ik==0)
+                {
+                    h_nuMomSplitSelections[ic][ir] = (TH1F*) FolderSplitedSelection[ic]->Get( Form("nuMom%s_%s", SelectionsName[ic].Data(), ReactionName[ir].Data() ) );
+                }
+            }
         }
         for(int ic=0; ic<SelectionNumber; ic++)
         {
@@ -337,7 +381,7 @@ void ComparisonPlot()
     TLegend *legend[300];
     int canvasCounter=0;
     
- ///////////////////////////////// DRAWING PART STARTS HERE/////////////////////////////   
+///////////////////////////////// DRAWING PART STARTS HERE/////////////////////////////   
 /*
     for(int ig=0; ig<SizeOfParticleVector; ig++)
     {
@@ -680,8 +724,6 @@ void ComparisonPlot()
         delete Canvas[canvasCounter];
         canvasCounter++;
     }
-    
-    */
     THStack *VAstackSelec[5];
     for(int ik=0; ik<5; ik++)
     {
@@ -767,8 +809,7 @@ void ComparisonPlot()
         delete Canvas[canvasCounter];
         canvasCounter++;
     }
-    /*
-    ////REACTIONS   TODO
+    ////REACTIONS
     THStack *VAstackReac[5];
     for(int ik=0; ik<5; ik++)
     {
@@ -858,4 +899,106 @@ void ComparisonPlot()
         canvasCounter++;
     }
     */
+    //WARNING 2p2h may not be compatible with all MC
+    THStack *VAstackSplit[SelectionNumber][5];
+    for(int ik=0; ik<5; ik++)
+    {
+        for(int ic=0; ic<SelectionNumber; ic++)
+        {
+            Canvas[canvasCounter] = new TCanvas( Form("Canvas%i",canvasCounter), Form("Canvas%i",canvasCounter), 1400, 1000);
+            //CCQE 2p2h RES DIS COH NC
+            hVASplitSelection[ic][0][ik]->SetFillColor(kRed);
+            hVASplitSelection[ic][0][ik]->SetMarkerStyle(21);
+            hVASplitSelection[ic][0][ik]->SetMarkerColor(kRed);
+            
+            hVASplitSelection[ic][1][ik]->SetFillColor(kViolet);
+            hVASplitSelection[ic][1][ik]->SetMarkerStyle(21);
+            hVASplitSelection[ic][1][ik]->SetMarkerColor(kViolet);
+            
+            hVASplitSelection[ic][2][ik]->SetFillColor(kGreen);
+            hVASplitSelection[ic][2][ik]->SetMarkerStyle(21);
+            hVASplitSelection[ic][2][ik]->SetMarkerColor(kGreen);
+        
+            hVASplitSelection[ic][3][ik]->SetFillColor(kBlue);
+            hVASplitSelection[ic][3][ik]->SetMarkerStyle(21);
+            hVASplitSelection[ic][3][ik]->SetMarkerColor(kBlue);
+        
+            hVASplitSelection[ic][4][ik]->SetFillColor(kCyan);
+            hVASplitSelection[ic][4][ik]->SetMarkerStyle(21);
+            hVASplitSelection[ic][4][ik]->SetMarkerColor(kCyan);
+        
+            VAstackSplit[ic][ik] = new THStack( Form("VAstackSplit%s_%s",  VetrexString[ik].Data(),SelectionsName[ic].Data() ), Form("VAstackSplit%s", VetrexString[ik].Data()) );
+            VAstackSplit[ic][ik]->Add( hVASplitSelection[ic][0][ik] );
+            VAstackSplit[ic][ik]->Add( hVASplitSelection[ic][1][ik] );
+            VAstackSplit[ic][ik]->Add( hVASplitSelection[ic][2][ik] );
+            VAstackSplit[ic][ik]->Add( hVASplitSelection[ic][3][ik] );
+            VAstackSplit[ic][ik]->Add( hVASplitSelection[ic][4][ik] );
+        
+            VAstackSplit[ic][ik]->Draw("");
+        
+            VAstackSplit[ic][ik]->GetXaxis()->SetTitle( Form("Energy deposit in box %s [p.e.]", VetrexString[ik].Data()) );
+        
+            legend[canvasCounter] = new TLegend(0.60,0.7,0.9,0.9);
+            for(int ir=0; ir<ReacTypeNum; ir++)
+            {
+                legend[canvasCounter]->AddEntry(hVASplitSelection[ic][ir][ik], Form( "VA%s_%s", VetrexString[ik].Data(), ReactionName[ir].Data() ),"f");
+            }
+            legend[canvasCounter]->SetTextSize(0.04);
+            legend[canvasCounter]->Draw();
+        
+            gPad->Modified();
+            Canvas[canvasCounter]->Print( Form("%sVA%s_StackSplit_%s.pdf", DirectorySplitSelectionsPlots.Data(), VetrexString[ik].Data(), SelectionsName[ic].Data()) ); 
+            delete Canvas[canvasCounter];
+            canvasCounter++;
+        }
+    }
+    THStack *VAstackSplitNuMom[SelectionNumber];
+    for(int ic=0; ic<SelectionNumber; ic++)
+    {
+        Canvas[canvasCounter] = new TCanvas( Form("Canvas%i",canvasCounter), Form("Canvas%i",canvasCounter), 1400, 1000);
+        //CCQE RES DIS COH NC
+        h_nuMomSplitSelections[ic][0]->SetFillColor(kRed);
+        h_nuMomSplitSelections[ic][0]->SetMarkerStyle(21);
+        h_nuMomSplitSelections[ic][0]->SetMarkerColor(kRed);
+
+        h_nuMomSplitSelections[ic][1]->SetFillColor(kViolet);
+        h_nuMomSplitSelections[ic][1]->SetMarkerStyle(21);
+        h_nuMomSplitSelections[ic][1]->SetMarkerColor(kViolet);
+        
+        h_nuMomSplitSelections[ic][2]->SetFillColor(kGreen);
+        h_nuMomSplitSelections[ic][2]->SetMarkerStyle(21);
+        h_nuMomSplitSelections[ic][2]->SetMarkerColor(kGreen);
+    
+        h_nuMomSplitSelections[ic][3]->SetFillColor(kBlue);
+        h_nuMomSplitSelections[ic][3]->SetMarkerStyle(21);
+        h_nuMomSplitSelections[ic][3]->SetMarkerColor(kBlue);
+    
+        h_nuMomSplitSelections[ic][4]->SetFillColor(kCyan);
+        h_nuMomSplitSelections[ic][4]->SetMarkerStyle(21);
+        h_nuMomSplitSelections[ic][4]->SetMarkerColor(kCyan);
+    
+        VAstackSplitNuMom[ic] = new THStack( Form("NuMomstackSplit_%s", SelectionsName[ic].Data() ), Form("NuMomstackSplit_%s", SelectionsName[ic].Data() ) );
+        VAstackSplitNuMom[ic]->Add( h_nuMomSplitSelections[ic][0] );
+        VAstackSplitNuMom[ic]->Add( h_nuMomSplitSelections[ic][1] );
+        VAstackSplitNuMom[ic]->Add( h_nuMomSplitSelections[ic][2] );
+        VAstackSplitNuMom[ic]->Add( h_nuMomSplitSelections[ic][3] );
+        VAstackSplitNuMom[ic]->Add( h_nuMomSplitSelections[ic][3] );
+    
+        VAstackSplitNuMom[ic]->Draw("");
+    
+        VAstackSplitNuMom[ic]->GetXaxis()->SetTitle( "Momentum [MeV/c]");
+    
+        legend[canvasCounter] = new TLegend(0.60,0.7,0.9,0.9);
+        for(int ir=0; ir<ReacTypeNum; ir++)
+        {
+            legend[canvasCounter]->AddEntry(h_nuMomSplitSelections[ic][ir], Form("%s", ReactionName[ir].Data() ),"f");
+        }
+        legend[canvasCounter]->SetTextSize(0.04);
+        legend[canvasCounter]->Draw();
+    
+        gPad->Modified();
+        Canvas[canvasCounter]->Print( Form("%sNuMom_StackSplit_%s.pdf", DirectorySplitSelectionsPlots.Data(), SelectionsName[ic].Data()) ); 
+        delete Canvas[canvasCounter];
+        canvasCounter++;
+    }
 }

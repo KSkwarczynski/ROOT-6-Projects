@@ -14,9 +14,9 @@ void HitSubstractComparisonPlot()
     
     const int NumberOfFiles = 3; //we only consider those files with substracted deposits, default one is alway included
     TString Directory="/Users/kolos/Desktop/sFGD/Output/";
-    TString DirectoryPlots="/Users/kolos/Desktop/sFGD/Plots/Hits/";
+    TString DirectoryPlots="/Users/kolos/Desktop/sFGD/Plots/GENIE/Hits/";
     //TString Directory="/mnt/home/kskwarczynski/t2k-nd280-upgrade/sfgd_framework/analysis/Output/";
-    //TString DirectoryPlots="/mnt/home/kskwarczynski/t2k-nd280-upgrade/sfgd_framework/analysis/PlotOutput/VertexActivity/";
+    //TString DirectoryPlots="/mnt/home/kskwarczynski/t2k-nd280-upgrade/sfgd_framework/analysis/PlotOutput/VertexActivity/GENIE/";
     TString FileName[4]={"VertexAcivityHits_Output", "VertexAcivityHits_SubstractedMu_Output", "VertexAcivityHits_SubstractedPi+_Output", "VertexAcivityHits_SubstractedProton_Output" };
     TString VetrexString[5]={"1x1x1" , "3x3x3" , "5x5x5", "7x7x7", "9x9x9"};
     TFile *file[4];

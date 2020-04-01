@@ -152,9 +152,9 @@ void DynamicComparisonPlot()
 /////////////////////////////////////////////////////////////////////
     
     TString Directory="/Users/kolos/Desktop/sFGD/Output/";
-    TString DirectoryPlots="/Users/kolos/Desktop/sFGD/Plots/Dynamic/";
+    TString DirectoryPlots="/Users/kolos/Desktop/sFGD/Plots/GENIE/Dynamic/";
     //TString Directory="/mnt/home/kskwarczynski/t2k-nd280-upgrade/sfgd_framework/analysis/Output/";
-    //TString DirectoryPlots="/mnt/home/kskwarczynski/t2k-nd280-upgrade/sfgd_framework/analysis/PlotOutput/VertexActivity/";
+    //TString DirectoryPlots="/mnt/home/kskwarczynski/t2k-nd280-upgrade/sfgd_framework/analysis/PlotOutput/VertexActivity/GENIE/";
     
     TString FileName="DynamicVertexAcivity_Output";
     TString VertexName[5]={"VertexActivity1x1x1", "VertexActivity3x3x3", "VertexActivity5x5x5", "VertexActivity7x7x7", "VertexActivity9x9x9"};
