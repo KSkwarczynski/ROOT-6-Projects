@@ -802,13 +802,35 @@ int SFGD_Reconstruction(int argc,char** argv) {
             TND280UpVertex* vrtx = nd280UpEvent->GetVertex(0);
             // vrtx->PrintVertex();
             TND280UpHit *hitSFGD = nd280UpEvent->GetHit(0);
-            TVector3 vPos(vrtx->GetPosition().x(),vrtx->GetPosition().y()+16.2,vrtx->GetPosition().z()+1707 );
+            /*
+            double shift[3]={};
+            if (rootfilename.find("NEUT") != string::npos)
+            {
+            
+            }
+            else
+            {
+               shift[1] = 16; 
+               shift[2] = 1707;
+            }
+            TVector3 vPos(vrtx->GetPosition().x()+shift[0],vrtx->GetPosition().y()+shift[1],vrtx->GetPosition().z()+shift[2] );
+            */
+            TVector3 vPos(vrtx->GetPosition().x(),vrtx->GetPosition().y()+16,vrtx->GetPosition().z()+1707 );
             string Reakcja = vrtx->GetReacModeString();
             cout << "ReacModeString: " << Reakcja << endl;
             cout << "ReacMode: " << vrtx->GetReacMode() << endl;
             
             //TODO dodawanie reakcji
-            event->SetReactionType( vrtx->GetReacMode() );
+            if (rootfilename.find("NEUT") != string::npos)
+            {
+                cout<<" NEUT file "<<endl;
+                event->SetReactionType( std::stoi(Reakcja) );
+            }
+            else 
+            {
+                cout<<" GNEIE file "<<endl;
+                event->SetReactionType( vrtx->GetReacMode() );
+            }
             cout<<" udalo sie "<< event->GetReactionType()<<endl;
         
             for(int itrk=0;itrk<vrtx->GetNInTracks();itrk++)
