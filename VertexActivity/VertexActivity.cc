@@ -57,7 +57,7 @@ void VertexActivity()
     parseArguments();
     linkFilesToTTrees();
 
-    bool VERBOSE = false;
+    bool VERBOSE = true;
     std::vector<ND280SFGDHit*> mppc_hits;
     
     if(VERBOSE) cout<<"Short track definion  "<<ShortTrack<<endl;
@@ -170,6 +170,16 @@ void VertexActivity()
     TH1F *hGarbagePDG[5]; //[vertexBox]
     
     TH1F *hRecParticleCounter[4]; //[particles]
+    
+    //WARNING
+    TH1F *hVertexPosX= new TH1F("hVertexPosX", "hVertexPosX", SFGD_X, 0.5, SFGD_X+0.5);
+    TH1F *hVertexPosY= new TH1F("hVertexPosY", "hVertexPosY", SFGD_Y, 0.5, SFGD_Y+0.5);
+    TH1F *hVertexPosZ= new TH1F("hVertexPosZ", "hVertexPosZ", SFGD_Z, 0.5, SFGD_Z+0.5);
+    
+    TH2F *hVertexPosXY= new TH2F("hVertexPosXY", "hVertexPosXY", SFGD_X, 0.5, SFGD_X+0.5, SFGD_Y, 0.5, SFGD_Y+0.5);
+    TH2F *hVertexPosXZ= new TH2F("hVertexPosXZ", "hVertexPosXZ", SFGD_X, 0.5, SFGD_X+0.5, SFGD_Z, 0.5, SFGD_Z+0.5);
+    TH2F *hVertexPosYZ= new TH2F("hVertexPosYZ", "hVertexPosYZ", SFGD_Y, 0.5, SFGD_Y+0.5, SFGD_Z, 0.5, SFGD_Z+0.5);
+    
     for(int ik=0; ik<5; ik++)
     {
         hVertexActivity[ik] = new TH1F(VertexName[ik], VertexName[ik], 50, 0, 4000+ik*3000);  
@@ -419,7 +429,7 @@ void VertexActivity()
     for (int iev=evtIni; iev<evtFin; iev++)
     {
         if(iev == maxEvents-1 or selEvents >= maxSelEvents) 
-        //if(iev == maxEvents-1 or selEvents >= 1000) //DEBUG MODE
+        //if(iev == maxEvents-1 or selEvents >= 2000) //DEBUG MODE
         {   
             break;
         }
@@ -456,6 +466,15 @@ void VertexActivity()
         }
         if(!VetrexInDetector) continue;
         
+        //WARNING
+        hVertexPosX->Fill(VertexPosition[0]);
+        hVertexPosY->Fill(VertexPosition[1]);
+        hVertexPosZ->Fill(VertexPosition[2]);
+    
+        hVertexPosXY->Fill(VertexPosition[0], VertexPosition[1]);
+        hVertexPosXZ->Fill(VertexPosition[0], VertexPosition[2]);
+        hVertexPosYZ->Fill(VertexPosition[1], VertexPosition[2]);
+    
         double VertexDeposit[5][2]={}; //[VertexBox][0-PE, 1-MeV]
         double VertexDepositSubtracted[SizeOfParticleVector][5][2]={}; //[studied particle][VertexBox][0-PE, 1-MeV]
         double VertexDepositSubtractedLength[2][SizeOfParticleVector][5][2]={}; //[0-short, 1-long][studied particle][VertexBox][0-PE, 1-MeV]
@@ -479,7 +498,6 @@ void VertexActivity()
                 hprotonMomentum->Fill( t->GetMomentum() );
             }
         }
-        
 
         int MuonCounter=0;
         for(auto t:inputEvent->GetTrueTracks()) 
@@ -898,6 +916,15 @@ void VertexActivity()
         {
             hRecParticleCounter[ig]->Write("",TObject::kOverwrite);
         }
+        //WARNING
+        hVertexPosX->Write("",TObject::kOverwrite);
+        hVertexPosY->Write("",TObject::kOverwrite);
+        hVertexPosZ->Write("",TObject::kOverwrite);
+    
+        hVertexPosXY->Write("",TObject::kOverwrite);
+        hVertexPosXZ->Write("",TObject::kOverwrite);
+        hVertexPosYZ->Write("",TObject::kOverwrite);
+        
         FolderHist2D->cd();
         for(int ig=0; ig<SizeOfParticleVector; ig++)
         {
