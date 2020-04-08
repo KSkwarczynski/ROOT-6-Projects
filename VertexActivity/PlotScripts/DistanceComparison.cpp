@@ -270,13 +270,12 @@ void DistanceComparison()
     TCanvas *Canvas[300];
     TLegend *legend[300];
     int canvasCounter=0;
-///////////////////////////////// DRAWING PART STARTS HERE/////////////////////////////  
-    //hParticleMomentumReactions[2][0][1]->Draw("SAME");
-   
-    int binowanie=hParticleMomentumReactions[0][0][0]->GetNbinsX();
-    long double normalizacja[SizeOfParticleVector][ReacTypeNum][NumberOfFiles];  
     int norma=1;
-    
+///////////////////////////////// DRAWING PART STARTS HERE/////////////////////////////  
+    /*
+    int binowanie=hParticleMomentumReactions[0][0][0]->GetNbinsX();
+    long double normalizacja[SizeOfParticleVector][ReacTypeNum][NumberOfFiles];
+   
     for(int ir=0; ir<ReacTypeNum; ir++)
     {
         for(int ig=1; ig<SizeOfParticleVector; ig++) //start from 1 since we don't want muons
@@ -334,10 +333,9 @@ void DistanceComparison()
             canvasCounter++;
         }  
     }
-    /*
+    
     int binowanieReac[5];
     long double normalizacjaReac[ReacTypeNum][5][NumberOfFiles];  
-    int norma=1;
     
     for(int ik=0; ik<5; ik++) //start from 1 since we don't want muons
     {
@@ -396,9 +394,10 @@ void DistanceComparison()
             canvasCounter++;
         }  
     }
+    */
     int binowanieSelec[5];
     long double normalizacjaSelec[SelectionNumber][5][NumberOfFiles];  
-    int norma=1;
+    //hVertexActivitySelections[4][1][6]->Draw();
     
     for(int ik=0; ik<5; ik++) //start from 1 since we don't want muons
     {
@@ -443,7 +442,7 @@ void DistanceComparison()
             hVertexActivitySelections[ic][ik][4]->Draw("SAME");
             hVertexActivitySelections[ic][ik][5]->Draw("SAME");
             hVertexActivitySelections[ic][ik][6]->Draw("SAME");
-            legend[canvasCounter] = new TLegend(0.55,0.6,0.9,0.9);
+            legend[canvasCounter] = new TLegend(0.65,0.6,0.9,0.9);
             for(int i=0; i<NumberOfFiles; i++)
             {
                 legend[canvasCounter]->AddEntry(hVertexActivitySelections[ic][ik][i], Form( "%icm_VA%s", i+1, VetrexString[ik].Data() ),"l");
@@ -457,11 +456,9 @@ void DistanceComparison()
             canvasCounter++;
         }  
     }
-    */
     /*
     int binowanieShell[4];
     long double normalizacjaShell[SelectionNumber][ReacTypeNum][4][NumberOfFiles];  
-    int norma=1;
 
     for(int ik=0; ik<4; ik++) //start from 1 since we don't want muons
     {

@@ -157,7 +157,7 @@ void ComparisonPlot()
     int LongOrShort = 1; //Set if you are interested in subtracting long and short [0] or just long [1]
     const int SelectionNumber = 5;
     const int ReacTypeNum = 5;
-    bool CIS = true;
+    bool CIS = false;
     bool NEUT = true;
     
     TString Directory="/Users/kolos/Desktop/sFGD/Output/";
@@ -175,7 +175,6 @@ void ComparisonPlot()
     TString OppositeLenght[2]={"Long", "Short"};
     TString SelectionsName[SelectionNumber]={"1mu1p", "1mu", "1muNp", "CC1Pi", "CCOther"};
     TString ReactionName[ReacTypeNum]={"CCQE", "2p2h", "RES", "DIS", "COH"};
-    
     
     if(CIS)
     {
@@ -202,9 +201,6 @@ void ComparisonPlot()
             DirectorySplitSelectionsPlots="/mnt/home/kskwarczynski/t2k-nd280-upgrade/sfgd_framework/analysis/PlotOutput/VertexActivity/NEUT/SplitSelections/";
         }
     }
-    
-    
-
     
     TFile *file;
     TTree *t1;
@@ -282,7 +278,7 @@ void ComparisonPlot()
             hVertexActivityOnlyLongShell[ik-1] = (TH1F*) FolderSubtractedTrackLengthAllShell->Get( Form("%s_OnlyLong_Shell",VertexName[ik].Data() ) );
             hVertexActivityOnlyLongShell[ik-1]->GetYaxis()->SetTitleOffset(1.4);
         }
-        for(int ic=0; ic<SelectionNumber; ic++)//TODO
+        for(int ic=0; ic<SelectionNumber; ic++)
         {
             for(int ir=0; ir<ReacTypeNum; ir++) 
             {
@@ -306,7 +302,7 @@ void ComparisonPlot()
             }
             
         }
-        for(int ir=0; ir<ReacTypeNum; ir++) //TODO
+        for(int ir=0; ir<ReacTypeNum; ir++)
         {
             hVertexActivityReaction[ir][ik] = (TH1F*) FolderReaction[ir]->Get( Form("VA%s_%s", VetrexString[ik].Data(), ReactionName[ir].Data()) );
             hVertexActivityReaction[ir][ik]->GetYaxis()->SetTitleOffset(1.4);
@@ -382,7 +378,7 @@ void ComparisonPlot()
     int canvasCounter=0;
     
 ///////////////////////////////// DRAWING PART STARTS HERE/////////////////////////////   
-/*
+    /*
     for(int ig=0; ig<SizeOfParticleVector; ig++)
     {
         Canvas[canvasCounter] = new TCanvas( Form("Canvas%i",canvasCounter), Form("Canvas%i",canvasCounter), 1400, 1000);
@@ -403,9 +399,14 @@ void ComparisonPlot()
         delete Canvas[canvasCounter];
         canvasCounter++;
     }
+    */
+    Double_t norm;
     for(int ig=0; ig<SizeOfParticleVector; ig++)
     {
         Canvas[canvasCounter] = new TCanvas( Form("Canvas%i",canvasCounter), Form("Canvas%i",canvasCounter), 1400, 1000);
+        norm = 1/hEnergyPeVsRange[ig]->Integral();
+        hEnergyPeVsRange[ig]->Scale(norm);
+        hEnergyPeVsRange[ig]->GetZaxis()->SetRangeUser(0., 0.15.); //WARNING
         hEnergyPeVsRange[ig]->Draw("COLZ");
         
         gPad->Modified();
@@ -413,6 +414,7 @@ void ComparisonPlot()
         delete Canvas[canvasCounter];
         canvasCounter++;
     }
+    /*
     for(int ig=0; ig<SizeOfParticleVector; ig++)
     {
         Canvas[canvasCounter] = new TCanvas( Form("Canvas%i",canvasCounter), Form("Canvas%i",canvasCounter), 1400, 1000);
@@ -423,7 +425,7 @@ void ComparisonPlot()
         delete Canvas[canvasCounter];
         canvasCounter++;
     }
-        for(int ig=0; ig<SizeOfParticleVector; ig++)
+    for(int ig=0; ig<SizeOfParticleVector; ig++)
     {
         Canvas[canvasCounter] = new TCanvas( Form("Canvas%i",canvasCounter), Form("Canvas%i",canvasCounter), 1400, 1000);
         hScatteringPathVsMomentum[ig]->Draw("COLZ");
@@ -467,6 +469,7 @@ void ComparisonPlot()
         delete Canvas[canvasCounter];
         canvasCounter++;
     }
+    
     for(int ik=0; ik<5; ik++) //TODO normalizacja by sie przydala LOW PRIORITY
     {
         //TODO trzeba by dodac jakas ladna  petle abt ominac problemu zmiany badanych czastek LOW PRIORITY
@@ -899,6 +902,10 @@ void ComparisonPlot()
         canvasCounter++;
     }
     */
+
+
+
+    /*
     //WARNING 2p2h may not be compatible with all MC
     THStack *VAstackSplit[SelectionNumber][5];
     for(int ik=0; ik<5; ik++)
@@ -1001,4 +1008,5 @@ void ComparisonPlot()
         delete Canvas[canvasCounter];
         canvasCounter++;
     }
+    */
 }
