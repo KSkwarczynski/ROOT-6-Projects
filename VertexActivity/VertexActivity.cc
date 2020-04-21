@@ -143,12 +143,13 @@ void VertexActivity()
     TH1F *hVertexActivityIfTrackLenghtAllReactionShell[ReacTypeNum][2][4]; //[0-short, 1-long][vertexBox]
     TH1F *hParticleMomentumReactions[SizeOfParticleVector][ReacTypeNum];
     
-    //TODO SplittedSelections
+    /// \define SplittedSelections
     TH1F *hVASplitSelection[SelectionNumber][ReacTypeNum][5];
     TH1F *h_nuMomSplitSelections[SelectionNumber][ReacTypeNum];
     TH1F *hParticleMomentumSplitSelection[SizeOfParticleVector][SelectionNumber][ReacTypeNum];
     TH1F *hVertexActivityOnlyIfTrackLenghtAllSplitSelectionShell[SelectionNumber][ReacTypeNum][2][4]; //[0-short, long][vertexBox]
-        
+    TH1F *hVertexActivitySubTrackLengtSplitSelection[SelectionNumber][ReacTypeNum][2][5]; 
+    
     TH1F *hVertexActivitySubTrackLengtAllCondition[2][5]; 
     TH1F *hVertexActivityOnlyIfTrackLenghtAll[2][5]; //[0-short, long][vertexBox]
     
@@ -210,6 +211,7 @@ void VertexActivity()
                 
                 for(int il=0; il<2; il++) //loop over short long track
                 {
+                    hVertexActivitySubTrackLengtSplitSelection[ic][ir][il][ik] = new TH1F( Form("VA%sSubtract_%s_%s_%s", VetrexString[ik].Data(), TrackLenght[il].Data(), SelectionsName[ic].Data(), ReactionName[ir].Data()), Form("VA%sSubtract_%s_%s_%s", VetrexString[ik].Data(), TrackLenght[il].Data(), SelectionsName[ic].Data(), ReactionName[ir].Data()), 50, 0, 4000+ik*3000);  
                     if(ik>0)
                     {
                         hVertexActivityOnlyIfTrackLenghtAllSplitSelectionShell[ic][ir][il][ik-1] = new TH1F( Form("VA%s_IfThereAre_%s__%s_%s_Shell", VetrexString[ik].Data(), OppositeLenght[il].Data(), SelectionsName[ic].Data(), ReactionName[ir].Data()), Form("VA%s_IfThereAre_%s__%s_%s_Shell", VetrexString[ik].Data(), OppositeLenght[il].Data(), SelectionsName[ic].Data(), ReactionName[ir].Data()), 50, 0, 8000);  
@@ -243,7 +245,7 @@ void VertexActivity()
                 }
             }
         }
-        for(int ic=0; ic<SelectionNumber; ic++) //TODO
+        for(int ic=0; ic<SelectionNumber; ic++)
         {
             hVertexActivitySelections[ic][ik] = new TH1F( Form("VA%s_%s", VetrexString[ik].Data(), SelectionsName[ic].Data() ), Form("VA%s_%s", VetrexString[ik].Data(), SelectionsName[ic].Data() ), 50, 0, 4000+ik*3000);  
             hVertexActivitySelections[ic][ik]->GetXaxis()->SetTitle( Form("Energy deposit in box %s [p.e.]",VetrexString[ik].Data() ) );
@@ -647,12 +649,6 @@ void VertexActivity()
         }
         for(auto voxel:inputEvent->GetVoxels())
         {   
-            /*
-            if(voxel->GetTrueType()==1)
-            {
-                cout<<"Debug kurwa "<<voxel->GetTruePE()<<endl;
-            }
-            */
             for(int ik=0; ik<5; ik++)
             {
                 //A->DistToVoxel(B);
@@ -813,7 +809,7 @@ void VertexActivity()
                     }
                 }
             }
-            for(int ic=0; ic<SelectionNumber; ic++) //TODO NEEEEW
+            for(int ic=0; ic<SelectionNumber; ic++)
             {
                 for(int ir=0; ir<ReacTypeNum; ir++)
                 {
@@ -822,6 +818,7 @@ void VertexActivity()
                         hVASplitSelection[ic][ir][ik]->Fill(VertexDeposit[ik][0]);
                         for(int il=0; il<2; il++)
                         {   
+                            hVertexActivitySubTrackLengtSplitSelection[ic][ir][il][ik-1]->Fill(VertexDepositSubtractedLengthAll[il][ik][0]);
                             if( abs( VertexDeposit[ik][0]-VertexDepositSubtractedLengthAll[0][ik][0] ) > epsilon )
                             {
                                 if(ik>0) //TODO pomyśl nad warunkiem zeby porownywac to samo
@@ -1190,6 +1187,16 @@ void VertexActivity()
                 for(int ir=0; ir<ReacTypeNum; ir++)
                 {
                     hParticleMomentumSplitSelection[ig][ic][ir]->Write("",TObject::kOverwrite);
+                }
+            }
+            for(int ir=0; ir<ReacTypeNum; ir++)
+            {
+                for(int ik=0; ik<5; ik++)
+                {
+                    for(int il=LongOrShort; il<2; il++)
+                    {
+                        hVertexActivitySubTrackLengtSplitSelection[ic][ir][il][ik]->Write("",TObject::kOverwrite);
+                    }
                 }
             }
             for(int ir=0; ir<ReacTypeNum; ir++)
