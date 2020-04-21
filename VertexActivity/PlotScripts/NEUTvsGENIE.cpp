@@ -171,8 +171,7 @@ void NEUTvsGENIE()
     TString ParticleNameBranch[SizeOfParticleVector]={"Muon", "PionP", "Proton", "PionN"};
     TString TrackLenght[2]={"Short", "Long"};
     TString OppositeLenght[2]={"Long", "Short"};
-    /*TString SelectionsName[NumberOfFiles][SelectionNumber]={ {"CC0Pi", "CC0p0Pi", "CCNp0Pi", "CC1Pi", "CCOther"}, 
-                                                                {"1mu1p", "1mu", "1muNp", "CC1Pi", "CCOther"} }; */
+    TString SelectionsName[SelectionNumber]={"1mu1p", "1mu", "1muNp", "CC1Pi", "CCOther"};
     TString ReactionName[ReacTypeNum]={"CCQE","2p2h", "RES", "DIS", "COH"};
     
     TFile *file[NumberOfFiles];
@@ -180,27 +179,28 @@ void NEUTvsGENIE()
     TDirectory *FolderReaction[ReacTypeNum][NumberOfFiles];
     TDirectory *FolderSplitedSelection[SelectionNumber][NumberOfFiles];
     TDirectory *FolderHist2D[NumberOfFiles];
-    //cout<<"KURWA "<<SelectionsName[0][0]<<endl;
+
     for(int i=0; i<NumberOfFiles; i++)
     {
         file[i] = new TFile( Form("%s%s.root", Directory.Data() , FileName[i].Data() ),"READ");
         if (file[i]->IsOpen() )
         {
-            cout<<i+1<<"cm"<<" File opened successfully"<<endl;
+            cout<<i+1<<" File opened successfully"<<endl;
         }  
         FolderHist2D[i] = (TDirectory*)file[i]->Get("FolderHist2D");
-        /*
+        
         for(int ic=0; ic<SelectionNumber; ic++) 
         {
-            FolderParticleSelections[ic][i]= (TDirectory*)file[i]->Get( Form( "Folder%s", SelectionsName[i][ic].Data() ) );
+            FolderParticleSelections[ic][i]= (TDirectory*)file[i]->Get( Form( "Folder%s", SelectionsName[ic].Data() ) );
         }
+        /*
         for(int ir=0; ir<ReacTypeNum; ir++) 
         {
             FolderReaction[ir][i]= (TDirectory*)file[i]->Get( Form( "Folder%s", ReactionName[ir].Data() ) );
         }
         for(int ic=0; ic<SelectionNumber; ic++)
         {
-            FolderSplitedSelection[ic][i]= (TDirectory*)file[i]->Get( Form( "FolderSplited%s", SelectionsName[i][ic].Data() ) );
+            FolderSplitedSelection[ic][i]= (TDirectory*)file[i]->Get( Form( "FolderSplited%s", SelectionsName[ic].Data() ) );
         }
         */
     }
@@ -213,13 +213,16 @@ void NEUTvsGENIE()
     TH1F *hVertexPosZ[NumberOfFiles];
     
     TH2F *hEnergyPeVsRange[SizeOfParticleVector][NumberOfFiles];
+    
+    TH1F *hVertexActivitySelections[SelectionNumber][5][NumberOfFiles];
     for(int i=0; i<NumberOfFiles; i++)
     {
         for(int ik=0; ik<5; ik++)
         {
-            for(int ir=0; ir<ReacTypeNum; ir++)
+            hVertexActivity[ik][i] = (TH1F*) file[i]->Get( VertexName[ik].Data());
+            for(int ic=0; ic<SelectionNumber; ic++)
             {
-                hVertexActivity[ik][i] = (TH1F*) file[i]->Get( VertexName[ik].Data());
+                hVertexActivitySelections[ic][ik][i]= (TH1F*) FolderParticleSelections[ic][i]->Get(  Form("VA%s_%s", VetrexString[ik].Data(), SelectionsName[ic].Data() ) );
             }
         }
          h_nuMom[i] = (TH1F*) file[i]->Get( "h_nuMom" );
@@ -240,7 +243,7 @@ void NEUTvsGENIE()
     int norma=1;
     Double_t norm;
 ///////////////////////////////// DRAWING PART STARTS HERE///////////////////////////// 
-    
+    /*
     int binowanieVA[5]={};
     long double normalizacjaVA[5][NumberOfFiles];
     for(int ik=0; ik<5; ik++)
@@ -255,6 +258,7 @@ void NEUTvsGENIE()
                     normalizacjaVA[ik][i]+= hVertexActivity[ik][i]->GetBinContent(ib);
             }
             hVertexActivity[ik][i]->Scale(norma/normalizacjaVA[ik][i]);
+            //hVertexActivity[ik][i]->Scale(100/hVertexActivity[ik][i]->Integral("width"));
         }
     
         hVertexActivity[ik][0]->SetLineColorAlpha(kBlue, 1);
@@ -279,7 +283,7 @@ void NEUTvsGENIE()
     }
 
     Canvas[canvasCounter] = new TCanvas( Form("Canvas%i",canvasCounter), Form("Canvas%i",canvasCounter), 1400, 1000);
-    /*
+    
     int binowanieNuMom=h_nuMom[0]->GetNbinsX();
     long double normalizacjaNuMom[NumberOfFiles];  
     
@@ -473,4 +477,85 @@ void NEUTvsGENIE()
     delete Canvas[canvasCounter];
     canvasCounter++;
     */
+    
+    
+    /*
+    double normalizationFactorProton= (hprotonMomentum[1]->GetEntries() )*(h_nuMom[0]->GetEntries() )/h_nuMom[1]->GetEntries();
+    
+    Canvas[canvasCounter] = new TCanvas( Form("Canvas%i",canvasCounter), Form("Canvas%i",canvasCounter), 1400, 1000);
+    
+    int binowaniePrMom=hprotonMomentum[0]->GetNbinsX();
+    long double normalizacjaPrMom;  
+    
+    for(int ib=0;ib<=binowaniePrMom;ib++)
+    {
+            normalizacjaPrMom+=hprotonMomentum[1]->GetBinContent(ib);
+    }
+    hprotonMomentum[1]->Scale(normalizationFactorProton/normalizacjaPrMom);
+            
+    hprotonMomentum[0]->SetLineColorAlpha(kBlue, 1);
+    hprotonMomentum[0]->SetLineWidth(1.5);
+    
+    hprotonMomentum[1]->SetLineColorAlpha(kRed, 1);
+    hprotonMomentum[1]->SetLineWidth(1.5);
+
+    hprotonMomentum[1]->Draw("");
+    hprotonMomentum[0]->Draw("SAME");
+
+    legend[canvasCounter] = new TLegend(0.55,0.65,0.9,0.9);
+    legend[canvasCounter]->AddEntry(hprotonMomentum[0], "GENIE","l");
+    legend[canvasCounter]->AddEntry(hprotonMomentum[1], "NEUT","l");
+    legend[canvasCounter]->SetTextSize(0.04);
+    legend[canvasCounter]->Draw();
+
+    gPad->Modified();
+    Canvas[canvasCounter]->Print( Form("%sProtonMomNGnewNormalization.pdf", DirectoryPlots.Data() ) ); 
+    delete Canvas[canvasCounter];
+    canvasCounter++;
+     */
+    
+    
+    int binowanieselVA[SelectionNumber][5]={};
+    long double normalizacjaselVA[SelectionNumber][5][NumberOfFiles];
+    for(int ik=1; ik<2; ik++)
+    {
+        for(int ic=0; ic<SelectionNumber; ic++)
+        {
+            Canvas[canvasCounter] = new TCanvas( Form("Canvas%i",canvasCounter), Form("Canvas%i",canvasCounter), 1400, 1000);
+            
+            binowanieselVA[ic][ik]=hVertexActivitySelections[ic][ik][0]->GetNbinsX();
+            for(int i=0; i<NumberOfFiles; i++)
+            {
+                for(int ib=0;ib<=binowanieselVA[ic][ik];ib++)
+                {
+                        normalizacjaselVA[ic][ik][i]+= hVertexActivitySelections[ic][ik][i]->GetBinContent(ib);
+                }
+                hVertexActivitySelections[ic][ik][i]->Scale(norma/normalizacjaselVA[ic][ik][i]);
+                //hVertexActivity[ik][i]->Scale(100/hVertexActivity[ik][i]->Integral("width"));
+            }
+        
+            hVertexActivitySelections[ic][ik][0]->SetLineColorAlpha(kBlue, 1);
+            hVertexActivitySelections[ic][ik][0]->SetLineWidth(1.5);
+            
+            hVertexActivitySelections[ic][ik][1]->SetLineColorAlpha(kRed, 1);
+            hVertexActivitySelections[ic][ik][1]->SetLineWidth(1.5);
+        
+            hVertexActivitySelections[ic][ik][0]->Draw("");
+            hVertexActivitySelections[ic][ik][1]->Draw("SAME");
+        
+            legend[canvasCounter] = new TLegend(0.55,0.65,0.9,0.9);
+            legend[canvasCounter]->AddEntry(hVertexActivitySelections[ic][ik][0], Form( "VA%s_GENIE", VetrexString[ik].Data() ),"l");
+            legend[canvasCounter]->AddEntry(hVertexActivitySelections[ic][ik][1], Form( "VA%s_NEUT", VetrexString[ik].Data() ),"l");
+            legend[canvasCounter]->SetTextSize(0.04);
+            legend[canvasCounter]->Draw();
+        
+            gPad->Modified();
+            Canvas[canvasCounter]->Print( Form("%sVA%s_%s_NG.pdf", DirectoryPlots.Data(), VetrexString[ik].Data(), SelectionsName[ic].Data() ) ); 
+            delete Canvas[canvasCounter];
+            canvasCounter++;
+        }
+    }
+    
+   
+    
 }

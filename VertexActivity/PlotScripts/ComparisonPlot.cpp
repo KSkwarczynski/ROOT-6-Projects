@@ -157,8 +157,8 @@ void ComparisonPlot()
     int LongOrShort = 1; //Set if you are interested in subtracting long and short [0] or just long [1]
     const int SelectionNumber = 5;
     const int ReacTypeNum = 5;
-    bool CIS = false;
-    bool NEUT = true;
+    bool CIS = true;
+    bool NEUT = false;
     
     TString Directory="/Users/kolos/Desktop/sFGD/Output/";
     TString DirectoryPlots="/Users/kolos/Desktop/sFGD/Plots/GENIE/";
@@ -229,6 +229,7 @@ void ComparisonPlot()
     //TODO SplitReactions
     TH1F *hVASplitSelection[SelectionNumber][ReacTypeNum][5];
     TH1F *h_nuMomSplitSelections[SelectionNumber][ReacTypeNum];
+    TH1F *hVertexActivitySubTrackLengtSplitSelection[SelectionNumber][ReacTypeNum][2][5];
     
     TH2F *hMomentumVsRange[SizeOfParticleVector];
     TH2F *hEnergyVsRange[SizeOfParticleVector];
@@ -283,7 +284,10 @@ void ComparisonPlot()
             for(int ir=0; ir<ReacTypeNum; ir++) 
             {
                 hVASplitSelection[ic][ir][ik] = (TH1F*) FolderSplitedSelection[ic]->Get( Form("VA%s_%s_%s", VetrexString[ik].Data(), SelectionsName[ic].Data(), ReactionName[ir].Data() ) );
-                
+                for(int il=LongOrShort; il<2; il++) //loop over short or long track
+                {
+                    hVertexActivitySubTrackLengtSplitSelection[ic][ir][il][ik] = (TH1F*) FolderSplitedSelection[ic]->Get(Form("VA%sSubtract_%s_%s_%s", VetrexString[ik].Data(), TrackLenght[il].Data(), SelectionsName[ic].Data(), ReactionName[ir].Data()));
+                }
                 if(ik==0)
                 {
                     h_nuMomSplitSelections[ic][ir] = (TH1F*) FolderSplitedSelection[ic]->Get( Form("nuMom%s_%s", SelectionsName[ic].Data(), ReactionName[ir].Data() ) );
@@ -399,7 +403,6 @@ void ComparisonPlot()
         delete Canvas[canvasCounter];
         canvasCounter++;
     }
-    */
     Double_t norm;
     for(int ig=0; ig<SizeOfParticleVector; ig++)
     {
@@ -414,7 +417,7 @@ void ComparisonPlot()
         delete Canvas[canvasCounter];
         canvasCounter++;
     }
-    /*
+
     for(int ig=0; ig<SizeOfParticleVector; ig++)
     {
         Canvas[canvasCounter] = new TCanvas( Form("Canvas%i",canvasCounter), Form("Canvas%i",canvasCounter), 1400, 1000);
@@ -1009,4 +1012,76 @@ void ComparisonPlot()
         canvasCounter++;
     }
     */
+    for(int ik=0; ik<5; ik++)
+    {
+        for(int ir=0; ir<ReacTypeNum; ir++) 
+        {
+            for(int il=LongOrShort; il<2; il++) //loop over short or long track
+            {
+                for(int ic=0; ic<SelectionNumber; ic++)
+                {
+                    hVertexActivitySubTrackLengtSplitSelection[ic][ir][il][ik]->SetBinContent(1,0); 
+                }
+            }
+        }
+    }
+    
+    
+        //WARNING 2p2h may not be compatible with all MC
+    THStack *VAsubtractStackSplit[SelectionNumber][5];
+    for(int ik=0; ik<2; ik++)
+    {
+        for(int il=LongOrShort; il<2; il++) //loop over short or long track
+        {
+            for(int ic=0; ic<SelectionNumber; ic++)
+            {
+                Canvas[canvasCounter] = new TCanvas( Form("Canvas%i",canvasCounter), Form("Canvas%i",canvasCounter), 1400, 1000);
+                //CCQE 2p2h RES DIS COH NC
+                
+                hVertexActivitySubTrackLengtSplitSelection[ic][0][il][ik]->SetFillColor(kRed);
+                hVertexActivitySubTrackLengtSplitSelection[ic][0][il][ik]->SetMarkerStyle(21);
+                hVertexActivitySubTrackLengtSplitSelection[ic][0][il][ik]->SetMarkerColor(kRed);
+                
+                hVertexActivitySubTrackLengtSplitSelection[ic][1][il][ik]->SetFillColor(kViolet);
+                hVertexActivitySubTrackLengtSplitSelection[ic][1][il][ik]->SetMarkerStyle(21);
+                hVertexActivitySubTrackLengtSplitSelection[ic][1][il][ik]->SetMarkerColor(kViolet);
+                
+                hVertexActivitySubTrackLengtSplitSelection[ic][2][il][ik]->SetFillColor(kGreen);
+                hVertexActivitySubTrackLengtSplitSelection[ic][2][il][ik]->SetMarkerStyle(21);
+                hVertexActivitySubTrackLengtSplitSelection[ic][2][il][ik]->SetMarkerColor(kGreen);
+            
+                hVertexActivitySubTrackLengtSplitSelection[ic][3][il][ik]->SetFillColor(kBlue);
+                hVertexActivitySubTrackLengtSplitSelection[ic][3][il][ik]->SetMarkerStyle(21);
+                hVertexActivitySubTrackLengtSplitSelection[ic][3][il][ik]->SetMarkerColor(kBlue);
+            
+                hVertexActivitySubTrackLengtSplitSelection[ic][4][il][ik]->SetFillColor(kCyan);
+                hVertexActivitySubTrackLengtSplitSelection[ic][4][il][ik]->SetMarkerStyle(21);
+                hVertexActivitySubTrackLengtSplitSelection[ic][4][il][ik]->SetMarkerColor(kCyan);
+                
+                VAsubtractStackSplit[ic][ik] = new THStack( Form("VAsubtractStackSplit%s_%s",  VetrexString[ik].Data(),SelectionsName[ic].Data() ), Form("VAsubtractStackSplit%s", VetrexString[ik].Data()) );
+                VAsubtractStackSplit[ic][ik]->Add( hVertexActivitySubTrackLengtSplitSelection[ic][0][il][ik] );
+                VAsubtractStackSplit[ic][ik]->Add( hVertexActivitySubTrackLengtSplitSelection[ic][1][il][ik] );
+                VAsubtractStackSplit[ic][ik]->Add( hVertexActivitySubTrackLengtSplitSelection[ic][2][il][ik] );
+                VAsubtractStackSplit[ic][ik]->Add( hVertexActivitySubTrackLengtSplitSelection[ic][3][il][ik] );
+                VAsubtractStackSplit[ic][ik]->Add( hVertexActivitySubTrackLengtSplitSelection[ic][4][il][ik] );
+            
+                VAsubtractStackSplit[ic][ik]->Draw("");
+            
+                VAsubtractStackSplit[ic][ik]->GetXaxis()->SetTitle( Form("Energy deposit in box %s [p.e.]", VetrexString[ik].Data()) );
+            
+                legend[canvasCounter] = new TLegend(0.60,0.7,0.9,0.9);
+                for(int ir=0; ir<ReacTypeNum; ir++)
+                {
+                    legend[canvasCounter]->AddEntry(hVertexActivitySubTrackLengtSplitSelection[ic][ir][il][ik], Form( "VA%s_%s", VetrexString[ik].Data(), ReactionName[ir].Data() ),"f");
+                }
+                legend[canvasCounter]->SetTextSize(0.04);
+                legend[canvasCounter]->Draw();
+            
+                gPad->Modified();
+                Canvas[canvasCounter]->Print( Form("%sVA%s_Subtract_StackSplit_%s.pdf", DirectorySplitSelectionsPlots.Data(), VetrexString[ik].Data(), SelectionsName[ic].Data()) ); 
+                delete Canvas[canvasCounter];
+                canvasCounter++;
+            }
+        }
+    }
 }

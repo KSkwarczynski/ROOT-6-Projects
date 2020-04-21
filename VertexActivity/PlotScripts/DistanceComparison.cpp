@@ -157,7 +157,7 @@ void DistanceComparison()
     const int ParticleNumberGO = 2; //Number of particles we put condition on, starting from 0
     int LongOrShort = 1; //Set if you are interested in subtracting long and short [0] or just long [1]
     const int SelectionNumber = 5;
-    const int ReacTypeNum = 5;
+    const int ReacTypeNum = 5; //WARNING
     const int NumberOfFiles = 7;
     bool CIS = false;
     bool NEUT = true;
@@ -188,8 +188,9 @@ void DistanceComparison()
     TString TrackLenght[2]={"Short", "Long"};
     TString OppositeLenght[2]={"Long", "Short"};
     TString SelectionsName[SelectionNumber]={"1mu1p", "1mu", "1muNp", "CC1Pi", "CCOther"};
-    //TString SelectionsName[SelectionNumber]={"CC0Pi", "CC0p0Pi", "CCNp0Pi", "CC1Pi", "CCOther"};
+    //TString SelectionsName[SelectionNumber]={"CC0Pi", "CC0p0Pi", "CCNp0Pi", "CC1Pi", "CCOther"}; //WARNING
     TString ReactionName[ReacTypeNum]={"CCQE","2p2h", "RES", "DIS", "COH"};
+    //TString ReactionName[ReacTypeNum]={"CCQE","RES", "DIS", "COH"};
     
     TFile *file[NumberOfFiles];
     TDirectory *FolderParticleSelections[SelectionNumber][NumberOfFiles];
@@ -394,7 +395,6 @@ void DistanceComparison()
             canvasCounter++;
         }  
     }
-    */
     int binowanieSelec[5];
     long double normalizacjaSelec[SelectionNumber][5][NumberOfFiles];  
     //hVertexActivitySelections[4][1][6]->Draw();
@@ -456,7 +456,7 @@ void DistanceComparison()
             canvasCounter++;
         }  
     }
-    /*
+   
     int binowanieShell[4];
     long double normalizacjaShell[SelectionNumber][ReacTypeNum][4][NumberOfFiles];  
 
@@ -593,5 +593,25 @@ void DistanceComparison()
         }
     }
     FileMeanShell.close();
-*/
+    */
+    fstream FileCC0piCounter;
+    FileCC0piCounter.open( Form("%sFileCC0piCounter.txt", DirectoryPlots.Data()), ios::out); 
+    
+    double AllCC0piEvents[NumberOfFiles]={};
+    
+    for(int i=0; i<NumberOfFiles; i++)
+    {
+        for(int ic=0; ic<3; ic++)
+        {
+            AllCC0piEvents[i] =AllCC0piEvents[i]+hVertexActivitySelections[ic][0][i]->GetEntries();
+        }
+    }
+    for(int ic=0; ic<3; ic++)
+    {
+        FileCC0piCounter<<SelectionsName[ic].Data()<<endl;
+    
+        FileCC0piCounter<<hVertexActivitySelections[ic][0][0]->GetEntries()/AllCC0piEvents[0]<<" "<<hVertexActivitySelections[ic][0][1]->GetEntries()/AllCC0piEvents[1]<<" "<<hVertexActivitySelections[ic][0][2]->GetEntries()/AllCC0piEvents[2]<<" "<<hVertexActivitySelections[ic][0][3]->GetEntries()/AllCC0piEvents[3]<<" "<<hVertexActivitySelections[ic][0][4]->GetEntries()/AllCC0piEvents[4]<<" "<<hVertexActivitySelections[ic][0][5]->GetEntries()/AllCC0piEvents[5]<<" "<<hVertexActivitySelections[ic][0][6]->GetEntries()/AllCC0piEvents[6]<<endl;
+    }
+    
+     FileCC0piCounter.close();   
 }
