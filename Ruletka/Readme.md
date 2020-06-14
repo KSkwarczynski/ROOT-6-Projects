@@ -1,1 +1,1 @@
-Program counting surface of sphere using Monte Carlo technique
+Program counting surface of a sphere using Monte Carlo technique, done as homework for GEANT4 leacture.
