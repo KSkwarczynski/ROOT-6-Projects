@@ -459,8 +459,35 @@ int main ()
     TH1F *HistogramCrosstalkDistanceTypeMiddleY= new TH1F("HistogramCrosstalkDistanceTypeMiddleY", "Number of cubes that recieved signal Y axis, middle of track",16,0,16);
     HistogramCrosstalkDistanceTypeMiddleY->GetYaxis()->SetTitle("Number of events");
     HistogramCrosstalkDistanceTypeMiddleY->GetXaxis()->SetTitle("Y detector axis [cm]"); 
-
-    /////
+    ////////TODO nowe zabawy!!!!!!!////////
+    TH1F *StopXz= new TH1F("StopXz", "StopXz",100,0,2500);
+    TH1F *StopXz1= new TH1F("StopXz1", "StopXz1",100,0,2500);
+    TH1F *StopXz25= new TH1F("StopXz25", "StopXz25",100,0,2500);
+    
+    TH1F *StopYz= new TH1F("StopYz", "StopYz",100,0,2500);
+    TH1F *StopYz1= new TH1F("StopYz1", "StopYz1",100,0,2500);
+    TH1F *StopYz25= new TH1F("StopYz25", "StopYz25",100,0,2500);
+/////
+    TH1F *NewPercXz= new TH1F("NewPercXz", "NewPercXz",200,0,100);
+    TH1F *NewPercXz1= new TH1F("NewPercXz1", "NewPercXz1",200,0,100);
+    TH1F *NewPercXz25= new TH1F("NewPercXz25", "NewPercXz25",200,0,100);
+    
+    TH1F *NewPercYz= new TH1F("NewPercYz", "NewPercYz",200,0,100);
+    TH1F *NewPercYz1= new TH1F("NewPercYz1", "NewPercYz1",200,0,100);
+    TH1F *NewPercYz25= new TH1F("NewPercYz25", "NewPercYz25",200,0,100);
+/////
+    TH1F *NewPercTwoXz= new TH1F("NewPercTwoXz", "NewPercTwoXz",200,0,100);
+    TH1F *NewPercTwoXz1= new TH1F("NewPercTwoXz1", "NewPercTwoXz1",200,0,100);
+    TH1F *NewPercTwoXz25= new TH1F("NewPercTwoXz25", "NewPercTwoXz25",200,0,100);
+////
+    TH2F *Multi1Xz= new TH2F("Multi1Xz", "Multi1Xz",24,0,24, 48,0,48);
+    TH2F *Multi1Xz1= new TH2F("Multi1Xz1", "Multi1Xz1",24,0,24, 48,0,48);
+    TH2F *Multi1Xz25= new TH2F("Multi1Xz25", "Multi1Xz25",24,0,24, 48,0,48);
+    
+    TH2F *Multi2Xz= new TH2F("Multi2Xz", "Multi2Xz",24,0,24, 48,0,48);
+    TH2F *Multi2Xz1= new TH2F("Multi2Xz1", "Multi2Xz1",24,0,24, 48,0,48);
+    TH2F *Multi2Xz25= new TH2F("Multi2Xz25", "Multi2Xz25",24,0,24, 48,0,48);
+/////
     TH2F *EnergyTrigTimeMiddleX = new TH2F("EnergyTrigTimeMiddleX","Energy and Time of Trigger X axis, 15 cubes away from stopping point", 100,-100,100,500,0,1500);
     EnergyTrigTimeMiddleX->GetYaxis()->SetTitle("Energy [p.e.]");
     EnergyTrigTimeMiddleX->GetXaxis()->SetTitle("Time from Trigger [2.5 ns]");
@@ -493,7 +520,7 @@ int main ()
     TDirectory *events2D = wfile.mkdir("events2D");
     TDirectory *CrossEnergy = wfile.mkdir("CrossEnergy");
     TDirectory *CrossEnergyPlain = wfile.mkdir("CrossEnergyPlain");
-    int NumberEvDis = 14000; // zmiana 10000
+    int NumberEvDis = 12000; // zmiana 10000
 
     ostringstream sEventnum;
     string sEvent;
@@ -608,7 +635,7 @@ int main ()
 
     double energyDepX_XZ_Plain[3][24];
     double energyDepY_YZ_Plain[3][8];
-
+    
     int eventNum=0;
     int licznik=1;
     bool LargehitTimeDif = 0;
@@ -665,7 +692,7 @@ int main ()
                     energyDepX_XZ_Plain[1][ik] = 0;
                     energyDepX_XZ_Plain[2][ik] = 0;
                 }
-                for (int ik = 0; ik < 8; ik++ ) //zerowanie tablic przechowujace dane, X
+                for (int ik = 0; ik < 8; ik++ ) //zerowanie tablic przechowujace dane, Y
                 {
                     energyDepY_YZ[ik] = 0;
                     energyDepY_YZ_Plain[0][ik] = 0;
@@ -791,6 +818,8 @@ int main ()
             }
             RealPeakEnergy=PeakEnergy;
             RealPeakNumber=PeakNumber;
+            //TODO
+            /*
             if(PeakNumber+1!=48)
             {
                 for(int ik = PeakNumber+1; ik < 48; ik++ )
@@ -802,6 +831,9 @@ int main ()
                     }
                 }
             }
+            */
+            bool StopingSignature = true; //TODO TODO
+            //if(RealPeakNumber>30) StopingSignature= true;
             for(int ik = 0; ik < 24; ik++ )
             {
                 energyX_XZ[eventNum]->Fill(ik,energyDepX_XZ[ik]);
@@ -826,16 +858,31 @@ int main ()
             //Fitting neccesary to elimate garbage events
             double sigma=0;
             bool sigmaCut=0;
-            if ( LargehitTimeDif == 0 && StoppingParticle==1 && PeakEnergy>250 && DiscontinuityCut==1 && TrackBeginningCut==1)
+            if ( LargehitTimeDif == 0 && StoppingParticle==1 && PeakEnergy>250 && DiscontinuityCut==1 && TrackBeginningCut==1 && StopingSignature==1)
             {
                 TF1 *EnergyFitX = new TF1("EnergyFitX", "gaus");
                 energyX_XZ[eventNum]-> Fit(EnergyFitX,"q","",1 , 23);
-                sigma = EnergyFitX->GetParameter(2); // We chose sigma to get rid of garbage
+                sigma = energyX_XZ[eventNum]->GetStdDev(); // We chose sigma to get rid of garbage
 
                 delete EnergyFitX;
-                if(sigma < 1.4) ///setting value for sigma cut
+                if(sigma < 1.4) ///setting value for sigma cut //TODO
                 {
                     sigmaCut=1;
+                }
+            }
+            double sigmaY=0;
+            bool sigmaCutY=0;
+            
+            if ( LargehitTimeDif == 0 && StoppingParticle==1 && PeakEnergy>250 && DiscontinuityCut==1 && TrackBeginningCut==1 && StopingSignature==1)
+            {
+                TF1 *EnergyFitY = new TF1("EnergyFitY", "gaus");
+                energyY_YZ[eventNum]-> Fit(EnergyFitY,"q","",1 , 7);
+                sigmaY = energyY_YZ[eventNum]->GetStdDev(); // We chose sigma to get rid of garbage
+
+                delete EnergyFitY;
+                if(sigmaY < 1.4) ///setting value for sigma cut
+                {
+                    sigmaCutY=1;
                 }
             }
             //Selecting Proton Events
@@ -849,7 +896,7 @@ int main ()
             {
                 EventNumberCut=1;
             }
-            if(LargehitTimeDif == 0 && StoppingParticle==1 && PeakEnergy>250 && DiscontinuityCut==1 && TrackBeginningCut==1 && sigmaCut==1 && EventNumberCut==1)
+            if(LargehitTimeDif == 0 && StoppingParticle==1 && PeakEnergy>250 && DiscontinuityCut==1 && TrackBeginningCut==1 && sigmaCut==1 && sigmaCutY==1 && EventNumberCut==1 && StopingSignature==1)
             {
                 Int_t GTindex[2] = {0,0};
                 for (int i = 0; i < 19; i++) //loop over FEB
@@ -881,7 +928,7 @@ int main ()
                                     {
                                         energyDepY_YZ_Plain[1][MapCon[FEBs[i]][1][(int)FEB[FEBs[i]].hitsChannel->at(check)]] += DepozytPomocniczy;
                                     }
-                                    if(PomocniczyNumerKostki == RealPeakNumber-15 && RealPeakNumber>15 && DepozytPomocniczy > 0 && DepozytPomocniczy < 10000)// zmiana 0 and 10000
+                                    if(PomocniczyNumerKostki == RealPeakNumber-25 && RealPeakNumber>25 && DepozytPomocniczy > 0 && DepozytPomocniczy < 10000)// zmiana 0 and 10000
                                     {
                                         energyDepY_YZ_Plain[2][MapCon[FEBs[i]][1][(int)FEB[FEBs[i]].hitsChannel->at(check)]] += DepozytPomocniczy;
                                     }
@@ -901,7 +948,7 @@ int main ()
                                     {
                                         energyDepX_XZ_Plain[1][MapCon[FEBs[i]][0][(int)FEB[FEBs[i]].hitsChannel->at(check)]] += DepozytPomocniczy;
                                     }
-                                    if(PomocniczyNumerKostki == RealPeakNumber-15 && RealPeakNumber>15 && DepozytPomocniczy > 0 && DepozytPomocniczy < 10000) //zmiana 0 and 10000
+                                    if(PomocniczyNumerKostki == RealPeakNumber-25 && RealPeakNumber>25 && DepozytPomocniczy > 0 && DepozytPomocniczy < 10000) //zmiana 0 and 10000
                                     {
                                         energyDepX_XZ_Plain[2][MapCon[FEBs[i]][0][(int)FEB[FEBs[i]].hitsChannel->at(check)]] += DepozytPomocniczy;
                                     }
@@ -913,7 +960,7 @@ int main ()
                     }
                 }
                 int LoopLimit=3; //poniewaz patrzymy na 3 punkty
-                if(RealPeakNumber<=15) //jesli mamy za krotki tor to nie chcemy wyjsc poza tablice
+                if(RealPeakNumber<=25) //jesli mamy za krotki tor to nie chcemy wyjsc poza tablice
                 {
                     LoopLimit=2;
                 }
@@ -984,7 +1031,7 @@ int main ()
             {
                 ProtonFlag=1;
             }
-            if(LargehitTimeDif == 0 && StoppingParticle==1 && PeakEnergy>250 && DiscontinuityCut==1 && TrackBeginningCut==1 && BorderCutY==1 && BorderCutX && sigmaCut==1 && EventNumberCut==1 && ProtonFlag==1 && EnergeticEventsX[0]==1 && EnergeticEventsY[0]==1 && EnergeticEventsX[1]==1 && EnergeticEventsY[1]==1)
+            if(LargehitTimeDif == 0 && StoppingParticle==1 && PeakEnergy>250 && DiscontinuityCut==1 && TrackBeginningCut==1 && BorderCutY==1 && BorderCutX && sigmaCut==1 && sigmaCutY==1 && EventNumberCut==1 && StopingSignature==1 && ProtonFlag==1 && EnergeticEventsX[0]==1 && EnergeticEventsY[0]==1 && EnergeticEventsX[1]==1 && EnergeticEventsY[1]==1)
             {   
                 //Sprawdzenie wartosci stopujacego protonu potrzebna do wykresow procentowych 
                 for(int ip=0; ip<3; ip++)
@@ -1030,7 +1077,7 @@ int main ()
                                     PomocniczyNumerKostki = MapCon[FEBs[i]][0][(int)FEB[FEBs[i]].hitsChannel->at(check)];
                                     PomicniczyTriggerTime=FEB[FEBs[i]].hitLeadTime->at(check)-TriggerTime;
                                     DepozytPomocniczy=FEB[FEBs[i]].hitCharge_pe->at(check);
-                                    if ( PomocniczyNumerKostki == RealPeakNumber && RealPeakEnergyY[0]>40 && DepozytPomocniczy > 0 && DepozytPomocniczy < 10000)// zmiana 0 and 10000
+                                    if ( PomocniczyNumerKostki == RealPeakNumber && RealPeakEnergyY[0]>20 && DepozytPomocniczy > 0 && DepozytPomocniczy < 10000)// zmiana 0 and 10000
                                     {
                                         CrosstalkDistance = MapCon[FEBs[i]][1][(int)FEB[FEBs[i]].hitsChannel->at(check)] - RealPeakNumberY[0];
                                         if(MapCon[FEBs[i]][1][(int)FEB[FEBs[i]].hitsChannel->at(check)] == RealPeakNumberY[0])
@@ -1057,6 +1104,7 @@ int main ()
                                                 {
                                                     CrosstalkEnergyDepositPercentageOneCubeY->Fill(100*DepozytPomocniczy/RealPeakEnergyResult[0]);
                                                     CrosstalkEnergyDepositPercentageOneCubeImprovedY->Fill(100*DepozytPomocniczy/RealPeakEnergyResultImproved[0]);
+                                                    NewPercYz->Fill( 100*DepozytPomocniczy/energyDepZ_YZ[RealPeakNumber]);
                                                 }
                                             }
                                             if(CrosstalkDistance==2 || CrosstalkDistance==-2)
@@ -1082,7 +1130,7 @@ int main ()
                                             HistogramCrosstalkDistanceCutY->Fill( CrosstalkDistance );
                                         }
                                     }
-                                    if ( PomocniczyNumerKostki == RealPeakNumber-1 && RealPeakEnergyY[1]>40 && DepozytPomocniczy > 0 && DepozytPomocniczy < 10000)// zmiana 0 and 10000, one cube backward
+                                    if ( PomocniczyNumerKostki == RealPeakNumber-1 && RealPeakEnergyY[1]>20 && DepozytPomocniczy > 0 && DepozytPomocniczy < 10000)// zmiana 0 and 10000, one cube backward
                                     {
                                         CrosstalkDistance = MapCon[FEBs[i]][1][(int)FEB[FEBs[i]].hitsChannel->at(check)] - RealPeakNumberY[1];
                                         if(MapCon[FEBs[i]][1][(int)FEB[FEBs[i]].hitsChannel->at(check)] != RealPeakNumberY[1])
@@ -1097,6 +1145,7 @@ int main ()
                                                 {
                                                     CrosstalkEnergyPercentageMinus1OneCubeY->Fill( 100*DepozytPomocniczy/RealPeakEnergyResult[1] );
                                                     CrosstalkEnergyDepositPercentageMinus1OneCubeImprovedY->Fill(100*DepozytPomocniczy/RealPeakEnergyResultImproved[1]);
+                                                    NewPercYz1->Fill( 100*DepozytPomocniczy/energyDepZ_YZ[RealPeakNumber-1]);
                                                 }
                                             }
                                             if(CrosstalkDistance==2 || CrosstalkDistance==-2)
@@ -1127,7 +1176,7 @@ int main ()
                                             WierdLicznikY[1]++;
                                         }
                                     }
-                                    if ( PomocniczyNumerKostki == RealPeakNumber-15 && RealPeakEnergyY[2]>40 && DepozytPomocniczy > 0 && DepozytPomocniczy < 10000 && RealPeakNumber>15 && EnergeticEventsX[2]==1 && EnergeticEventsY[2]==1)// zmiana 0 and 10000, Middle of detector
+                                    if ( PomocniczyNumerKostki == RealPeakNumber-25 && RealPeakEnergyY[2]>20 && DepozytPomocniczy > 0 && DepozytPomocniczy < 10000 && RealPeakNumber>25 && EnergeticEventsX[2]==1 && EnergeticEventsY[2]==1)// zmiana 0 and 10000, Middle of detector
                                     {
                                         CrosstalkDistance = MapCon[FEBs[i]][1][(int)FEB[FEBs[i]].hitsChannel->at(check)] - RealPeakNumberY[2];
                                         if(MapCon[FEBs[i]][1][(int)FEB[FEBs[i]].hitsChannel->at(check)] != RealPeakNumberY[2])
@@ -1142,6 +1191,7 @@ int main ()
                                                 {
                                                     CrosstalkEnergyPercentageMiddleOneCubeY->Fill(100*DepozytPomocniczy/RealPeakEnergyResult[2]);
                                                     CrosstalkEnergyDepositPercentageMiddleOneCubeImprovedY->Fill(100*DepozytPomocniczy/RealPeakEnergyResultImproved[2]);
+                                                    NewPercYz25->Fill( 100*DepozytPomocniczy/energyDepZ_YZ[RealPeakNumber-25]);
                                                 }
                                             }
                                             if(CrosstalkDistance==2 || CrosstalkDistance==-2)
@@ -1178,7 +1228,7 @@ int main ()
                                     PomocniczyNumerKostki = MapCon[FEBs[i]][1][(int)FEB[FEBs[i]].hitsChannel->at(check)];
                                     PomicniczyTriggerTime=FEB[FEBs[i]].hitLeadTime->at(check)-TriggerTime;
                                     DepozytPomocniczy=FEB[FEBs[i]].hitCharge_pe->at(check);
-                                    if( PomocniczyNumerKostki == RealPeakNumber && RealPeakEnergyX[0]>40 && DepozytPomocniczy > 0 && DepozytPomocniczy < 10000) //zmiana 0 and 10000
+                                    if( PomocniczyNumerKostki == RealPeakNumber && RealPeakEnergyX[0]>20 && DepozytPomocniczy > 0 && DepozytPomocniczy < 10000) //zmiana 0 and 10000
                                     {
                                         CrosstalkDistance = MapCon[FEBs[i]][0][(int)FEB[FEBs[i]].hitsChannel->at(check)] - RealPeakNumberX[0];
                                         if(MapCon[FEBs[i]][0][(int)FEB[FEBs[i]].hitsChannel->at(check)] == RealPeakNumberX[0])
@@ -1194,6 +1244,7 @@ int main ()
                                             if(RealPeakEnergyResult[0]>1)
                                             {
                                                 CrosstalkEnergyDepositPercentageX->Fill( 100*DepozytPomocniczy/RealPeakEnergyResult[0]);
+                                                NewPercXz->Fill( 100*DepozytPomocniczy/energyDepZ_XZ[RealPeakNumber]);
                                             }
                                             
                                             EnergyTrigTimeCrosstalkX->Fill(PomicniczyTriggerTime, DepozytPomocniczy);
@@ -1206,6 +1257,8 @@ int main ()
                                                     CrosstalkEnergyDepositPercentageOneCubeX->Fill(100*DepozytPomocniczy/RealPeakEnergyResult[0]);
                                                     CrosstalkEnergyDepositPercentageOneCubeImprovedX->Fill(100*DepozytPomocniczy/RealPeakEnergyResultImproved[0]);
                                                 }
+                                                //TODO
+                                                Multi1Xz->Fill(MapCon[FEBs[i]][0][(int)FEB[FEBs[i]].hitsChannel->at(check)],MapCon[FEBs[i]][1][(int)FEB[FEBs[i]].hitsChannel->at(check)],1);
                                             }
                                             if(CrosstalkDistance==2 || CrosstalkDistance==-2)
                                             {
@@ -1215,7 +1268,19 @@ int main ()
                                                     CrosstalkEnergyDepositPercentageTwoCubesX->Fill( 100*DepozytPomocniczy/RealPeakEnergyResult[0] );
                                                 }
                                                 SecondCrosstalkFlag+=1;
+                                                //TODO
+                                                Multi2Xz->Fill(MapCon[FEBs[i]][0][(int)FEB[FEBs[i]].hitsChannel->at(check)],MapCon[FEBs[i]][1][(int)FEB[FEBs[i]].hitsChannel->at(check)],1);
                                             }
+                                            //TODO
+                                            if(CrosstalkDistance==2 && CrosstalkFirstCubeValueX[0][1]>1)
+                                            {
+                                                NewPercTwoXz->Fill(100*DepozytPomocniczy/CrosstalkFirstCubeValueX[0][1]);
+                                            }
+                                            if(CrosstalkDistance==-2 && CrosstalkFirstCubeValueX[0][0]>1)
+                                            {
+                                                NewPercTwoXz->Fill(100*DepozytPomocniczy/CrosstalkFirstCubeValueX[0][0]);
+                                            }
+                                            
                                             if(CrosstalkDistance>0)
                                             {
                                                 CrossEventTypeX[0][CrosstalkDistance+24]=1;
@@ -1234,7 +1299,7 @@ int main ()
                                             HistogramCrosstalkDistanceCutX->Fill( CrosstalkDistance );
                                         }
                                     }
-                                    if( PomocniczyNumerKostki == RealPeakNumber-1 && RealPeakEnergyX[1]>40 && DepozytPomocniczy > 0 && DepozytPomocniczy < 10000) //zmiana 0 and 10000, one cube backward
+                                    if( PomocniczyNumerKostki == RealPeakNumber-1 && RealPeakEnergyX[1]>20 && DepozytPomocniczy > 0 && DepozytPomocniczy < 10000) //zmiana 0 and 10000, one cube backward
                                     {
                                         CrosstalkDistance = MapCon[FEBs[i]][0][(int)FEB[FEBs[i]].hitsChannel->at(check)] - RealPeakNumberX[1];
                                         
@@ -1250,7 +1315,10 @@ int main ()
                                                 {
                                                     CrosstalkEnergyPercentageMinus1OneCubeX->Fill( 100*DepozytPomocniczy/RealPeakEnergyResult[1]);
                                                     CrosstalkEnergyDepositPercentageMinus1OneCubeImprovedX->Fill(100*DepozytPomocniczy/RealPeakEnergyResultImproved[1]);
+                                                    NewPercXz1->Fill( 100*DepozytPomocniczy/energyDepZ_XZ[RealPeakNumber-1]);
                                                 }
+                                                //TODO
+                                                Multi1Xz1->Fill(MapCon[FEBs[i]][0][(int)FEB[FEBs[i]].hitsChannel->at(check)],MapCon[FEBs[i]][1][(int)FEB[FEBs[i]].hitsChannel->at(check)],1);
                                             }
                                             if(CrosstalkDistance==2 || CrosstalkDistance==-2)
                                             {
@@ -1259,6 +1327,17 @@ int main ()
                                                 {
                                                     CrosstalkEnergyPercentageMinus1TwoCubesX->Fill( 100*DepozytPomocniczy/RealPeakEnergyResult[1]);
                                                 }
+                                                //TODO
+                                                Multi2Xz1->Fill(MapCon[FEBs[i]][0][(int)FEB[FEBs[i]].hitsChannel->at(check)],MapCon[FEBs[i]][1][(int)FEB[FEBs[i]].hitsChannel->at(check)],1);
+                                            }
+                                            //TODO
+                                            if(CrosstalkDistance==2 && CrosstalkFirstCubeValueX[0][1]>1)
+                                            {
+                                                NewPercTwoXz1->Fill(100*DepozytPomocniczy/CrosstalkFirstCubeValueX[1][1]);
+                                            }
+                                            if(CrosstalkDistance==-2 && CrosstalkFirstCubeValueX[0][0]>1)
+                                            {
+                                                NewPercTwoXz1->Fill(100*DepozytPomocniczy/CrosstalkFirstCubeValueX[1][0]);
                                             }
                                             if(RealPeakEnergyResult[1]>1)
                                             {
@@ -1280,7 +1359,7 @@ int main ()
                                             WierdLicznikX[1]++;
                                         }
                                     }
-                                    if( PomocniczyNumerKostki == RealPeakNumber-15 && RealPeakEnergyX[2]>40 && DepozytPomocniczy > 0 && DepozytPomocniczy < 10000 && RealPeakNumber>15 && EnergeticEventsX[2]==1 && EnergeticEventsY[2]==1) //zmiana 0 and 10000, Middle of detector
+                                    if( PomocniczyNumerKostki == RealPeakNumber-25 && RealPeakEnergyX[2]>20 && DepozytPomocniczy > 0 && DepozytPomocniczy < 10000 && RealPeakNumber>25 && EnergeticEventsX[2]==1 && EnergeticEventsY[2]==1) //zmiana 0 and 10000, Middle of detector
                                     {
                                         CrosstalkDistance = MapCon[FEBs[i]][0][(int)FEB[FEBs[i]].hitsChannel->at(check)] - RealPeakNumberX[2];
                                         if(MapCon[FEBs[i]][0][(int)FEB[FEBs[i]].hitsChannel->at(check)] != RealPeakNumberX[2])
@@ -1295,7 +1374,10 @@ int main ()
                                                 {
                                                     CrosstalkEnergyPercentageMiddleOneCubeX->Fill( 100*DepozytPomocniczy/RealPeakEnergyResult[2]);
                                                     CrosstalkEnergyDepositPercentageMiddleOneCubeImprovedX->Fill(100*DepozytPomocniczy/RealPeakEnergyResultImproved[2]);
+                                                    NewPercXz25->Fill( 100*DepozytPomocniczy/energyDepZ_XZ[RealPeakNumber-25]);
                                                 }
+                                                //TODO
+                                                Multi1Xz25->Fill(MapCon[FEBs[i]][0][(int)FEB[FEBs[i]].hitsChannel->at(check)],MapCon[FEBs[i]][1][(int)FEB[FEBs[i]].hitsChannel->at(check)],1);
                                             }
                                             if(CrosstalkDistance==2 || CrosstalkDistance==-2)
                                             {
@@ -1304,6 +1386,17 @@ int main ()
                                                 {
                                                     CrosstalkEnergyPercentageMiddleTwoCubesX->Fill( 100*DepozytPomocniczy/RealPeakEnergyResult[2] );
                                                 }
+                                                //TODO
+                                                Multi2Xz25->Fill(MapCon[FEBs[i]][0][(int)FEB[FEBs[i]].hitsChannel->at(check)],MapCon[FEBs[i]][1][(int)FEB[FEBs[i]].hitsChannel->at(check)],1);
+                                            }
+                                            //TODO
+                                            if(CrosstalkDistance==2 && CrosstalkFirstCubeValueX[0][1]>1)
+                                            {
+                                                NewPercTwoXz25->Fill(100*DepozytPomocniczy/CrosstalkFirstCubeValueX[2][1]);
+                                            }
+                                            if(CrosstalkDistance==-2 && CrosstalkFirstCubeValueX[0][0]>1)
+                                            {
+                                                NewPercTwoXz25->Fill(100*DepozytPomocniczy/CrosstalkFirstCubeValueX[2][0]);
                                             }
                                             if(RealPeakEnergyResult[2]>1)
                                             {
@@ -1365,7 +1458,7 @@ int main ()
                         CrossEventTypeY[1][ib]=0;
                     }
                 }
-                if(energyDepZ[RealPeakNumber-15]>0 && RealPeakNumber>15 && EnergeticEventsX[2]==1 && EnergeticEventsY[2]==1)
+                if(energyDepZ[RealPeakNumber-25]>0 && RealPeakNumber>25 && EnergeticEventsX[2]==1 && EnergeticEventsY[2]==1)
                 {
                     for(int ib=0; ib<48; ib++)
                     {
@@ -1385,42 +1478,48 @@ int main ()
                     }
                 }
             //////
-                if(RealPeakEnergyX[0]>40)
+                if(RealPeakEnergyX[0]>20)
                 {
                     HistogramCrosstalkDistanceTypeX->Fill(CrossEventTypeCounterX[0]);
+                    StopXz->Fill(energyDepZ_XZ[RealPeakNumber]);
                 }
-                if(RealPeakEnergyY[0]>40)
+                if(RealPeakEnergyY[0]>20)
                 {
                     HistogramCrosstalkDistanceTypeY->Fill(CrossEventTypeCounterY[0]);
+                    StopYz->Fill(energyDepZ_YZ[RealPeakNumber]);
                 }
                 if(energyDepZ[RealPeakNumber-1]>0)
                 {
-                    if(RealPeakEnergyResult[1]>40)
+                    if(RealPeakEnergyResult[1]>20)
                     {
                         HistogramRealPeakEnergyDepositMinus1->Fill(RealPeakEnergyResult[1]);
                     }
-                    if(RealPeakEnergyX[1]>40)
+                    if(RealPeakEnergyX[1]>20)
                     {
                         HistogramCrosstalkDistanceTypeMinus1X->Fill(CrossEventTypeCounterX[1]);
+                        StopXz1->Fill(energyDepZ_XZ[RealPeakNumber-1]);
                     }
-                    if(RealPeakEnergyY[1]>40)
+                    if(RealPeakEnergyY[1]>20)
                     {
                         HistogramCrosstalkDistanceTypeMinus1Y->Fill(CrossEventTypeCounterY[1]);
+                        StopYz1->Fill(energyDepZ_YZ[RealPeakNumber-1]);
                     }
                 }
-                if(energyDepZ[RealPeakNumber-15]>0 && RealPeakNumber>15 && EnergeticEventsX[2]==1 && EnergeticEventsY[2]==1)
+                if(energyDepZ[RealPeakNumber-25]>0 && RealPeakNumber>25 && EnergeticEventsX[2]==1 && EnergeticEventsY[2]==1)
                 {
-                    if(RealPeakEnergyResult[2]>40)
+                    if(RealPeakEnergyResult[2]>20)
                     {
                         HistogramRealPeakEnergyDepositMiddle->Fill(RealPeakEnergyResult[2]);
                     }
-                    if(RealPeakEnergyX[2]>40)
+                    if(RealPeakEnergyX[2]>20)
                     {
                         HistogramCrosstalkDistanceTypeMiddleX->Fill(CrossEventTypeCounterX[2]);
+                        StopXz25->Fill(energyDepZ_XZ[RealPeakNumber-25]);
                     }
-                    if(RealPeakEnergyY[2]>40)
+                    if(RealPeakEnergyY[2]>20)
                     {
                         HistogramCrosstalkDistanceTypeMiddleY->Fill(CrossEventTypeCounterY[2]);
+                        StopYz25->Fill(energyDepZ_YZ[RealPeakNumber-25]);
                     }
                 }
 
@@ -1440,7 +1539,7 @@ int main ()
                         {
                             TemporaryTime=WierdTestX[hk][1][0];
                         }
-                        if(hk==0 && RealPeakEnergyX[0]>40)
+                        if(hk==0 && RealPeakEnergyX[0]>20)
                         {
                             EnergyTrigTimeTestX->Fill(WierdTestX[0][0][0],WierdTestX[0][0][1]);
                             EnergyTrigTimeTestX->Fill(WierdTestX[0][1][0],WierdTestX[0][1][1]);
@@ -1449,11 +1548,11 @@ int main ()
                             EnergyTrigTimeX->Fill(TemporaryTime, TemporaryEnergy);
                             EnergyTrigTimeTestUpgradeX->Fill(TemporaryTime, TemporaryEnergy);
                         }
-                        if(hk==1 && RealPeakEnergyX[1]>40)
+                        if(hk==1 && RealPeakEnergyX[1]>20)
                         {
                             EnergyTrigTimeMinus1X->Fill(TemporaryTime, TemporaryEnergy);
                         }
-                        if(hk==2 && RealPeakNumber>15 && RealPeakEnergyX[2]>40 && EnergeticEventsX[2]==1 && EnergeticEventsY[2]==1)
+                        if(hk==2 && RealPeakNumber>25 && RealPeakEnergyX[2]>20 && EnergeticEventsX[2]==1 && EnergeticEventsY[2]==1)
                         {
                             EnergyTrigTimeMiddleX->Fill(TemporaryTime, TemporaryEnergy);
                         }
@@ -1472,7 +1571,7 @@ int main ()
                         {
                             TemporaryTime=WierdTestY[hk][1][0];
                         }
-                        if(hk==0 && RealPeakEnergyY[1]>40)
+                        if(hk==0 && RealPeakEnergyY[1]>20)
                         {
                             EnergyTrigTimeTestY->Fill(WierdTestY[0][0][0],WierdTestY[0][0][1]);
                             EnergyTrigTimeTestY->Fill(WierdTestY[0][1][0],WierdTestY[0][1][1]);
@@ -1481,11 +1580,11 @@ int main ()
                             EnergyTrigTimeY->Fill(TemporaryTime, TemporaryEnergy);
                             EnergyTrigTimeTestUpgradeY->Fill(TemporaryTime, TemporaryEnergy);
                         }
-                        if(hk==1 && RealPeakEnergyY[1]>40)
+                        if(hk==1 && RealPeakEnergyY[1]>20)
                         {
                             EnergyTrigTimeMinus1Y->Fill(TemporaryTime, TemporaryEnergy);
                         }
-                        if(hk==2 && RealPeakNumber>15 && RealPeakEnergyY[2]>40 && EnergeticEventsX[2]==1 && EnergeticEventsY[2]==1)
+                        if(hk==2 && RealPeakNumber>25 && RealPeakEnergyY[2]>20 && EnergeticEventsX[2]==1 && EnergeticEventsY[2]==1)
                         {
                            EnergyTrigTimeMiddleY->Fill(TemporaryTime, TemporaryEnergy);
                         }
@@ -1495,7 +1594,7 @@ int main ()
                 {
                     EnergyTrigTimeSignalX->Fill(WierdTestX[0][0][0], WierdTestX[0][0][1]);
                     EnergyTrigTimeX->Fill(WierdTestX[0][0][0], WierdTestX[0][0][1]);
-                    if(WierdTestX[0][0][1]<40)
+                    if(WierdTestX[0][0][1]<20)
                     {
                         EnergyTrigTimeTestLowX->Fill(WierdTestX[0][0][0],WierdTestX[0][0][1]); 
                     }
@@ -1504,7 +1603,7 @@ int main ()
                 {
                     EnergyTrigTimeMinus1X->Fill(WierdTestX[1][0][0], WierdTestX[1][0][1]);
                 }
-                if(WierdLicznikX[2]==1 && RealPeakNumber>15 && RealPeakEnergyX[2]>0 && EnergeticEventsX[2]==1 && EnergeticEventsY[2]==1)
+                if(WierdLicznikX[2]==1 && RealPeakNumber>25 && RealPeakEnergyX[2]>0 && EnergeticEventsX[2]==1 && EnergeticEventsY[2]==1)
                 {
                     EnergyTrigTimeMiddleX->Fill(WierdTestX[2][0][0], WierdTestX[2][0][1]);
                 }
@@ -1512,7 +1611,7 @@ int main ()
                 {
                     EnergyTrigTimeSignalY->Fill(WierdTestY[0][0][0], WierdTestY[0][0][1]);
                     EnergyTrigTimeY->Fill(WierdTestY[0][0][0], WierdTestY[0][0][1]);
-                    if(WierdTestY[0][0][1]<40)
+                    if(WierdTestY[0][0][1]<20)
                     {
                         EnergyTrigTimeTestLowY->Fill(WierdTestY[0][0][0],WierdTestY[0][0][1]);
                     }
@@ -1521,7 +1620,7 @@ int main ()
                 {
                    EnergyTrigTimeMinus1Y->Fill(WierdTestY[1][0][0], WierdTestY[1][0][1]);
                 }
-                if(WierdLicznikY[2]==1 && RealPeakNumber>15 && RealPeakEnergyY[2]>0 && EnergeticEventsX[2]==1 && EnergeticEventsY[2]==1)
+                if(WierdLicznikY[2]==1 && RealPeakNumber>25 && RealPeakEnergyY[2]>0 && EnergeticEventsX[2]==1 && EnergeticEventsY[2]==1)
                 {
                     EnergyTrigTimeMiddleY->Fill(WierdTestY[2][0][0], WierdTestY[2][0][1]);
                 }
@@ -1530,12 +1629,12 @@ int main ()
                 HistogramHighestEnergyDeposit->Fill(PeakEnergy);
                 HistogramRealPeakEnergyDeposit->Fill(RealPeakEnergyResult[0]);
                 
-                cout <<"licznik "<<licznik<<" sigma " << sigma <<" RealPeakNumber "<<RealPeakNumber<<" PID "<<Pid<<endl;
+                cout <<"licznik "<<licznik<<" sigmaX " << sigma <<" sigmaY " << sigmaY <<" RealPeakNumber "<<RealPeakNumber<<" PID "<<Pid<<endl;
                 cout <<"licznik "<<licznik<<" RealPeakEnergyX "<< RealPeakEnergyX[0]<<" RealPeakEnergyY "<<RealPeakEnergyY[0]<<endl;
                 cout <<"licznik "<<licznik<<" RealPeakNumberX "<< RealPeakNumberX[0]<<" RealPeakNumberY "<<RealPeakNumberY[0]<<endl;
-                if(energyDepZ[RealPeakNumber-15]>0 && RealPeakNumber>15 && EnergeticEventsX[2]==1 && EnergeticEventsY[2]==1)
+                if(energyDepZ[RealPeakNumber-25]>0 && RealPeakNumber>25 && EnergeticEventsX[2]==1 && EnergeticEventsY[2]==1)
                 {
-                    cout <<"licznik "<<licznik<<" RealPeakNumber-15: "<<RealPeakNumber-15<<" RealPeakEnergy-15: "<<energyDepZ[RealPeakNumber-15]<<endl;
+                    cout <<"licznik "<<licznik<<" RealPeakNumber-25: "<<RealPeakNumber-25<<" RealPeakEnergy-25: "<<energyDepZ[RealPeakNumber-25]<<endl;
                 }
                 if(SecondCrosstalkFlag>0)
                 {
@@ -1761,6 +1860,34 @@ int main ()
     
     EnergyTrigTimeTestLowX->Write();
     EnergyTrigTimeTestLowY->Write();
+    ////////
+    StopXz->Write();
+    StopXz1->Write();
+    StopXz25->Write();
+   
+    StopYz->Write();
+    StopYz1->Write();
+    StopYz25->Write();
+    
+    NewPercXz->Write();
+    NewPercXz1->Write();
+    NewPercXz25->Write();
+    
+    NewPercYz->Write();
+    NewPercYz1->Write();
+    NewPercYz25->Write();
+    
+    NewPercTwoXz->Write();
+    NewPercTwoXz1->Write();
+    NewPercTwoXz25->Write();
+    
+    Multi1Xz->Write();
+    Multi1Xz1->Write();
+    Multi1Xz25->Write();
+    
+    Multi2Xz->Write();
+    Multi2Xz1->Write();
+    Multi2Xz25->Write();
     
     wfile.Close();
     FileInput->Close();

@@ -13,7 +13,7 @@ void PlotMaker()
     gStyle->SetOptStat(0);
     
     char filename[200];
-    sprintf(filename,"/Users/kolos/Desktop/Studia/CIS/Crosstalk/StoppingProton/Data/MergedCrosstalk.root");
+    sprintf(filename,"/Users/kolos/Desktop/Crosstalk/Data/DataMerged.root");
     TFile *file = new TFile(filename,"READ");
     if ( file->IsOpen() )
     {
@@ -170,7 +170,7 @@ void PlotMaker()
     
 ////////////////////////////////
     fstream plik;
-    plik.open("/Users/kolos/Desktop/Studia/CIS/Crosstalk/StoppingProton/Output/Probability.txt", ios::out);
+    plik.open("/Users/kolos/Desktop/Crosstalk/Output/Probability.txt", ios::out);
     double main[3]={};
     double EventMapX[2][2][3]={}; //[1 away, 2 away][left,righ],[Z,Z-1,Z-15]
     double EventMapY[2][2][3]={}; //[1 away, 2 away][left,righ],[Z,Z-1,Z-15]
@@ -287,7 +287,7 @@ void PlotMaker()
     EnergyTrigTimeSignalY->Draw("COLZ");
     
     gPad->Modified();
-    Canvas->Print("/Users/kolos/Desktop/Studia/CIS/Crosstalk/StoppingProton/Output/TimeTriggerEnergy.pdf");
+    Canvas->Print("/Users/kolos/Desktop/Crosstalk/Output/TimeTriggerEnergy.pdf");
     delete Canvas;
 ////////////////////////////////
     TCanvas *Canvas2 = new TCanvas("Canvas2","Canvas2", 1400, 1000);
@@ -307,7 +307,7 @@ void PlotMaker()
     EnergyTrigTimeTestUpgradeY->Draw("COLZ");
     
     gPad->Modified();
-    Canvas2->Print("/Users/kolos/Desktop/Studia/CIS/Crosstalk/StoppingProton/Output/WierdPlot.pdf");    
+    Canvas2->Print("/Users/kolos/Desktop/Crosstalk/Output/WierdPlot.pdf");    
     delete Canvas2;
 ////////////////////////////////
     TCanvas *Canvas3 = new TCanvas("Canvas3","Canvas3", 1400, 1000);
@@ -401,7 +401,7 @@ void PlotMaker()
     legend3->Draw();
     
     gPad->Modified();
-    Canvas3->Print("/Users/kolos/Desktop/Studia/CIS/Crosstalk/StoppingProton/Output/CrosstalkComparison.pdf");
+    Canvas3->Print("/Users/kolos/Desktop/Crosstalk/Output/CrosstalkComparison.pdf");
     delete Canvas3;
     ////////////////////////////////
     TCanvas *Canvas4 = new TCanvas("Canvas4","Canvas4", 1400, 1000);
@@ -529,7 +529,7 @@ void PlotMaker()
     legend14->Draw();
     
     gPad->Modified();
-    Canvas4->Print("/Users/kolos/Desktop/Studia/CIS/Crosstalk/StoppingProton/Output/CrosstalkPercentageComparison.pdf");
+    Canvas4->Print("/Users/kolos/Desktop/Crosstalk/Output/CrosstalkPercentageComparison.pdf");
     delete Canvas4;
     delete legend11; 
     delete legend12; 
@@ -631,7 +631,7 @@ void PlotMaker()
     EnergyTrigTimeMiddleY->Draw("COLZ");
     
     gPad->Modified();
-    Canvas8->Print("/Users/kolos/Desktop/Studia/CIS/Crosstalk/StoppingProton/Output/EnergyTrigTimeAllComparison.pdf");
+    Canvas8->Print("/Users/kolos/Desktop/Crosstalk/Output/EnergyTrigTimeAllComparison.pdf");
     delete Canvas8;
     
     TCanvas *Canvas9 = new TCanvas("Canvas9","Canvas9", 1400, 1000);
@@ -679,7 +679,7 @@ void PlotMaker()
     legend42->Draw();
     
     gPad->Modified();
-    Canvas9->Print("/Users/kolos/Desktop/Studia/CIS/Crosstalk/StoppingProton/Output/CrosstalkTypeComparison.pdf");
+    Canvas9->Print("/Users/kolos/Desktop/Crosstalk/Output/CrosstalkTypeComparison.pdf");
     delete Canvas9;
 ////////////////////
     TCanvas *Canvas12 = new TCanvas("Canvas12","Canvas12", 1400, 1000);
@@ -788,7 +788,7 @@ void PlotMaker()
     legend74->Draw();
     
     gPad->Modified();
-    Canvas12->Print("/Users/kolos/Desktop/Studia/CIS/Crosstalk/StoppingProton/Output/CrosstalkCubeDistance.pdf");  
+    Canvas12->Print("/Users/kolos/Desktop/Crosstalk/Output/CrosstalkCubeDistance.pdf");  
     delete Canvas12;
 /////////////
     TCanvas *Canvas13 = new TCanvas("Canvas13","Canvas13", 1400, 1000);
@@ -950,7 +950,7 @@ void PlotMaker()
     legend84->Draw();
     
     gPad->Modified();
-    Canvas13->Print("/Users/kolos/Desktop/Studia/CIS/Crosstalk/StoppingProton/Output/CrosstalkPercentageDistance.pdf");  
+    Canvas13->Print("/Users/kolos/Desktop/Crosstalk/Output/CrosstalkPercentageDistance.pdf");  
     delete Canvas13;
     ///////////////
     TCanvas *Canvas15 = new TCanvas("Canvas15","Canvas15", 1400, 1000);
@@ -1041,6 +1041,182 @@ void PlotMaker()
     legend103->Draw();
     
     gPad->Modified();
-    Canvas15->Print("/Users/kolos/Desktop/Studia/CIS/Crosstalk/StoppingProton/Output/CrosstalkDepositFirstAndSecondCube.pdf");  
+    Canvas15->Print("/Users/kolos/Desktop/Crosstalk/Output/CrosstalkDepositFirstAndSecondCube.pdf");  
     delete Canvas15;
+    
+/////////////////////////////////////////////////////TODO
+    Canvas201 = new TCanvas( "Canvas201", "Canvas201", 1400, 1000);
+    TH1F* StopXz = (TH1F*) file->Get("StopXz");
+    StopXz->GetYaxis()->SetTitleOffset(1.4);
+    TH1F* StopXz1 = (TH1F*) file->Get("StopXz1");
+    StopXz1->GetYaxis()->SetTitleOffset(1.4);
+    TH1F* StopXz25 = (TH1F*) file->Get("StopXz25");
+    StopXz25->GetYaxis()->SetTitleOffset(1.4);
+        
+    StopXz->SetLineColorAlpha(kRed, 1);
+    StopXz->SetLineWidth(1.5);
+    StopXz->GetXaxis()->SetRangeUser(0., 1200.);
+    StopXz1->SetLineColorAlpha(kBlue, 1);
+    StopXz1->SetLineWidth(1.5);
+    StopXz1->GetXaxis()->SetRangeUser(0., 1200.);
+    StopXz25->SetLineColorAlpha(kGreen, 1);
+    StopXz25->SetLineWidth(1.5);
+    StopXz25->GetXaxis()->SetRangeUser(0., 1200.);
+    
+    StopXz->GetYaxis()->SetTitleOffset(1.0);
+    StopXz1->GetXaxis()->SetTitleSize(0.05);
+    StopXz25->GetYaxis()->SetTitleSize(0.05);
+    
+    StopXz25->Draw("");
+    StopXz->Draw("SAME");
+    StopXz1->Draw("SAME");
+    
+    TLegend *legend201 = new TLegend(0.75,0.6,1.0,0.9);
+    legend201->AddEntry(StopXz,"Stopping Point","l");
+    legend201->AddEntry(StopXz1,"One Cube Backward","l");
+    legend201->AddEntry(StopXz25,"25 Cubes Backward","l");
+    legend201->SetTextSize(0.03);
+    legend201->Draw();
+    
+    gPad->Modified();
+    Canvas201->Print( "/Users/kolos/Desktop/Crosstalk/Output/NOWE_X_Depozyty.pdf" ); 
+    delete Canvas201;
+    
+    Canvas202 = new TCanvas( "Canvas202", "Canvas202", 1400, 1000);
+    
+    TH1F* StopYz = (TH1F*) file->Get("StopYz");
+    StopYz->GetYaxis()->SetTitleOffset(1.4);
+    TH1F* StopYz1 = (TH1F*) file->Get("StopYz1");
+    StopYz1->GetYaxis()->SetTitleOffset(1.4);
+    TH1F* StopYz25 = (TH1F*) file->Get("StopYz25");
+    StopYz25->GetYaxis()->SetTitleOffset(1.4);
+    
+    StopYz->SetLineColorAlpha(kRed, 1);
+    StopYz->SetLineWidth(1.5);
+    StopYz->GetXaxis()->SetRangeUser(0., 1200.);
+    StopYz1->SetLineColorAlpha(kBlue, 1);
+    StopYz1->SetLineWidth(1.5);
+    StopYz1->GetXaxis()->SetRangeUser(0., 1200.);
+    StopYz25->SetLineColorAlpha(kGreen, 1);
+    StopYz25->SetLineWidth(1.5);
+    StopYz25->GetXaxis()->SetRangeUser(0., 1200.);
+    
+    StopYz->GetYaxis()->SetTitleOffset(1.0);
+    StopYz1->GetXaxis()->SetTitleSize(0.05);
+    StopYz25->GetYaxis()->SetTitleSize(0.05);
+    
+    StopYz25->Draw("");
+    StopYz->Draw("SAME");
+    StopYz1->Draw("SAME");
+    
+    
+    TLegend *legend202 = new TLegend(0.75,0.6,1.0,0.9);
+    legend202->AddEntry(StopYz,"Stopping Point","l");
+    legend202->AddEntry(StopYz1,"One Cube Backward","l");
+    legend202->AddEntry(StopYz25,"25 Cubes Backward","l");
+    legend202->SetTextSize(0.03);
+    legend202->Draw();
+    
+    gPad->Modified();
+    Canvas202->Print( "/Users/kolos/Desktop/Crosstalk/Output/NOWE_Y_Depozyty.pdf" ); 
+    delete Canvas202;
+    
+///////////////////////////////////////////////////// TODO dodaj normalizacje
+    Canvas203 = new TCanvas( "Canvas203", "Canvas203", 1400, 1000);
+    TH1F* NewPercXz = (TH1F*) file->Get("NewPercXz");
+    NewPercXz->GetYaxis()->SetTitleOffset(1.4);
+    TH1F* NewPercXz1 = (TH1F*) file->Get("NewPercXz1");
+    NewPercXz1->GetYaxis()->SetTitleOffset(1.4);
+    TH1F* NewPercXz25 = (TH1F*) file->Get("NewPercXz25");
+    NewPercXz25->GetYaxis()->SetTitleOffset(1.4);
+        
+    TH1F* NewPercYz = (TH1F*) file->Get("NewPercYz");
+    NewPercYz->GetYaxis()->SetTitleOffset(1.4);
+    TH1F* NewPercYz1 = (TH1F*) file->Get("NewPercYz1");
+    NewPercYz1->GetYaxis()->SetTitleOffset(1.4);
+    TH1F* NewPercYz25 = (TH1F*) file->Get("NewPercYz25");
+    NewPercYz25->GetYaxis()->SetTitleOffset(1.4);
+    
+    for(int i=0;i<=5;i++)
+    {
+       normalizacja[i]=0;
+    }
+    int binowanie=HistogramCrosstalkDistanceX->GetNbinsX();
+    for(int i=1;i<=binowanie;i++)
+    {
+        normalizacja[0]+=NewPercXz->GetBinContent(i);
+        normalizacja[1]+=NewPercXz1->GetBinContent(i);
+        normalizacja[2]+=NewPercXz25->GetBinContent(i);
+        normalizacja[3]+=NewPercYz->GetBinContent(i);
+        normalizacja[4]+=NewPercYz1->GetBinContent(i);
+        normalizacja[5]+=NewPercYz25->GetBinContent(i);
+    }
+    int norma=1;
+    NewPercXz->Scale(norma/normalizacja[0]);
+    NewPercXz1->Scale(norma/normalizacja[1]);
+    NewPercXz25->Scale(norma/normalizacja[2]);
+    NewPercYz->Scale(norma/normalizacja[3]);
+    NewPercYz1->Scale(norma/normalizacja[4]);
+    NewPercYz25->Scale(norma/normalizacja[5]);
+
+    NewPercXz->SetLineColorAlpha(kRed, 1);
+    NewPercXz->SetLineWidth(1.5);
+    NewPercXz->GetXaxis()->SetRangeUser(0., 20.);
+    NewPercXz1->SetLineColorAlpha(kBlue, 1);
+    NewPercXz1->SetLineWidth(1.5);
+    NewPercXz1->GetXaxis()->SetRangeUser(0., 20.);
+    NewPercXz25->SetLineColorAlpha(kGreen, 1);
+    NewPercXz25->SetLineWidth(1.5);
+    NewPercXz25->GetXaxis()->SetRangeUser(0., 20.);
+    
+    NewPercXz->GetYaxis()->SetTitleOffset(1.0);
+    NewPercXz1->GetXaxis()->SetTitleSize(0.05);
+    NewPercXz25->GetYaxis()->SetTitleSize(0.05);
+    
+    NewPercXz->Draw("");
+    NewPercXz1->Draw("SAME");
+    NewPercXz25->Draw("SAME");
+    
+    TLegend *legend203 = new TLegend(0.65,0.6,1.0,0.9);
+    legend203->AddEntry(NewPercXz,"Stopping Point","l");
+    legend203->AddEntry(NewPercXz1,"One Cube Backward","l");
+    legend203->AddEntry(NewPercXz25,"25 Cubes Backward","l");
+    legend203->SetTextSize(0.03);
+    legend203->Draw();
+    
+    gPad->Modified();
+    Canvas203->Print( "/Users/kolos/Desktop/Crosstalk/Output/NOWE_X_Procenty.pdf" ); 
+    delete Canvas203;
+    
+    Canvas204 = new TCanvas( "Canvas204", "Canvas204", 1400, 1000);
+        
+    NewPercYz->SetLineColorAlpha(kRed, 1);
+    NewPercYz->SetLineWidth(1.5);
+    NewPercYz->GetXaxis()->SetRangeUser(0., 20.);
+    NewPercYz1->SetLineColorAlpha(kBlue, 1);
+    NewPercYz1->SetLineWidth(1.5);
+    NewPercYz1->GetXaxis()->SetRangeUser(0., 20.);
+    NewPercYz25->SetLineColorAlpha(kGreen, 1);
+    NewPercYz25->SetLineWidth(1.5);
+    NewPercYz25->GetXaxis()->SetRangeUser(0., 20.);
+    
+    NewPercYz->GetYaxis()->SetTitleOffset(1.0);
+    NewPercYz1->GetXaxis()->SetTitleSize(0.05);
+    NewPercYz25->GetYaxis()->SetTitleSize(0.05);
+    
+    NewPercYz->Draw("");
+    NewPercYz1->Draw("SAME");
+    NewPercYz25->Draw("SAME");
+    
+    TLegend *legend204 = new TLegend(0.65,0.6,1.0,0.9);
+    legend204->AddEntry(NewPercYz,"Stopping Point","l");
+    legend204->AddEntry(NewPercYz1,"One Cube Backward","l");
+    legend204->AddEntry(NewPercYz25,"25 Cubes Backward","l");
+    legend204->SetTextSize(0.03);
+    legend204->Draw();
+    
+    gPad->Modified();
+    Canvas204->Print( "/Users/kolos/Desktop/Crosstalk/Output/NOWE_Y_Procenty.pdf" ); 
+    delete Canvas204;
+     
 }
